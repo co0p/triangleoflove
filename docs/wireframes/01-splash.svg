@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="390" height="844" viewBox="0 0 390 844">
+  <rect x="0" y="0" width="390" height="844" fill="#fff"/>
+  <rect x="18" y="18" width="354" height="808" rx="28" fill="none" stroke="#111" stroke-width="2.6"/>
+  <path d="M195 210 L135 320 L255 320 Z" fill="none" stroke="#111" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M195 222 L146 312" fill="none" stroke="#111" stroke-width="1.8" stroke-linecap="round"/>
+  <path d="M195 222 L244 312" fill="none" stroke="#111" stroke-width="1.6" stroke-linecap="round"/>
+  <path d="M146 312 L244 312" fill="none" stroke="#111" stroke-width="1.4" stroke-linecap="round"/>
+  <text x="195" y="380" text-anchor="middle" font-family="ui-sans-serif, system-ui" font-size="20" fill="#111">Triangle of Love</text>
+  <text x="195" y="404" text-anchor="middle" font-family="ui-sans-serif, system-ui" font-size="12" fill="#111">Coach (Mobile PWA)</text>
+  <g stroke="#111" stroke-width="0.8" opacity="0.25">
+    <path d="M110 460 l60 20"/>
+    <path d="M108 470 l64 22"/>
+    <path d="M112 480 l62 20"/>
+    <path d="M114 490 l58 18"/>
+  </g>
+  <text x="195" y="760" text-anchor="middle" font-family="ui-sans-serif, system-ui" font-size="12" fill="#111">Loading…</text>
+</svg>
