@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="390" height="844" viewBox="0 0 390 844">
+  <rect x="0" y="0" width="390" height="844" fill="#fff"/>
+  <rect x="18" y="18" width="354" height="808" rx="28" fill="none" stroke="#111" stroke-width="2.6"/>
+
+  <text x="36" y="62" font-family="ui-sans-serif, system-ui" font-size="16" fill="#111">Weekly plan</text>
+  <path d="M18 82 H372" stroke="#111" stroke-width="1.6"/>
+
+  <text x="36" y="116" font-family="ui-sans-serif, system-ui" font-size="12" fill="#111">Pick one small action</text>
+
+  <rect x="36" y="140" width="318" height="170" rx="18" fill="none" stroke="#111" stroke-width="2.6"/>
+  <text x="56" y="174" font-family="ui-sans-serif, system-ui" font-size="12" fill="#111">Chosen impulse</text>
+  <text x="56" y="202" font-family="ui-sans-serif, system-ui" font-size="11" fill="#111">10-min no-phone High/Low talk</text>
+  <text x="56" y="226" font-family="ui-sans-serif, system-ui" font-size="11" fill="#111">When: Tue / Thu evenings</text>
+  <text x="56" y="250" font-family="ui-sans-serif, system-ui" font-size="11" fill="#111">Backup: weekend coffee check-in</text>
+
+  <rect x="36" y="330" width="318" height="150" rx="18" fill="none" stroke="#111" stroke-width="2.2"/>
+  <text x="56" y="364" font-family="ui-sans-serif, system-ui" font-size="12" fill="#111">Reminder</text>
+  <text x="56" y="392" font-family="ui-sans-serif, system-ui" font-size="11" fill="#111">Keep it tiny. Consistency beats intensity.</text>
+  <g stroke="#111" stroke-width="0.9" opacity="0.22">
+    <path d="M56 420 h270"/>
+    <path d="M56 432 h252"/>
+    <path d="M56 444 h262"/>
+  </g>
+
+  <rect x="36" y="520" width="318" height="52" rx="16" fill="none" stroke="#111" stroke-width="2.6"/>
+  <text x="195" y="552" text-anchor="middle" font-family="ui-sans-serif, system-ui" font-size="14" fill="#111">Confirm plan</text>
+
+  <path d="M18 760 H372" stroke="#111" stroke-width="1.6"/>
+  <text x="80" y="800" text-anchor="middle" font-family="ui-sans-serif, system-ui" font-size="11" fill="#111">Home</text>
+  <text x="195" y="800" text-anchor="middle" font-family="ui-sans-serif, system-ui" font-size="11" fill="#111">Insights</text>
+  <text x="310" y="800" text-anchor="middle" font-family="ui-sans-serif, system-ui" font-size="11" fill="#111">Achievements</text>
+</svg>
