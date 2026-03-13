@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="390" height="844" viewBox="0 0 390 844">
+  <rect x="0" y="0" width="390" height="844" fill="#fff"/>
+  <rect x="18" y="18" width="354" height="808" rx="28" fill="none" stroke="#111" stroke-width="2.6"/>
+  <text x="36" y="62" font-family="ui-sans-serif, system-ui" font-size="16" fill="#111">Done</text>
+  <path d="M18 82 H372" stroke="#111" stroke-width="1.6"/>
+  <circle cx="195" cy="210" r="46" fill="none" stroke="#111" stroke-width="2.6"/>
+  <path d="M175 210 l14 16 l28 -34" fill="none" stroke="#111" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="195" y="290" text-anchor="middle" font-family="ui-sans-serif, system-ui" font-size="14" fill="#111">Daily check-in complete</text>
+  <rect x="36" y="330" width="318" height="130" rx="18" fill="none" stroke="#111" stroke-width="2.2"/>
+  <text x="56" y="366" font-family="ui-sans-serif, system-ui" font-size="12" fill="#111">Micro-tip</text>
+  <text x="56" y="392" font-family="ui-sans-serif, system-ui" font-size="11" fill="#111">Try one appreciation today:</text>
+  <text x="56" y="414" font-family="ui-sans-serif, system-ui" font-size="11" fill="#111">"Thanks for ___."</text>
+  <rect x="36" y="510" width="318" height="52" rx="16" fill="none" stroke="#111" stroke-width="2.6"/>
+  <text x="195" y="542" text-anchor="middle" font-family="ui-sans-serif, system-ui" font-size="14" fill="#111">Back to Home</text>
+  <path d="M18 760 H372" stroke="#111" stroke-width="1.6"/>
+  <text x="80" y="800" text-anchor="middle" font-family="ui-sans-serif, system-ui" font-size="11" fill="#111">Home</text>
+  <text x="195" y="800" text-anchor="middle" font-family="ui-sans-serif, system-ui" font-size="11" fill="#111">Insights</text>
+  <text x="310" y="800" text-anchor="middle" font-family="ui-sans-serif, system-ui" font-size="11" fill="#111">Achievements</text>
+  <path d="M62 808 h36" stroke="#111" stroke-width="2.4"/>
+</svg>

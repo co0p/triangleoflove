@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="390" height="844" viewBox="0 0 390 844">
+  <rect x="0" y="0" width="390" height="844" fill="#fff"/>
+  <rect x="18" y="18" width="354" height="808" rx="28" fill="none" stroke="#111" stroke-width="2.6"/>
+
+  <text x="36" y="62" font-family="ui-sans-serif, system-ui" font-size="16" fill="#111">Dashboard</text>
+  <path d="M18 82 H372" stroke="#111" stroke-width="1.6"/>
+
+  <rect x="36" y="106" width="318" height="110" rx="18" fill="none" stroke="#111" stroke-width="2.2"/>
+  <text x="56" y="140" font-family="ui-sans-serif, system-ui" font-size="12" fill="#111">Today</text>
+  <text x="56" y="166" font-family="ui-sans-serif, system-ui" font-size="11" fill="#111">Daily check-in: not done</text>
+  <rect x="56" y="178" width="120" height="28" rx="10" fill="none" stroke="#111" stroke-width="2.0"/>
+  <text x="116" y="198" text-anchor="middle" font-family="ui-sans-serif, system-ui" font-size="11" fill="#111">Start</text>
+
+  <rect x="36" y="230" width="318" height="150" rx="18" fill="none" stroke="#111" stroke-width="2.0"/>
+  <text x="56" y="264" font-family="ui-sans-serif, system-ui" font-size="12" fill="#111">This week</text>
+  <text x="56" y="290" font-family="ui-sans-serif, system-ui" font-size="11" fill="#111">Plan: High/Low talk (Tue/Thu)</text>
+  <text x="56" y="314" font-family="ui-sans-serif, system-ui" font-size="11" fill="#111">Streak: 7 days</text>
+  <rect x="56" y="332" width="140" height="28" rx="10" fill="none" stroke="#111" stroke-width="2.0"/>
+  <text x="126" y="352" text-anchor="middle" font-family="ui-sans-serif, system-ui" font-size="11" fill="#111">Review</text>
+
+  <rect x="36" y="396" width="318" height="210" rx="18" fill="none" stroke="#111" stroke-width="2.0"/>
+  <text x="56" y="430" font-family="ui-sans-serif, system-ui" font-size="12" fill="#111">Quick stats</text>
+  <text x="56" y="456" font-family="ui-sans-serif, system-ui" font-size="11" fill="#111">Intimacy</text>
+  <path d="M150 450 h180" stroke="#111" stroke-width="2"/>
+  <text x="56" y="484" font-family="ui-sans-serif, system-ui" font-size="11" fill="#111">Passion</text>
+  <path d="M150 478 h140" stroke="#111" stroke-width="2"/>
+  <text x="56" y="512" font-family="ui-sans-serif, system-ui" font-size="11" fill="#111">Commitment</text>
+  <path d="M150 506 h160" stroke="#111" stroke-width="2"/>
+  <g stroke="#111" stroke-width="0.9" opacity="0.22">
+    <path d="M56 544 h270"/>
+    <path d="M56 556 h252"/>
+    <path d="M56 568 h262"/>
+  </g>
+
+  <path d="M18 760 H372" stroke="#111" stroke-width="1.6"/>
+  <text x="80" y="800" text-anchor="middle" font-family="ui-sans-serif, system-ui" font-size="11" fill="#111">Home</text>
+  <text x="195" y="800" text-anchor="middle" font-family="ui-sans-serif, system-ui" font-size="11" fill="#111">Insights</text>
+  <text x="310" y="800" text-anchor="middle" font-family="ui-sans-serif, system-ui" font-size="11" fill="#111">Achievements</text>
+  <path d="M62 808 h36" stroke="#111" stroke-width="2.4"/>
+</svg>

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="390" height="844" viewBox="0 0 390 844">
+  <rect x="0" y="0" width="390" height="844" fill="#fff"/>
+  <rect x="18" y="18" width="354" height="808" rx="28" fill="none" stroke="#111" stroke-width="2.6"/>
+
+  <text x="36" y="62" font-family="ui-sans-serif, system-ui" font-size="16" fill="#111">Weekly review</text>
+  <path d="M18 82 H372" stroke="#111" stroke-width="1.6"/>
+
+  <text x="36" y="116" font-family="ui-sans-serif, system-ui" font-size="11" fill="#111">~5 minutes • reflections are private</text>
+
+  <rect x="36" y="140" width="318" height="150" rx="18" fill="none" stroke="#111" stroke-width="2.2"/>
+  <text x="56" y="174" font-family="ui-sans-serif, system-ui" font-size="12" fill="#111">Triangle ratings (1–5)</text>
+  <text x="56" y="206" font-family="ui-sans-serif, system-ui" font-size="11" fill="#111">Intimacy</text>
+  <path d="M170 200 h160" stroke="#111" stroke-width="2"/>
+  <text x="56" y="234" font-family="ui-sans-serif, system-ui" font-size="11" fill="#111">Passion</text>
+  <path d="M170 228 h160" stroke="#111" stroke-width="2"/>
+  <text x="56" y="262" font-family="ui-sans-serif, system-ui" font-size="11" fill="#111">Commitment</text>
+  <path d="M170 256 h160" stroke="#111" stroke-width="2"/>
+
+  <text x="36" y="326" font-family="ui-sans-serif, system-ui" font-size="12" fill="#111">Private reflections (not shared)</text>
+  <rect x="36" y="340" width="318" height="110" rx="16" fill="none" stroke="#111" stroke-width="2.1"/>
+  <text x="52" y="372" font-family="ui-sans-serif, system-ui" font-size="11" fill="#111">What was nice last week?</text>
+
+  <rect x="36" y="462" width="318" height="110" rx="16" fill="none" stroke="#111" stroke-width="2.1"/>
+  <text x="52" y="494" font-family="ui-sans-serif, system-ui" font-size="11" fill="#111">What was annoying/hard?</text>
+
+  <rect x="36" y="610" width="318" height="52" rx="16" fill="none" stroke="#111" stroke-width="2.6"/>
+  <text x="195" y="642" text-anchor="middle" font-family="ui-sans-serif, system-ui" font-size="14" fill="#111">Continue</text>
+
+  <path d="M18 760 H372" stroke="#111" stroke-width="1.6"/>
+  <text x="80" y="800" text-anchor="middle" font-family="ui-sans-serif, system-ui" font-size="11" fill="#111">Home</text>
+  <text x="195" y="800" text-anchor="middle" font-family="ui-sans-serif, system-ui" font-size="11" fill="#111">Insights</text>
+  <text x="310" y="800" text-anchor="middle" font-family="ui-sans-serif, system-ui" font-size="11" fill="#111">Achievements</text>
+</svg>

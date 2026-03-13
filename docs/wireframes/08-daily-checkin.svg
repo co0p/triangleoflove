@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="390" height="844" viewBox="0 0 390 844">
+  <rect x="0" y="0" width="390" height="844" fill="#fff"/>
+  <rect x="18" y="18" width="354" height="808" rx="28" fill="none" stroke="#111" stroke-width="2.6"/>
+  <text x="36" y="62" font-family="ui-sans-serif, system-ui" font-size="16" fill="#111">Daily check-in</text>
+  <path d="M18 82 H372" stroke="#111" stroke-width="1.6"/>
+  <text x="36" y="116" font-family="ui-sans-serif, system-ui" font-size="11" fill="#111">30–60 seconds • private note optional</text>
+  <g font-family="ui-sans-serif, system-ui" fill="#111">
+    <text x="36" y="160" font-size="12">Felt close today</text>
+    <path d="M240 152 h92" stroke="#111" stroke-width="2"/>
+    <text x="36" y="210" font-size="12">Positive energy / fun</text>
+    <path d="M240 202 h92" stroke="#111" stroke-width="2"/>
+    <text x="36" y="260" font-size="12">Supported / team</text>
+    <path d="M240 252 h92" stroke="#111" stroke-width="2"/>
+    <text x="36" y="310" font-size="12">Communication healthy</text>
+    <path d="M240 302 h92" stroke="#111" stroke-width="2"/>
+    <text x="36" y="360" font-size="12">My stress level</text>
+    <path d="M240 352 h92" stroke="#111" stroke-width="2"/>
+  </g>
+  <text x="36" y="420" font-family="ui-sans-serif, system-ui" font-size="12" fill="#111">Optional private note</text>
+  <rect x="36" y="434" width="318" height="110" rx="16" fill="none" stroke="#111" stroke-width="2.2"/>
+  <g stroke="#111" stroke-width="1" opacity="0.18">
+    <path d="M52 468 h270"/>
+    <path d="M52 490 h250"/>
+    <path d="M52 512 h260"/>
+  </g>
+  <rect x="36" y="580" width="318" height="52" rx="16" fill="none" stroke="#111" stroke-width="2.6"/>
+  <text x="195" y="612" text-anchor="middle" font-family="ui-sans-serif, system-ui" font-size="14" fill="#111">Submit</text>
+  <text x="195" y="680" text-anchor="middle" font-family="ui-sans-serif, system-ui" font-size="10" fill="#111">No sharing in-app. Talk about it if you want.</text>
+</svg>
