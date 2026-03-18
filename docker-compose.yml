@@ -1,0 +1,25 @@
+version: "3.9"
+
+services:
+  frontend:
+    build:
+      context: ./frontend
+    container_name: triangleoflove-frontend
+    ports:
+      - "5173:5173"
+
+  backend:
+    build:
+      context: ./backend
+    container_name: triangleoflove-backend
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+
+  db:
+    build:
+      context: ./db
+    container_name: triangleoflove-db
+    ports:
+      - "5432:5432"

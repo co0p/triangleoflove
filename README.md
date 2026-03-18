@@ -1,3 +1,5 @@
+![Triangle of Love Coach logo](docs/logo.png)
+
 # Triangle of Love Coach
 
 Triangle of Love Coach is a mobile-first web app for couples to build better habits through tiny daily check-ins and a weekly relationship review. It uses Sternberg's Triangle of Love (Intimacy, Passion, Commitment) to show trends and suggest one clear next move each week.
