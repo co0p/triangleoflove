@@ -1,0 +1,12 @@
+{
+  "name": "triangleoflove-api-tests",
+  "version": "1.0.0",
+  "private": true,
+  "description": "API acceptance checks run with Playwright",
+  "scripts": {
+    "test": "playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.52.0"
+  }
+}
