@@ -30,7 +30,9 @@ services:
     container_name: triangleoflove-api-tests
     environment:
       - API_BASE_URL=http://backend:8080
+      - FRONTEND_BASE_URL=http://frontend:5173
     depends_on:
       - backend
+      - frontend
     profiles:
       - tests
