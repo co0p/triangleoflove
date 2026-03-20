@@ -62,13 +62,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Validate acceptance test folder
+      - name: Validate api-tests folder
         run: |
-          test -d tests/api-acceptance
+          test -d api-tests
 
-      - name: Acceptance test gate placeholder
+      - name: Run dockerized API acceptance tests
         run: |
-          echo "API acceptance test gate is active. Replace with tests/api-acceptance command."
+          docker compose --profile tests run --rm --build api-tests
 
   deploy-prod:
     name: Deploy to Production

@@ -1,11 +1,12 @@
 const { test, expect } = require('@playwright/test');
 
-test('health endpoint returns healthy response', async ({ request }) => {
+test('TestBootstrap_GivenRunningStack_WhenHealthEndpointCalled_ThenHealthyResponseReturned', async ({ request }) => {
   const response = await request.get('/health');
 
   expect(response.ok()).toBeTruthy();
 
   const body = await response.json();
+  console.log('health endpoint response:', body);
   expect(body).toEqual(
     expect.objectContaining({
       status: 'healthy'
