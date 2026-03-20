@@ -18,7 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     if: inputs.run_ghcr_integration
     env:
-      DB_IMAGE: ghcr.io/${{ github.repository_owner }}/triangleoflove-db:${{ github.sha }}
+      DB_IMAGE: ghcr.io/railwayapp-templates/postgres-ssl:latest
       BACKEND_IMAGE: ghcr.io/${{ github.repository_owner }}/triangleoflove-backend:${{ github.sha }}
       FRONTEND_IMAGE: ghcr.io/${{ github.repository_owner }}/triangleoflove-frontend:${{ github.sha }}
       API_TESTS_IMAGE: triangleoflove-api-tests:ci
@@ -28,8 +28,8 @@ jobs:
 
       - name: Validate required files
         run: |
-          test -d api-tests
-          test -f api-tests/Dockerfile
+          test -d testing
+          test -f testing/Dockerfile
           test -f docker-compose.yml
 
       - name: Log in to GitHub Container Registry
@@ -40,7 +40,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build local api-tests image
-        run: docker build -t triangleoflove-api-tests:ci ./api-tests
+        run: docker build -t triangleoflove-api-tests:ci ./testing
 
       - name: Start services from GHCR images
         run: |

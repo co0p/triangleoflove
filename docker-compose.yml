@@ -2,7 +2,7 @@ services:
   frontend:
     image: ${FRONTEND_IMAGE:-triangleoflove-frontend:local}
     build:
-      context: ./frontend
+      context: ./services/frontend
     container_name: triangleoflove-frontend
     ports:
       - "5173"
@@ -10,7 +10,7 @@ services:
   backend:
     image: ${BACKEND_IMAGE:-triangleoflove-backend:local}
     build:
-      context: ./backend
+      context: ./services/backend
     container_name: triangleoflove-backend
     ports:
       - "8080"
@@ -27,7 +27,7 @@ services:
   db:
     image: ${DB_IMAGE:-triangleoflove-db:local}
     build:
-      context: ./db
+      context: ./services/db
     container_name: triangleoflove-db
     environment:
       - POSTGRES_DB=triangleoflove
@@ -43,7 +43,7 @@ services:
   api-tests:
     image: ${API_TESTS_IMAGE:-triangleoflove-api-tests:local}
     build:
-      context: ./api-tests
+      context: ./testing
     container_name: triangleoflove-api-tests
     environment:
       - API_BASE_URL=http://backend:8080

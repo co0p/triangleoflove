@@ -3,12 +3,12 @@
 ## Architectural Decisions
 
 ### Layering
-- Default: The repository is split into three top-level folders: `frontend`, `backend`, and `db`.
+- Default: Service code lives under `services/` with one subfolder per runtime service (for example `services/frontend`, `services/backend`, and `services/db`).
 - Default: Each part has its own `Dockerfile`.
 - Default: Local development uses one root `docker-compose` setup to run all parts together.
 - Default: Frontend UI components call an API client layer only. Direct HTTP calls from UI components are not allowed.
 - Default: Backend flow is `handlers/routes -> service/use-case -> repository/data`.
-- Default: The `db` folder contains migrations and seed scripts only.
+- Default: The `services/db` folder contains migrations and seed scripts only.
 - Exceptions: Layering can be bypassed only in short-lived spike branches.
 - Enforcement signal: PR review blocks feature code that crosses these boundaries.
 
@@ -33,7 +33,7 @@
 
 ## Testing Expectations
 
-- Test location: Unit tests are colocated with source. API acceptance tests live in a dedicated repository-level folder at `tests/api-acceptance/`.
+- Test location: Unit tests are colocated with source. API acceptance tests live in `testing/`.
 - Coverage: Critical backend API flows require acceptance tests. Core business logic paths require unit tests. UI end-to-end tests are out of scope.
 - Runtime: Acceptance tests must run in CI and must also run locally against the `docker-compose` stack.
 - Mocking: Unit tests may mock ports/adapters. Acceptance tests should hit real API endpoints with real service wiring and controlled test data setup/teardown.

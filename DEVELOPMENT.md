@@ -7,6 +7,38 @@ This document explains how to run the local stack and API tests.
 - Docker Desktop (or Docker Engine + Docker Compose plugin)
 - A shell with `docker` and `docker compose` available
 
+## Local Development (Low Effort)
+
+This is the simplest local setup for working on frontend and backend with minimal tooling.
+
+1. Start the full stack once:
+
+```bash
+docker compose up -d --build frontend backend db
+```
+
+2. Make code changes in `services/frontend` or `services/backend`.
+
+3. Rebuild only the service you changed:
+
+```bash
+# after backend changes
+docker compose up -d --build backend
+
+# after frontend changes
+docker compose up -d --build frontend
+```
+
+4. Watch service logs when needed:
+
+```bash
+docker compose logs -f backend frontend db
+```
+
+Notes:
+- Hot reload/autoload is not enabled in this setup.
+- This keeps local development simple and close to the containerized runtime used by CI.
+
 ## Start the Stack Locally
 
 Build and start the application services:
