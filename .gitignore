@@ -1,1 +1,11 @@
 .4dc
+node_modules/
+dist/
+build/
+*.log
+*.tmp
+*.bak
+*.swp
+.DS_Store
+.idea/
+.vscode/

@@ -1,0 +1,32 @@
+services:
+  db:
+    image: ghcr.io/${REPOSITORY_OWNER}/triangleoflove-db:${IMAGE_TAG}
+    environment:
+      - POSTGRES_DB=triangleoflove
+      - POSTGRES_USER=triangle
+      - POSTGRES_PASSWORD=triangle
+
+  backend:
+    image: ghcr.io/${REPOSITORY_OWNER}/triangleoflove-backend:${IMAGE_TAG}
+    environment:
+      - POSTGRES_HOST=db
+      - POSTGRES_PORT=5432
+      - POSTGRES_DB=triangleoflove
+      - POSTGRES_USER=triangle
+      - POSTGRES_PASSWORD=triangle
+    depends_on:
+      - db
+
+  frontend:
+    image: ghcr.io/${REPOSITORY_OWNER}/triangleoflove-frontend:${IMAGE_TAG}
+    depends_on:
+      - backend
+
+  api-tests:
+    image: ghcr.io/${REPOSITORY_OWNER}/triangleoflove-api-tests:${IMAGE_TAG}
+    environment:
+      - API_BASE_URL=http://backend:8080
+      - FRONTEND_BASE_URL=http://frontend:5173
+    depends_on:
+      - backend
+      - frontend
