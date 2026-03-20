@@ -27,7 +27,12 @@ jobs:
           test -f docker-compose.yml
 
       - name: Run dockerized API acceptance tests (source)
-        run: docker compose --profile tests run --rm --build api-tests
+        run: |
+          docker compose --profile tests up --build --abort-on-container-exit --exit-code-from api-tests api-tests
+
+      - name: Tear down source stack
+        if: always()
+        run: docker compose --profile tests down -v
 
   api-tests-image:
     name: API Tests Image
@@ -87,23 +92,8 @@ jobs:
           docker pull ghcr.io/${REPOSITORY_OWNER}/triangleoflove-api-tests:${IMAGE_TAG}
 
       - name: Start services from GHCR images
-        run: docker compose -f .github/compose/ghcr-integration.compose.yml up -d db backend frontend
-
-      - name: Wait for backend health
         run: |
-          docker compose -f .github/compose/ghcr-integration.compose.yml run --rm api-tests sh -lc '
-            for i in $(seq 1 30); do
-              if curl -fsS http://backend:8080/health >/dev/null; then
-                exit 0
-              fi
-              sleep 2
-            done
-            echo "backend did not become healthy in time"
-            exit 1
-          '
-
-      - name: Run api-tests image against GHCR stack
-        run: docker compose -f .github/compose/ghcr-integration.compose.yml run --rm api-tests
+          docker compose -f .github/compose/ghcr-integration.compose.yml up --abort-on-container-exit --exit-code-from api-tests api-tests
 
       - name: Tear down GHCR test stack
         if: always()
