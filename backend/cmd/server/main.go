@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"time"
 
 	"triangleoflove/backend/internal/repository"
 	"triangleoflove/backend/internal/service"
@@ -33,7 +34,7 @@ func main() {
 	}
 	defer dbConn.Close()
 
-	if err := dbConn.Ping(); err != nil {
+	if err := waitForDatabase(dbConn, 30, 2*time.Second); err != nil {
 		log.Fatalf("failed to connect to db: %v", err)
 	}
 
@@ -99,4 +100,20 @@ func envOrDefault(key, fallback string) string {
 		return fallback
 	}
 	return value
+}
+
+func waitForDatabase(dbConn *sql.DB, maxAttempts int, delay time.Duration) error {
+	var lastErr error
+	for attempt := 1; attempt <= maxAttempts; attempt++ {
+		if err := dbConn.Ping(); err == nil {
+			return nil
+		} else {
+			lastErr = err
+			log.Printf("db not ready (attempt %d/%d): %v", attempt, maxAttempts, err)
+		}
+
+		time.Sleep(delay)
+	}
+
+	return lastErr
 }

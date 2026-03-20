@@ -30,6 +30,11 @@ jobs:
         run: |
           docker compose --profile tests up --build --abort-on-container-exit --exit-code-from api-tests api-tests
 
+      - name: Print source stack logs on failure
+        if: failure()
+        run: |
+          docker compose --profile tests logs backend db || true
+
       - name: Tear down source stack
         if: always()
         run: docker compose --profile tests down -v
@@ -68,14 +73,13 @@ jobs:
     needs: api-tests-image
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     env:
-      REPOSITORY_OWNER: ${{ github.repository_owner }}
-      IMAGE_TAG: ${{ github.sha }}
+      DB_IMAGE: ghcr.io/${{ github.repository_owner }}/triangleoflove-db:${{ github.sha }}
+      BACKEND_IMAGE: ghcr.io/${{ github.repository_owner }}/triangleoflove-backend:${{ github.sha }}
+      FRONTEND_IMAGE: ghcr.io/${{ github.repository_owner }}/triangleoflove-frontend:${{ github.sha }}
+      API_TESTS_IMAGE: ghcr.io/${{ github.repository_owner }}/triangleoflove-api-tests:${{ github.sha }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
-      - name: Validate GHCR compose file
-        run: test -f .github/compose/ghcr-integration.compose.yml
 
       - name: Log in to GitHub Container Registry
         uses: docker/login-action@v3
@@ -84,17 +88,15 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Pull GHCR images
-        run: |
-          docker pull ghcr.io/${REPOSITORY_OWNER}/triangleoflove-db:${IMAGE_TAG}
-          docker pull ghcr.io/${REPOSITORY_OWNER}/triangleoflove-backend:${IMAGE_TAG}
-          docker pull ghcr.io/${REPOSITORY_OWNER}/triangleoflove-frontend:${IMAGE_TAG}
-          docker pull ghcr.io/${REPOSITORY_OWNER}/triangleoflove-api-tests:${IMAGE_TAG}
-
       - name: Start services from GHCR images
         run: |
-          docker compose -f .github/compose/ghcr-integration.compose.yml up --abort-on-container-exit --exit-code-from api-tests api-tests
+          docker compose --profile tests up --pull always --no-build --abort-on-container-exit --exit-code-from api-tests api-tests
+
+      - name: Print GHCR stack logs on failure
+        if: failure()
+        run: |
+          docker compose --profile tests logs backend db || true
 
       - name: Tear down GHCR test stack
         if: always()
-        run: docker compose -f .github/compose/ghcr-integration.compose.yml down -v
+        run: docker compose --profile tests down -v

@@ -41,10 +41,16 @@ curl --fail "http://localhost:${BACKEND_PORT}/status"
 
 ## Run API Tests
 
-Run the Dockerized Playwright API test suite:
+Run the Dockerized Playwright API test suite using the same orchestration pattern as CI:
 
 ```bash
-docker compose --profile tests run --rm --build api-tests
+docker compose --profile tests up --build --abort-on-container-exit --exit-code-from api-tests api-tests
+```
+
+After tests finish (pass or fail), clean up containers and volumes:
+
+```bash
+docker compose --profile tests down -v
 ```
 
 ## Stop and Clean Up
@@ -66,7 +72,8 @@ docker compose down -v
 If tests fail after changing dependencies, force image rebuild:
 
 ```bash
-docker compose --profile tests run --rm --build api-tests
+docker compose --profile tests up --build --abort-on-container-exit --exit-code-from api-tests api-tests
+docker compose --profile tests down -v
 ```
 
 If services look stale, restart the stack:

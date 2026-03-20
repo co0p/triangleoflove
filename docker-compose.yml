@@ -1,5 +1,6 @@
 services:
   frontend:
+    image: ${FRONTEND_IMAGE:-triangleoflove-frontend:local}
     build:
       context: ./frontend
     container_name: triangleoflove-frontend
@@ -7,6 +8,7 @@ services:
       - "5173"
 
   backend:
+    image: ${BACKEND_IMAGE:-triangleoflove-backend:local}
     build:
       context: ./backend
     container_name: triangleoflove-backend
@@ -19,9 +21,11 @@ services:
       - POSTGRES_USER=triangle
       - POSTGRES_PASSWORD=triangle
     depends_on:
-      - db
+      db:
+        condition: service_healthy
 
   db:
+    image: ${DB_IMAGE:-triangleoflove-db:local}
     build:
       context: ./db
     container_name: triangleoflove-db
@@ -29,8 +33,15 @@ services:
       - POSTGRES_DB=triangleoflove
       - POSTGRES_USER=triangle
       - POSTGRES_PASSWORD=triangle
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U triangle -d triangleoflove"]
+      interval: 2s
+      timeout: 2s
+      retries: 20
+      start_period: 5s
 
   api-tests:
+    image: ${API_TESTS_IMAGE:-triangleoflove-api-tests:local}
     build:
       context: ./api-tests
     container_name: triangleoflove-api-tests
