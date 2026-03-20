@@ -1,9 +1,8 @@
 # PRD — Triangle of Love Coach (Mobile PWA)
 
-**Date:** 2026-03-10  
-**Product type:** Mobile-first web app (PWA) for couples  
-**Positioning / tone:** Coach, friend, wingman — supportive, mature, non-judgmental  
-**Core theory:** Sternberg’s Triangular Theory of Love (Intimacy, Passion, Commitment)
+## Document Role
+
+This document defines product intent, user-facing behavior, scope, and success criteria.
 
 ---
 

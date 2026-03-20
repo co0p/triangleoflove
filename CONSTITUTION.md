@@ -1,5 +1,9 @@
 # CONSTITUTION.md
 
+## Document Role
+
+This document defines binding engineering and delivery constraints for the repository.
+
 ## Architectural Decisions
 
 ### Layering
