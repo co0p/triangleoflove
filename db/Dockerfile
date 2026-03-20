@@ -1,1 +1,1 @@
-FROM postgres:16-alpine
+FROM ghcr.io/railwayapp-templates/postgres-ssl:latest

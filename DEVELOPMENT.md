@@ -15,6 +15,8 @@ Build and start the application services:
 docker compose up -d --build frontend backend db
 ```
 
+The `db` service uses Railway's SSL-enabled Postgres base image (`ghcr.io/railwayapp-templates/postgres-ssl:latest`) so local and Railway behavior stay aligned.
+
 The project uses ephemeral host ports for frontend and backend, so Docker chooses free ports automatically.
 
 Find the assigned host ports:
