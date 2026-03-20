@@ -7,19 +7,21 @@ permissions:
 on:
   workflow_call:
     inputs:
-      publish_images:
-        description: "Whether api-tests image should be pushed to GHCR"
-        required: true
-        type: boolean
       run_ghcr_integration:
         description: "Whether GHCR-based integration test stage should run"
         required: true
         type: boolean
 
 jobs:
-  api-tests-quality:
-    name: API Tests Quality
+  ghcr-integration:
+    name: API Tests Against GHCR Images
     runs-on: ubuntu-latest
+    if: inputs.run_ghcr_integration
+    env:
+      DB_IMAGE: ghcr.io/${{ github.repository_owner }}/triangleoflove-db:${{ github.sha }}
+      BACKEND_IMAGE: ghcr.io/${{ github.repository_owner }}/triangleoflove-backend:${{ github.sha }}
+      FRONTEND_IMAGE: ghcr.io/${{ github.repository_owner }}/triangleoflove-frontend:${{ github.sha }}
+      API_TESTS_IMAGE: triangleoflove-api-tests:ci
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -30,67 +32,15 @@ jobs:
           test -f api-tests/Dockerfile
           test -f docker-compose.yml
 
-      - name: Run dockerized API acceptance tests (source)
-        run: |
-          docker compose --profile tests up --build --abort-on-container-exit --exit-code-from api-tests api-tests
-
-      - name: Print source stack logs on failure
-        if: failure()
-        run: |
-          docker compose --profile tests logs backend db || true
-
-      - name: Tear down source stack
-        if: always()
-        run: docker compose --profile tests down -v
-
-  api-tests-image:
-    name: API Tests Image
-    runs-on: ubuntu-latest
-    needs: api-tests-quality
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Log in to GitHub Container Registry
-        if: inputs.publish_images
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Build and optionally publish api-tests image
-        uses: docker/build-push-action@v6
-        with:
-          context: ./api-tests
-          push: ${{ inputs.publish_images }}
-          tags: |
-            ghcr.io/${{ github.repository_owner }}/triangleoflove-api-tests:${{ github.sha }}
-            ghcr.io/${{ github.repository_owner }}/triangleoflove-api-tests:latest
-
-  ghcr-integration:
-    name: API Tests Against GHCR Images
-    runs-on: ubuntu-latest
-    needs: api-tests-image
-    if: inputs.run_ghcr_integration
-    env:
-      DB_IMAGE: ghcr.io/${{ github.repository_owner }}/triangleoflove-db:${{ github.sha }}
-      BACKEND_IMAGE: ghcr.io/${{ github.repository_owner }}/triangleoflove-backend:${{ github.sha }}
-      FRONTEND_IMAGE: ghcr.io/${{ github.repository_owner }}/triangleoflove-frontend:${{ github.sha }}
-      API_TESTS_IMAGE: ghcr.io/${{ github.repository_owner }}/triangleoflove-api-tests:${{ github.sha }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
       - name: Log in to GitHub Container Registry
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build local api-tests image
+        run: docker build -t triangleoflove-api-tests:ci ./api-tests
 
       - name: Start services from GHCR images
         run: |
