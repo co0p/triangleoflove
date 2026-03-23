@@ -36,3 +36,11 @@ jobs:
     with:
       run_ghcr_integration: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
     secrets: inherit
+
+  deployment:
+    name: Deployment Pipeline
+    needs:
+      - api-tests
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    uses: ./.github/workflows/deployment.yml
+    secrets: inherit

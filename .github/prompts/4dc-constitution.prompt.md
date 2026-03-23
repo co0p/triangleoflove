@@ -2,8 +2,8 @@
 name: 4dc-constitution
 title: Create or update a project constitution
 description: Discover and document the project's specific architectural decisions through Socratic questioning
-version: b35fbe9
-generatedAt: 2026-03-17T12:24:14Z
+version: 07b2f9c
+generatedAt: 2026-03-20T16:25:50Z
 source: https://github.com/co0p/4dc
 ---
 

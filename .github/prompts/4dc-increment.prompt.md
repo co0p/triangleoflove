@@ -3,8 +3,8 @@ name: 4dc-increment
 argument-hint: explicit work type + goal (e.g., "feature: add password reset", "bugfix: fix token expiry", "refactor: extract validator", "exploration: evaluate retry strategy")
 title: Slice work into shippable deliverables
 description: Discover WHAT to build through Socratic questioning, slice into small deliverables
-version: b35fbe9
-generatedAt: 2026-03-17T12:24:14Z
+version: 07b2f9c
+generatedAt: 2026-03-20T16:25:50Z
 source: https://github.com/co0p/4dc
 ---
 
@@ -88,6 +88,7 @@ The increment must:
 - Stay at the **WHAT/WHY level**—no technical HOW.
 - Define **observable success criteria**.
 - Slice into **small, independently shippable pieces**.
+- Defer all technical design questions (API contracts, screens/states, data boundaries) to the **Implement** prompt.
 
 Do not include:
 - File/class/module implementation plans.

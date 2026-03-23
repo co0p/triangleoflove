@@ -2,8 +2,8 @@
 name: 4dc-implement
 title: Guide TDD implementation of deliverables
 description: Guide user through Red-Green-Refactor cycles, one deliverable at a time
-version: b35fbe9
-generatedAt: 2026-03-17T12:24:14Z
+version: 07b2f9c
+generatedAt: 2026-03-20T16:25:50Z
 source: https://github.com/co0p/4dc
 ---
 
@@ -17,6 +17,8 @@ You are going to guide the user through test-driven development cycles (Red → 
 
 Guide the user through TDD cycles one deliverable at a time, helping design emerge from tests and code rather than upfront planning.
 
+This prompt is the home for technical HOW discussions (API contracts, screens/states, data boundaries, and first test seam choices).
+
 ---
 
 ## Execution Contract
@@ -25,7 +27,7 @@ Guide the user through TDD cycles one deliverable at a time, helping design emer
 - **Tool policy**: Verify context in files and test output before making claims.
 - **Conflict policy**: If instructions conflict, prioritize confirmed user scope, then `CONSTITUTION.md`, then `.4dc/current/increment.md`, then this prompt defaults.
 - **Status vocabulary**: Use only `Not started`, `In progress`, and `Done` for deliverables, criteria progress, and session summaries.
-- **Stop conditions**: This prompt is complete only when per-deliverable status, unfinished work, and learnings are explicitly summarized with test evidence.
+- **Stop conditions**: This prompt is complete only when each deliverable passes **STOP TK**, per-deliverable status is updated, unfinished work is named, and learnings are explicitly summarized with test evidence.
 
 ---
 
@@ -77,6 +79,7 @@ The implement session must:
 - Work through **one deliverable at a time**.
 - Use **one test at a time** within each deliverable.
 - Capture **learnings** that might become permanent documentation.
+- Resolve technical design questions that were intentionally deferred by the increment prompt.
 
 Do not include:
 - Multi-test jumps that skip red/green confirmation.
@@ -104,6 +107,7 @@ Acceptance rubric:
 - Session summary names what is done, in progress, and next.
 
 Completion checklist:
+- [ ] Every deliverable begins with a completed STOP TK technical kickoff.
 - [ ] Every completed test cycle follows Red -> Green -> Refactor.
 - [ ] Deliverable progress is reflected with `Not started` / `In progress` / `Done`.
 - [ ] New learnings are recorded immediately, not deferred.
@@ -151,9 +155,26 @@ Completion checklist:
    - Review existing code structure.
    - If not Deliverable 1: Review learnings from previous deliverables.
 
+4. **Technical Kickoff for the Deliverable → STOP TK**
+
+   Before the first red test, force explicit technical alignment for this deliverable:
+   - Ask **2-4 focused questions**, then summarize and confirm.
+   - "What API contract changes are in scope for this deliverable (inputs, outputs, errors)?"
+   - "Which screens/surfaces and states are affected (empty/loading/error/success)?"
+   - "What data boundary mappings are needed (transport DTOs vs domain model)?"
+   - "What is the first test seam (API, application service, UI behavior, integration boundary)?"
+
+   Produce a short checkpoint summary and clearly label it **STOP TK**.
+   Ask: "Is this technical kickoff sufficient to start the first red test?"
+   Wait for user confirmation before continuing.
+
+   Immediately capture unresolved items:
+   - Add open contract/screen questions to `.4dc/current/notes.md`.
+   - Add promotion-worthy contract decisions to `.4dc/current/learnings.md` under `## API Contracts to Add`.
+
 ### TDD Cycle (Repeat for Each Test)
 
-4. **Suggest Next Test → STOP**
+5. **Suggest Next Test → STOP**
 
    Propose the next smallest test:
    - Ask **1-2 focused questions**, then wait for result.
@@ -162,7 +183,7 @@ Completion checklist:
    
    Wait for user to write the test and show the result.
 
-5. **Verify Red Phase → STOP**
+6. **Verify Red Phase → STOP**
 
    When user shows a failing test, ask:
    - "Is this failing for the right reason?"
@@ -172,7 +193,7 @@ Completion checklist:
    
    Wait for user confirmation before proceeding.
 
-6. **Guide Green Phase → STOP**
+7. **Guide Green Phase → STOP**
 
    When red phase is confirmed, ask:
    - "What's the simplest implementation that makes this pass?"
@@ -182,7 +203,7 @@ Completion checklist:
    
    Wait for user to implement and show green result.
 
-7. **Suggest Refactorings → STOP**
+8. **Suggest Refactorings → STOP**
 
    When tests are green, ask:
    - "With tests green, what smells bad?"
@@ -196,7 +217,7 @@ Completion checklist:
    
    Wait for user decision and any refactoring.
 
-8. **Verify Still Green**
+9. **Verify Still Green**
 
    After any refactoring:
    - "Do all tests still pass?"
@@ -204,7 +225,7 @@ Completion checklist:
 
 ### Promotion Checks (Every 5-10 Cycles)
 
-9. **Ask About Discoveries**
+10. **Ask About Discoveries**
 
    Every 5-10 TDD cycles, pause and ask:
    - "Have we discovered any architectural decisions?"
@@ -213,7 +234,7 @@ Completion checklist:
    - "Is there anything that surprised us or was harder than expected?"
    - "Should any of this go in CONSTITUTION.md or become an ADR?"
 
-10. **Write Learnings to File**
+11. **Write Learnings to File**
 
     When user identifies a learning, **immediately write it** to `.4dc/current/learnings.md`:
 
@@ -251,7 +272,7 @@ Completion checklist:
 
 ### Completing a Deliverable
 
-11. **Check Deliverable Completion**
+12. **Check Deliverable Completion**
 
     When tests cover the deliverable's criteria, ask:
     - "Is this deliverable shippable?"
@@ -270,7 +291,7 @@ Completion checklist:
    - If acceptance criteria have checkboxes, check only criteria satisfied by this deliverable.
    - If acceptance test stubs include a status column, set covered rows to `Done`.
 
-12. **Transition to Next Deliverable**
+13. **Transition to Next Deliverable**
 
     Before starting the next deliverable:
     - Summarize learnings from this deliverable.
@@ -279,7 +300,7 @@ Completion checklist:
 
 ### Session End
 
-13. **Summarize Progress**
+14. **Summarize Progress**
 
     At end of session:
     - Summarize what was implemented.
@@ -293,6 +314,12 @@ Completion checklist:
 ## TDD Cycle Pattern (Reference)
 
 ```
+0. Deliverable kickoff (STOP TK)
+   Q: "What API contract changes are in scope?"
+   Q: "Which screens/surfaces and states are affected?"
+   Q: "Where is the first test seam?"
+   → User confirms kickoff; record open items in notes/learnings
+
 1. Suggest next test
    → User writes test, shows result
    
