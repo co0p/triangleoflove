@@ -27,8 +27,17 @@ jobs:
       - name: Install Railway CLI
         run: npm install -g @railway/cli
 
-      - name: Validate Railway auth context
-        run: railway whoami
+      - name: Validate Railway auth inputs
+        run: |
+          if [ -z "${RAILWAY_TOKEN:-}" ]; then
+            echo "Missing Railway auth secret. Set RAILWAY_TOKEN."
+            exit 1
+          fi
+
+          if [ -z "${RAILWAY_ENVIRONMENT:-}" ]; then
+            echo "RAILWAY_ENVIRONMENT is empty. Set vars.RAILWAY_ENVIRONMENT or rely on workflow fallback."
+            exit 1
+          fi
 
       - name: Redeploy backend service from Railway source
         id: backend_deploy
