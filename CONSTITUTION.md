@@ -57,3 +57,5 @@ This document defines binding engineering and delivery constraints for the repos
 - CI requirements: Full gate before merge to `main`: build, lint, unit tests, and API acceptance tests.
 - Branching: Use individual branches per feature/change and merge into `main`.
 - Deployment: Merge to `main` triggers pipeline and automatic production deployment.
+- Deployment artifact policy (temporary): Use latest-style Railway deployment flow while delivery speed is the priority.
+- Deployment artifact policy reason: Optimize for moving fast and fixing fast; exact-SHA rollout remains planned follow-up work.

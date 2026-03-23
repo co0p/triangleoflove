@@ -184,6 +184,10 @@ Backend notes:
 - Use migrations on deploy (careful):
   - either run migrations in the API startup (simple MVP)
   - or a separate migration job step (cleaner later)
+- CI/CD pipeline separation pattern:
+  - `ci-orchestrator.yml` owns test/build orchestration and deployment trigger conditions.
+  - `deployment.yml` owns deployment execution only.
+  - Orchestration hands off to deployment only after CI/API gates pass, keeping release operations isolated and easier to operate.
 
 ---
 
