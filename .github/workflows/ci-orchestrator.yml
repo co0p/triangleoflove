@@ -17,14 +17,14 @@ jobs:
     name: Frontend Pipeline
     uses: ./.github/workflows/frontend-ci.yml
     with:
-      publish_images: ${{ github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository) }}
+      publish_images: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
     secrets: inherit
 
   backend:
     name: Backend Pipeline
     uses: ./.github/workflows/backend-ci.yml
     with:
-      publish_images: ${{ github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository) }}
+      publish_images: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
     secrets: inherit
 
   api-tests:
@@ -35,4 +35,12 @@ jobs:
     uses: ./.github/workflows/api-tests-ci.yml
     with:
       run_ghcr_integration: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+    secrets: inherit
+
+  deployment:
+    name: Deployment Pipeline
+    needs:
+      - api-tests
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    uses: ./.github/workflows/deployment.yml
     secrets: inherit

@@ -1,6 +1,8 @@
 # DESIGN — Technical Architecture & Implementation Suggestions
-**Date:** 2026-03-10  
-**Stack choice:** Vue 3 PWA + Go API + Postgres, deployed on Railway
+
+## Document Role
+
+This document defines technical implementation decisions that satisfy the product goals in `PRD.md`.
 
 ---
 
@@ -182,6 +184,10 @@ Backend notes:
 - Use migrations on deploy (careful):
   - either run migrations in the API startup (simple MVP)
   - or a separate migration job step (cleaner later)
+- CI/CD pipeline separation pattern:
+  - `ci-orchestrator.yml` owns test/build orchestration and deployment trigger conditions.
+  - `deployment.yml` owns deployment execution only.
+  - Orchestration hands off to deployment only after CI/API gates pass, keeping release operations isolated and easier to operate.
 
 ---
 
@@ -206,11 +212,3 @@ Backend notes:
 - Add clear disclaimers: not therapy; if users are in crisis, seek professional help
 
 ---
-
-## 10. Next Implementation Deliverables (Suggested)
-1. Repo skeleton (web/api) + Railway deploy config
-2. Database schema + migrations
-3. Auth + couple pairing endpoints
-4. Daily + weekly check-in endpoints + UI
-5. Insights aggregation endpoints + basic dashboard
-6. Impulse engine v1 + achievements v1

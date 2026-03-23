@@ -2,8 +2,8 @@
 name: 4dc-promote
 title: Promote learnings to permanent documentation
 description: Before merging, ensure important learnings become permanent docs, then delete working context
-version: b35fbe9
-generatedAt: 2026-03-17T12:24:14Z
+version: 07b2f9c
+generatedAt: 2026-03-20T16:25:50Z
 source: https://github.com/co0p/4dc
 ---
 

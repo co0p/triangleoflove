@@ -6,6 +6,7 @@ build/
 *.tmp
 *.bak
 *.swp
+.env
 .DS_Store
 .idea/
 .vscode/

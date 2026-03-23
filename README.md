@@ -4,6 +4,14 @@
 
 Triangle of Love Coach is a mobile-first web app for couples to build better habits through tiny daily check-ins and a weekly relationship review. It uses Sternberg's Triangle of Love (Intimacy, Passion, Commitment) to show trends and suggest one clear next move each week.
 
+## References
+
+- [DEVELOPMENT.md](DEVELOPMENT.md): Local setup, Docker commands, and API test execution workflow.
+- [CONSTITUTION.md](CONSTITUTION.md): Project architecture rules, layering boundaries, and delivery expectations.
+- [DESIGN.md](DESIGN.md): Product and technical design direction, including deployment notes.
+- [PRD.md](PRD.md): Product requirements, scope, and intended user experience.
+- [docs/flow.md](docs/flow.md): User and system flow documentation.
+
 ## First Time Here
 
 1. Create your account.

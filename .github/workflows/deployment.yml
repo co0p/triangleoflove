@@ -1,0 +1,78 @@
+name: Deployment
+
+permissions:
+  contents: read
+  packages: read
+
+on:
+  workflow_call:
+
+jobs:
+  deploy-services:
+    name: Deploy Services
+    runs-on: ubuntu-latest
+    env:
+      RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+      RAILWAY_PROJECT_ID: ${{ vars.RAILWAY_PROJECT_ID }}
+      RAILWAY_ENVIRONMENT: production
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Railway CLI
+        run: npm install -g @railway/cli
+
+      - name: Deploy backend service
+        id: backend_deploy
+        continue-on-error: true
+        run: |
+          railway up "services/backend" \
+            --ci \
+            --project "$RAILWAY_PROJECT_ID" \
+            --environment "$RAILWAY_ENVIRONMENT" \
+            --service "triangleoflove-backend"
+
+      - name: Deploy frontend service
+        id: frontend_deploy
+        continue-on-error: true
+        run: |
+          railway up "services/frontend" \
+            --ci \
+            --project "$RAILWAY_PROJECT_ID" \
+            --environment "$RAILWAY_ENVIRONMENT" \
+            --service "triangleoflove-frontend"
+
+      - name: Summarize deployment results
+        if: always()
+        run: |
+          echo "## Railway Deploy Results" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Backend: ${{ steps.backend_deploy.outcome }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Frontend: ${{ steps.frontend_deploy.outcome }}" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Enforce deploy outcome
+        if: always()
+        run: |
+          failed=""
+          if [ "${{ steps.backend_deploy.outcome }}" != "success" ]; then
+            failed="backend"
+          fi
+
+          if [ "${{ steps.frontend_deploy.outcome }}" != "success" ]; then
+            if [ -n "$failed" ]; then
+              failed="$failed, frontend"
+            else
+              failed="frontend"
+            fi
+          fi
+
+          if [ -n "$failed" ]; then
+            echo "Deployment failed for service(s): $failed"
+            exit 1
+          fi
+
+          echo "Deployment succeeded for backend and frontend."
