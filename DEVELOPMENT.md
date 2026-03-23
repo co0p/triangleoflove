@@ -38,6 +38,19 @@ docker compose logs -f backend frontend db
 Notes:
 - Hot reload/autoload is not enabled in this setup.
 - This keeps local development simple and close to the containerized runtime used by CI.
+- Backend database config uses a single `DATABASE_URL` variable in both local Docker and Railway.
+
+## Local Environment Variables
+
+For shell-based local runs (outside Docker), load the local variable contract:
+
+```bash
+source ./env-local.sh
+```
+
+This sets:
+- `DATABASE_URL`
+- `PORT`
 
 ## Start the Stack Locally
 

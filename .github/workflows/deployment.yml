@@ -14,7 +14,7 @@ jobs:
     env:
       RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
       RAILWAY_PROJECT_ID: ${{ vars.RAILWAY_PROJECT_ID }}
-      RAILWAY_ENVIRONMENT: production
+      RAILWAY_ENVIRONMENT: ${{ vars.RAILWAY_ENVIRONMENT }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -27,25 +27,29 @@ jobs:
       - name: Install Railway CLI
         run: npm install -g @railway/cli
 
-      - name: Deploy backend service
+      - name: Validate Railway target context
+        run: |
+          railway status \
+            --project "$RAILWAY_PROJECT_ID" \
+            --environment "$RAILWAY_ENVIRONMENT"
+
+      - name: Redeploy backend service from Railway source
         id: backend_deploy
         continue-on-error: true
         run: |
-          railway up "services/backend" \
-            --ci \
-            --project "$RAILWAY_PROJECT_ID" \
-            --environment "$RAILWAY_ENVIRONMENT" \
-            --service "triangleoflove-backend"
+          railway redeploy \
+            --yes \
+            --service "triangleoflove-backend" \
+            --environment "$RAILWAY_ENVIRONMENT"
 
-      - name: Deploy frontend service
+      - name: Redeploy frontend service from Railway source
         id: frontend_deploy
         continue-on-error: true
         run: |
-          railway up "services/frontend" \
-            --ci \
-            --project "$RAILWAY_PROJECT_ID" \
-            --environment "$RAILWAY_ENVIRONMENT" \
-            --service "triangleoflove-frontend"
+          railway redeploy \
+            --yes \
+            --service "triangleoflove-frontend" \
+            --environment "$RAILWAY_ENVIRONMENT"
 
       - name: Summarize deployment results
         if: always()

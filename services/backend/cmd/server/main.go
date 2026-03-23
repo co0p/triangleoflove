@@ -28,7 +28,12 @@ func writeJSON(w http.ResponseWriter, code int, payload any) {
 }
 
 func main() {
-	dbConn, err := sql.Open("postgres", postgresDSN())
+	dsn, err := postgresDSN()
+	if err != nil {
+		log.Fatalf("database configuration error: %v", err)
+	}
+
+	dbConn, err := sql.Open("postgres", dsn)
 	if err != nil {
 		log.Fatalf("failed to open db: %v", err)
 	}
@@ -79,27 +84,25 @@ func main() {
 	}
 }
 
-func postgresDSN() string {
-	host := envOrDefault("POSTGRES_HOST", "db")
-	port := envOrDefault("POSTGRES_PORT", "5432")
-	user := envOrDefault("POSTGRES_USER", "triangle")
-	password := envOrDefault("POSTGRES_PASSWORD", "triangle")
-	dbName := envOrDefault("POSTGRES_DB", "triangleoflove")
+func postgresDSN() (string, error) {
+	dsn := os.Getenv("DATABASE_URL")
+	if dsn == "" {
+		return "", errMissingEnv("DATABASE_URL")
+	}
 
-	return "host=" + host +
-		" port=" + port +
-		" user=" + user +
-		" password=" + password +
-		" dbname=" + dbName +
-		" sslmode=disable"
+	return dsn, nil
 }
 
-func envOrDefault(key, fallback string) string {
-	value := os.Getenv(key)
-	if value == "" {
-		return fallback
-	}
-	return value
+func errMissingEnv(key string) error {
+	return &missingEnvError{Key: key}
+}
+
+type missingEnvError struct {
+	Key string
+}
+
+func (e *missingEnvError) Error() string {
+	return e.Key + " is required"
 }
 
 func waitForDatabase(dbConn *sql.DB, maxAttempts int, delay time.Duration) error {
