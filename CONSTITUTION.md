@@ -8,8 +8,8 @@ This document defines binding engineering and delivery constraints for the repos
 
 ### Layering
 - Default: Service code lives under `services/` with one subfolder per runtime service (for example `services/frontend`, `services/backend`, and `services/db`).
-- Default: Each part has its own `Dockerfile`.
-- Default: Local development uses one root `docker-compose` setup to run all parts together.
+- Default: Each service has its own `Dockerfile`.
+- Default: Local development uses one root `docker-compose` setup to run all services together.
 - Default: Frontend UI components call an API client layer only. Direct HTTP calls from UI components are not allowed.
 - Default: Backend flow is `handlers/routes -> service/use-case -> repository/data`.
 - Default: The `services/db` folder contains migrations and seed scripts only.
@@ -45,17 +45,15 @@ This document defines binding engineering and delivery constraints for the repos
 ## Artifact Layout
 
 - **CONSTITUTION.md**: Project root
-- **DESIGN.md**: Project root (emergent architecture, updated after increments)
+- **docs/DESIGN.md**: `docs/` (emergent architecture, updated after increments)
 - **ADRs**: `docs/adr/` using `YYYY-MM-DD-short-title.md` naming (unnumbered)
 - **API contracts**: `docs/api/` with OpenAPI as the canonical contract when present
 - **Other docs**: `docs/`
-- **Working context**: `.4dc/current/` (temporary, gitignored)
+- **Working context**: `.4dc/` (temporary, gitignored)
 
 ## Delivery Practices
 
-- PR size: Flexible. Keep PRs reviewable and focused on one coherent change.
+- PR size: One coherent feature change per PR. Prefer small PRs reviewable in a single focused pass.
 - CI requirements: Full gate before merge to `main`: build, lint, unit tests, and API acceptance tests.
 - Branching: Use individual branches per feature/change and merge into `main`.
-- Deployment: Merge to `main` triggers pipeline and automatic production deployment.
-- Deployment artifact policy (temporary): Use latest-style Railway deployment flow while delivery speed is the priority.
-- Deployment artifact policy reason: Optimize for moving fast and fixing fast; exact-SHA rollout remains planned follow-up work.
+- Deployment: Merge to `main` triggers Railway auto-deploy for all services. See `docs/adr/2026-03-27-railway-deployment-target.md`.
