@@ -12,6 +12,7 @@ This document defines binding engineering and delivery constraints for the repos
 - Default: Local development uses one root `docker-compose` setup to run all services together.
 - Default: Frontend UI components call an API client layer only. Direct HTTP calls from UI components are not allowed.
 - Default: Backend flow is `handlers/routes -> service/use-case -> repository/data`.
+- Default: All backend routes use the `/api/v1/` prefix.
 - Default: The `services/db` folder contains migrations and seed scripts only.
 - Exceptions: Layering can be bypassed only in short-lived spike branches.
 - Enforcement signal: PR review blocks feature code that crosses these boundaries.
@@ -32,13 +33,14 @@ This document defines binding engineering and delivery constraints for the repos
 ### Dependencies
 - Default: External systems are accessed through backend adapters/repositories, not directly from handlers or domain logic.
 - Default: Frontend uses typed API contracts/client wrappers, not ad-hoc request and response shapes.
+- Default: The frontend Vite dev server proxies `/api` to the backend via the `BACKEND_URL` environment variable (defaults to `http://backend:8080`). This is required because the frontend Dockerfile runs the Vite dev server, not a static build.
 - Exceptions: Direct dependency calls are allowed only inside dedicated adapter modules.
 - Enforcement signal: Service and domain layers must not import transport or driver packages directly.
 
 ## Testing Expectations
 
 - Test location: Unit tests are colocated with source. API acceptance tests live in `testing/`.
-- Coverage: Critical backend API flows require acceptance tests. Core business logic paths require unit tests. UI end-to-end tests are out of scope.
+- Coverage: Critical backend API flows require acceptance tests. Core business logic paths require unit tests. Browser-driven acceptance tests are used for critical auth and routing flows. Full cross-service user-journey E2E tests are out of scope.
 - Runtime: Acceptance tests must run in CI and must also run locally against the `docker-compose` stack.
 - Mocking: Unit tests may mock ports/adapters. Acceptance tests should hit real API endpoints with real service wiring and controlled test data setup/teardown.
 

@@ -1,0 +1,37 @@
+const { test, expect } = require('@playwright/test');
+const { FRONTEND_BASE_URL, SEED_EMAIL, loginViaUI } = require('./helpers/auth');
+
+test('TestLogin GivenNoJWT WhenAppOpened ThenLoginScreenShown', async ({ page }) => {
+  await page.goto(FRONTEND_BASE_URL);
+  await expect(page.locator('h1')).toHaveText('Sign in');
+});
+
+test('TestLogin GivenValidCredentials WhenSubmitted ThenJWTStoredInBrowser', async ({ page }) => {
+  await loginViaUI(page);
+  await expect(page).toHaveURL(/\/dashboard/);
+  const token = await page.evaluate(() => localStorage.getItem('token'));
+  expect(token).toBeTruthy();
+});
+
+test('TestLogin GivenValidCredentials WhenSubmitted ThenDashboardShowsFirstName', async ({ page }) => {
+  await loginViaUI(page);
+  await expect(page).toHaveURL(/\/dashboard/);
+  await expect(page.locator('header')).toContainText('River');
+});
+
+test('TestLogin GivenInvalidCredentials WhenSubmitted ThenErrorShownOnLoginPage', async ({ page }) => {
+  await page.goto(`${FRONTEND_BASE_URL}/login`);
+  await page.fill('input[type="email"]', SEED_EMAIL);
+  await page.fill('input[type="password"]', 'wrongpassword');
+  await page.click('button[type="submit"]');
+  await expect(page.locator('[role="alert"]')).toBeVisible();
+  await expect(page).toHaveURL(/\/login/);
+});
+
+test('TestLogin GivenStoredJWT WhenPageRefreshed ThenDashboardStillShown', async ({ page }) => {
+  await loginViaUI(page);
+  await expect(page).toHaveURL(/\/dashboard/);
+  await page.reload();
+  await expect(page).toHaveURL(/\/dashboard/);
+  await expect(page.locator('header')).toContainText('River');
+});

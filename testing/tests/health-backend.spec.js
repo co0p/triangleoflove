@@ -1,7 +1,7 @@
 const { test, expect } = require('@playwright/test');
 
-test('TestBootstrap_GivenRunningStack_WhenHealthEndpointCalled_ThenHealthyResponseReturned', async ({ request }) => {
-  const response = await request.get('/health');
+test('TestBootstrap GivenRunningStack WhenHealthEndpointCalled ThenHealthyResponseReturned', async ({ request }) => {
+  const response = await request.get('/api/v1/health');
 
   expect(response.ok()).toBeTruthy();
 
@@ -15,7 +15,7 @@ test('TestBootstrap_GivenRunningStack_WhenHealthEndpointCalled_ThenHealthyRespon
 });
 
 test('status endpoint returns HTTP status payload', async ({ request }) => {
-  const response = await request.get('/status');
+  const response = await request.get('/api/v1/status');
 
   expect(response.status()).toBe(200);
 
