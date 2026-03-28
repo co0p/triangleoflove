@@ -15,6 +15,8 @@ jobs:
       RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
       RAILWAY_PROJECT_ID: ${{ vars.RAILWAY_PROJECT_ID }}
       RAILWAY_ENVIRONMENT: ${{ vars.RAILWAY_ENVIRONMENT || 'production' }}
+      BACKEND_IMAGE: ghcr.io/${{ github.repository_owner }}/triangleoflove-backend:latest
+      FRONTEND_IMAGE: ghcr.io/${{ github.repository_owner }}/triangleoflove-frontend:latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -39,7 +41,22 @@ jobs:
             exit 1
           fi
 
-      - name: Redeploy backend service from Railway source
+      - name: Confirm deployment model
+        run: |
+          echo "## Deployment Model" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "This workflow triggers Railway to redeploy image-backed services." >> "$GITHUB_STEP_SUMMARY"
+          echo "Railway must be configured to pull the following GHCR images:" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Service | Image |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| --- | --- |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| triangleoflove-backend | \`${BACKEND_IMAGE}\` |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| triangleoflove-frontend | \`${FRONTEND_IMAGE}\` |" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "Commit \`${{ github.sha }}\` images were published to GHCR by the CI pipeline." >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Redeploy backend service
         id: backend_deploy
         continue-on-error: true
         run: |
@@ -48,7 +65,7 @@ jobs:
             --service "triangleoflove-backend" \
             --environment "$RAILWAY_ENVIRONMENT"
 
-      - name: Redeploy frontend service from Railway source
+      - name: Redeploy frontend service
         id: frontend_deploy
         continue-on-error: true
         run: |
@@ -60,9 +77,15 @@ jobs:
       - name: Summarize deployment results
         if: always()
         run: |
-          echo "## Railway Deploy Results" >> "$GITHUB_STEP_SUMMARY"
-          echo "- Backend: ${{ steps.backend_deploy.outcome }}" >> "$GITHUB_STEP_SUMMARY"
-          echo "- Frontend: ${{ steps.frontend_deploy.outcome }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "## Railway Redeploy Results" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Service | Result |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| --- | --- |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| triangleoflove-backend | ${{ steps.backend_deploy.outcome }} |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| triangleoflove-frontend | ${{ steps.frontend_deploy.outcome }} |" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "> Railway services must be configured as image-backed services." >> "$GITHUB_STEP_SUMMARY"
+          echo "> See [docs/DEPLOYMENT.md](https://github.com/${{ github.repository }}/blob/main/docs/DEPLOYMENT.md) for setup instructions." >> "$GITHUB_STEP_SUMMARY"
 
       - name: Enforce deploy outcome
         if: always()
@@ -82,6 +105,8 @@ jobs:
 
           if [ -n "$failed" ]; then
             echo "Deployment failed for service(s): $failed"
+            echo "Ensure Railway services are configured as image-backed services pointing at GHCR."
+            echo "See docs/DEPLOYMENT.md for setup instructions."
             exit 1
           fi
 
