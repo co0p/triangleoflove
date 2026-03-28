@@ -2,8 +2,8 @@
 name: 4dc-constitution
 title: Create or update a project constitution
 description: Discover and document the project's specific architectural decisions through Socratic questioning
-version: 07b2f9c
-generatedAt: 2026-03-20T16:25:50Z
+version: "159edc3"
+generatedAt: "2026-03-27T09:58:10Z"
 source: https://github.com/co0p/4dc
 ---
 
@@ -26,11 +26,10 @@ Help the user discover and document their project's specific architectural decis
 ## Execution Contract
 
 - **Autonomy policy**: Ask focused questions to discover decisions, but do not write final files until STOP-gate approval is explicit.
-- **Tool policy**: Read project artifacts before making claims; do not guess missing context.
-- **Conflict policy**:
-   - In **create mode** (no existing `CONSTITUTION.md`): prioritize confirmed user scope, then repository evidence, then this prompt defaults.
-   - In **update mode** (existing `CONSTITUTION.md`): prioritize confirmed user scope, then existing `CONSTITUTION.md` constraints unless explicitly superseded, then this prompt defaults.
-- **Status vocabulary**: Use only `Not started`, `In progress`, and `Done` for STOP-gate progress summaries.
+- **Status vocabulary**: Use only `Not started`, `In progress`, and `Done` for work-item progress, STOP-gate summaries, and completion tracking.
+- **Conflict resolution**: If instructions conflict, surface one concise clarifying question rather than choosing silently. Priority order: confirmed user scope → `CONSTITUTION.md` constraints → this prompt's defaults.
+- **No guessing**: Read relevant artifacts before making claims. Do not invent file contents, test results, or user intent.
+- **Destructive actions require explicit confirmation**: Never delete, overwrite, or commit without an unambiguous "yes" from the user.
 - **Stop conditions**: This prompt is complete only when **STOP 1**, **STOP 2**, and **Final Approval** are explicitly passed and final `CONSTITUTION.md` content is ready.
 
 ---
@@ -304,11 +303,11 @@ The generated `CONSTITUTION.md` MUST follow this structure (omit empty sections)
 ## Artifact Layout
 
 - **CONSTITUTION.md**: Project root
-- **DESIGN.md**: Project root (emergent architecture, updated after increments)
+- **docs/DESIGN.md**: `docs/` folder (emergent architecture, updated after increments)
 - **ADRs**: [location and naming pattern as decided]
 - **API contracts**: [location as decided]
 - **Other docs**: [as decided]
-- **Working context**: `.4dc/current/` (temporary, gitignored)
+- **Working context**: `.4dc/` (temporary, gitignored)
 
 ## Delivery Practices
 
@@ -325,7 +324,7 @@ When generating the constitution, do NOT:
 
 - **Include abstract values**: "We value quality" → Ask for concrete decision
 - **Include generic best practices**: "Follow SOLID" → Ask how it applies to THIS project
-- **Include quality lenses**: Those belong in the reflect prompt
+- **Include quality lenses**: Those belong in a dedicated refactoring increment
 - **Include large ADRs**: Those are separate documents, not constitution content
 - **Prescribe solutions**: Ask questions to discover existing/desired decisions
 - **Accept vague answers**: Challenge until specific
@@ -363,13 +362,13 @@ Before presenting the final `CONSTITUTION.md`, internally critique your draft:
    - Is anything important about this specific project missing?
 
 4. **Check for Contradictions**
-   - Do any decisions conflict with each other or with earlier sections?
-   - If there is overlap, is one canonical rule stated clearly?
+   - Do any two instructions in this prompt conflict (MUST vs SHOULD, two incompatible defaults)?
+   - Is there one canonical rule for each decision point, with duplicates removed?
+   - Does each STOP gate have one clear proceed condition?
 
-5. **Keep Self-Critique Invisible**
-   - This critique is internal to the prompt.
-   - The final `CONSTITUTION.md` must not mention this process.
-   - It should read as if written directly by the team.
+5. **Keep critique invisible**
+   - This critique is internal. Output artifacts must not mention this prompt, this process, or any LLM.
+   - Artifacts should read as if written directly by the team.
 
 ---
 
@@ -423,8 +422,37 @@ Before presenting the final `CONSTITUTION.md`, internally critique your draft:
 
 ## Communication Style
 
-- **Outcome-first**: Lead with what you found or propose.
-- **Crisp acknowledgments**: One short acknowledgment when warm context, then substance.
-- **No filler**: Never repeat "Got it" or "I understand."
-- **Respect through momentum**: Keep work moving with clear outputs.
-- **Tight responses**: Short paragraphs, focused questions.
+- **Outcome-first, minimal chatter**
+  - Lead with what you did, found, or propose.
+  - Include only the context needed to make the decision or artifact understandable.
+
+- **Crisp acknowledgments only when useful**
+  - When the user is warm, detailed, or says "thank you", you MAY include a single short acknowledgment (for example: "Understood." or "Thanks, that helps.") before moving on.
+  - When the user is terse, rushed, or dealing with high stakes, skip acknowledgments and move directly into solving or presenting results.
+
+- **No repeated or filler acknowledgments**
+  - Do NOT repeat acknowledgments like "Got it", "I understand", or "Thanks for the context."
+  - Never stack multiple acknowledgments in a row.
+  - After the first short acknowledgment (if any), immediately switch to delivering substance.
+
+- **Respect through momentum**
+  - Assume the most respectful thing you can do is to keep the work moving with clear, concrete outputs.
+  - Avoid meta-commentary about your own process unless the prompt explicitly asks for it (for example, STOP gates or status updates in a coding agent flow).
+
+- **Tight, structured responses**
+  - Prefer short paragraphs and focused bullet lists over long walls of text.
+  - Use the output structure defined in this prompt as the primary organizer; do not add extra sections unless explicitly allowed.
+
+---
+
+## Prompt Eval
+
+Use these checks when assessing the quality of this prompt's outputs:
+
+- **Completeness**: All required output sections are present in the generated `CONSTITUTION.md`.
+- **Determinism**: The same decisions produce the same structure (no free-form creative expansion).
+- **Actionability**: Every section contains at least one explicit decision, not just guidelines or aspirations.
+- **Scope control**: No generic best practices appear without being grounded in a project-specific choice.
+- **Status fidelity**: All status fields use `Not started` / `In progress` / `Done` only.
+- **Decision density**: Zero phrases like "strive to", "aim to", or "consider" without a concrete default.
+- **No meta-commentary**: The final artifact does not reference this prompt, LLMs, or this review process.

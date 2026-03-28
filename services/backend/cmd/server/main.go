@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"encoding/json"
+	"errors"
 	"log"
 	"net/http"
 	"os"
@@ -10,6 +11,7 @@ import (
 
 	"triangleoflove/backend/internal/repository"
 	"triangleoflove/backend/internal/service"
+	"triangleoflove/backend/internal/web"
 
 	_ "github.com/lib/pq"
 )
@@ -46,17 +48,20 @@ func main() {
 	repo := repository.NewRoundtripRepository(dbConn)
 	roundtripService := service.NewRoundtripService(repo)
 
+	accountRepo := repository.NewAccountRepository(dbConn)
+	authService := service.NewAuthService(accountRepo)
+
 	mux := http.NewServeMux()
 
-	mux.HandleFunc("/health", func(w http.ResponseWriter, _ *http.Request) {
+	mux.HandleFunc("/api/v1/health", func(w http.ResponseWriter, _ *http.Request) {
 		writeJSON(w, http.StatusOK, map[string]string{"status": "healthy"})
 	})
 
-	mux.HandleFunc("/status", func(w http.ResponseWriter, _ *http.Request) {
+	mux.HandleFunc("/api/v1/status", func(w http.ResponseWriter, _ *http.Request) {
 		writeJSON(w, http.StatusOK, statusResponse{Status: "ok", Code: http.StatusOK})
 	})
 
-	mux.HandleFunc("/demo/roundtrip", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("/api/v1/demo/roundtrip", func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodPost {
 			writeJSON(w, http.StatusMethodNotAllowed, map[string]string{"error": "method not allowed"})
 			return
@@ -71,6 +76,56 @@ func main() {
 
 		writeJSON(w, http.StatusOK, result)
 	})
+
+	mux.HandleFunc("/api/v1/auth/login", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodPost {
+			writeJSON(w, http.StatusMethodNotAllowed, map[string]string{"error": "method not allowed"})
+			return
+		}
+
+		var body struct {
+			Email    string `json:"email"`
+			Password string `json:"password"`
+		}
+		if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+			writeJSON(w, http.StatusBadRequest, map[string]string{"error": "invalid request"})
+			return
+		}
+
+		result, err := authService.Login(r.Context(), body.Email, body.Password)
+		if errors.Is(err, service.ErrInvalidCredentials) {
+			writeJSON(w, http.StatusUnauthorized, map[string]string{"error": "invalid credentials"})
+			return
+		}
+		if err != nil {
+			log.Printf("login failed: %v", err)
+			writeJSON(w, http.StatusInternalServerError, map[string]string{"error": "internal server error"})
+			return
+		}
+
+		writeJSON(w, http.StatusOK, result)
+	})
+
+	mux.Handle("/api/v1/users/me", web.Middleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodGet {
+			writeJSON(w, http.StatusMethodNotAllowed, map[string]string{"error": "method not allowed"})
+			return
+		}
+
+		accountID, _ := r.Context().Value(web.AccountIDKey).(string)
+		profile, err := authService.GetProfile(r.Context(), accountID)
+		if errors.Is(err, service.ErrInvalidCredentials) {
+			writeJSON(w, http.StatusUnauthorized, map[string]string{"error": "unauthorized"})
+			return
+		}
+		if err != nil {
+			log.Printf("get profile failed: %v", err)
+			writeJSON(w, http.StatusInternalServerError, map[string]string{"error": "internal server error"})
+			return
+		}
+
+		writeJSON(w, http.StatusOK, profile)
+	})))
 
 	port := os.Getenv("PORT")
 	if port == "" {
