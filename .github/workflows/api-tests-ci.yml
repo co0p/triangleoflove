@@ -18,7 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     if: inputs.run_ghcr_integration
     env:
-      DB_IMAGE: ghcr.io/railwayapp-templates/postgres-ssl:latest
+      DB_IMAGE: triangleoflove-db:ci
       BACKEND_IMAGE: ghcr.io/${{ github.repository_owner }}/triangleoflove-backend:${{ github.sha }}
       FRONTEND_IMAGE: ghcr.io/${{ github.repository_owner }}/triangleoflove-frontend:${{ github.sha }}
       API_TESTS_IMAGE: triangleoflove-api-tests:ci
@@ -31,6 +31,7 @@ jobs:
           test -d testing
           test -f testing/Dockerfile
           test -f docker-compose.yml
+          test -f services/db/Dockerfile
 
       - name: Log in to GitHub Container Registry
         uses: docker/login-action@v3
@@ -38,6 +39,9 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build local db image
+        run: docker build -t triangleoflove-db:ci ./services/db
 
       - name: Build local api-tests image
         run: docker build -t triangleoflove-api-tests:ci ./testing
