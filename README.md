@@ -9,6 +9,7 @@ Triangle of Love Coach is a mobile-first web app for couples to build better hab
 - [DEVELOPMENT.md](DEVELOPMENT.md): Local setup, Docker commands, and API test execution workflow.
 - [CONSTITUTION.md](CONSTITUTION.md): Project architecture rules, layering boundaries, and delivery expectations.
 - [DESIGN.md](docs/DESIGN.md): Product and technical design direction, including deployment notes.
+- [DEPLOYMENT.md](docs/DEPLOYMENT.md): Production deployment model, Railway setup, and required secrets.
 - [PRD.md](PRD.md): Product requirements, scope, and intended user experience.
 - [docs/flow.md](docs/flow.md): User and system flow documentation.
 
