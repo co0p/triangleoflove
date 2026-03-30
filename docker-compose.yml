@@ -5,7 +5,7 @@ services:
       context: ./services/frontend
     container_name: triangleoflove-frontend
     ports:
-      - "5173"
+      - "5173:5173"
 
   backend:
     image: ${BACKEND_IMAGE:-triangleoflove-backend:local}
@@ -13,7 +13,7 @@ services:
       context: ./services/backend
     container_name: triangleoflove-backend
     ports:
-      - "8080"
+      - "8081:8080"
     environment:
       - DATABASE_URL=postgres://triangle:triangle@db:5432/triangleoflove?sslmode=disable
     depends_on:
