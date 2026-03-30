@@ -62,8 +62,7 @@ jobs:
         run: |
           railway redeploy \
             --yes \
-            --service "triangleoflove-backend" \
-            --environment "$RAILWAY_ENVIRONMENT"
+            --service "triangleoflove-backend"
 
       - name: Redeploy frontend service
         id: frontend_deploy
@@ -71,8 +70,7 @@ jobs:
         run: |
           railway redeploy \
             --yes \
-            --service "triangleoflove-frontend" \
-            --environment "$RAILWAY_ENVIRONMENT"
+            --service "triangleoflove-frontend"
 
       - name: Summarize deployment results
         if: always()
