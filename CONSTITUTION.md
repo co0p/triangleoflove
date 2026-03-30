@@ -53,6 +53,15 @@ This document defines binding engineering and delivery constraints for the repos
 - **Other docs**: `docs/`
 - **Working context**: `.4dc/` (temporary, gitignored)
 
+## Target Audience
+
+- Default: The primary user is on a mobile phone. All UI decisions start from mobile constraints.
+- Default: The 375 px viewport is the design baseline. Wider breakpoints are additive.
+- Default: Interactive elements must meet a 44 px minimum tap target height.
+- Default: Layouts must remain usable when the soft keyboard is open and reduces the visible
+  viewport by up to 300 px.
+- Enforcement signal: Visual review at 375 px is required before marking any frontend deliverable Done.
+
 ## Delivery Practices
 
 - PR size: One coherent feature change per PR. Prefer small PRs reviewable in a single focused pass.

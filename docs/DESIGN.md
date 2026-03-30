@@ -28,7 +28,7 @@ This document defines technical implementation decisions that satisfy the produc
 - **Vue 3 + TypeScript**
 - **Vite**
 - **vite-plugin-pwa**
-- **Tailwind CSS** (rapid mobile-first styling, easy iteration)
+- **Custom CSS library** (`services/frontend/src/assets/library.css`) — design tokens via CSS custom properties, no external framework. See `docs/adr/2026-03-30-custom-css-no-framework.md`.
 - State:
   - Start with **Pinia** (or Vue composables) if needed
 - Networking:
@@ -36,7 +36,25 @@ This document defines technical implementation decisions that satisfy the produc
 - Charts:
   - MVP: simple sparklines / minimal SVG charts
   - Optional: a Vue chart library later
+### CSS Library
 
+The visual system is a single file — `services/frontend/src/assets/library.css` — imported
+globally in `main.js`. It follows a three-layer structure:
+
+1. **Raw palette tokens** — named colour stops on `:root` (e.g. `--color-sage-500`)
+2. **Semantic tokens** — purpose-driven aliases that components reference (e.g. `--color-primary`)
+3. **Component classes** — selectors that reference only semantic tokens via `var()`; never raw values
+
+A theme is a named block of semantic token overrides applied to a container element. Components
+never reference a theme directly — they inherit overrides through the CSS cascade.
+
+The developer reference is at `/gallery` (unguarded route, not linked from app navigation).
+
+### Component conventions
+
+- **NavBar** (`services/frontend/src/components/NavBar.vue`) imports `logo.svg` directly
+  rather than accepting it as a prop. There is one logo asset and no story for swapping it;
+  a prop would be an unused abstraction. Revisit if the logo becomes configurable.
 ### PWA requirements
 - Offline-first behavior for check-ins:
   - Store pending submissions in **IndexedDB** (or localForage)
