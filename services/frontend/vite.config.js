@@ -5,7 +5,7 @@ export default defineConfig({
   plugins: [vue()],
   server: {
     host: true,
-    allowedHosts: ['frontend', 'localhost'],
+    allowedHosts: ['frontend', 'localhost', '.railway.app'],
     proxy: {
       '/api': {
         target: process.env.BACKEND_URL || 'http://backend:8080',

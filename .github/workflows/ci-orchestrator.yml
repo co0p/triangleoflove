@@ -17,14 +17,21 @@ jobs:
     name: Frontend Pipeline
     uses: ./.github/workflows/frontend-ci.yml
     with:
-      publish_images: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+      publish_images: ${{ github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository) }}
     secrets: inherit
 
   backend:
     name: Backend Pipeline
     uses: ./.github/workflows/backend-ci.yml
     with:
-      publish_images: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+      publish_images: ${{ github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository) }}
+    secrets: inherit
+
+  db:
+    name: DB Pipeline
+    uses: ./.github/workflows/db-ci.yml
+    with:
+      publish_images: ${{ github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository) }}
     secrets: inherit
 
   api-tests:
@@ -32,11 +39,14 @@ jobs:
     needs:
       - frontend
       - backend
+      - db
     uses: ./.github/workflows/api-tests-ci.yml
     with:
       run_ghcr_integration: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
     secrets: inherit
 
+  # db is not deployed here — Railway manages the production Postgres instance directly.
+  # See docs/adr/2026-03-27-railway-deployment-target.md
   deployment:
     name: Deployment Pipeline
     needs:
