@@ -1,0 +1,31 @@
+openapi: 3.0.0
+info:
+  title: Health API
+  version: 1.0.0
+
+paths:
+  /api/v1/health:
+    get:
+      summary: Backend health check
+      description: Returns the health status of the backend service, including DB connectivity.
+      responses:
+        '200':
+          description: Service and database are healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: healthy
+        '503':
+          description: Service is unhealthy (database unreachable)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: unhealthy

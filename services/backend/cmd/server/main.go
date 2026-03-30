@@ -50,10 +50,15 @@ func main() {
 
 	accountRepo := repository.NewAccountRepository(dbConn)
 	authService := service.NewAuthService(accountRepo)
+	healthService := service.NewHealthService(dbConn)
 
 	mux := http.NewServeMux()
 
-	mux.HandleFunc("/api/v1/health", func(w http.ResponseWriter, _ *http.Request) {
+	mux.HandleFunc("/api/v1/health", func(w http.ResponseWriter, r *http.Request) {
+		if err := healthService.Check(r.Context()); err != nil {
+			writeJSON(w, http.StatusServiceUnavailable, map[string]string{"status": "unhealthy"})
+			return
+		}
 		writeJSON(w, http.StatusOK, map[string]string{"status": "healthy"})
 	})
 

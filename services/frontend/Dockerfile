@@ -8,4 +8,6 @@ RUN npm install
 COPY . .
 
 EXPOSE 5173
+HEALTHCHECK --interval=5s --timeout=3s --start-period=60s --retries=5 \
+  CMD wget -q -O /dev/null http://127.0.0.1:5173/
 CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0", "--port", "5173"]

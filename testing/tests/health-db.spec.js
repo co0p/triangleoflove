@@ -29,6 +29,13 @@ function canConnectToDb(host, port, timeoutMs) {
   });
 }
 
+test('TestHealth_GivenDBRunning_WhenTCPConnected_ThenPortReachable', async () => {
+  const dbHost = process.env.DB_HOST || 'db';
+  const dbPort = process.env.DB_PORT || '5432';
+  const connected = await canConnectToDb(dbHost, dbPort, 1000);
+  expect(connected).toBeTruthy();
+});
+
 test('db port is reachable from test container', async () => {
   const dbHost = process.env.DB_HOST || 'db';
   const dbPort = process.env.DB_PORT || '5432';
