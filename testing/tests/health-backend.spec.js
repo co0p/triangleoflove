@@ -14,6 +14,20 @@ test('TestBootstrap GivenRunningStack WhenHealthEndpointCalled ThenHealthyRespon
   );
 });
 
+test('TestHealth_GivenBackendImage_WhenDockerHealthcheckRuns_ThenContainerBecomesHealthy', async ({ request }) => {
+  const response = await request.get('/api/v1/health');
+  expect(response.status()).toBe(200);
+  const body = await response.json();
+  expect(body).toEqual({ status: 'healthy' });
+});
+
+test('TestHealth_GivenDBAvailable_WhenHealthCalled_ThenReturns200Healthy', async ({ request }) => {
+  const response = await request.get('/api/v1/health');
+  expect(response.status()).toBe(200);
+  const body = await response.json();
+  expect(body).toEqual({ status: 'healthy' });
+});
+
 test('status endpoint returns HTTP status payload', async ({ request }) => {
   const response = await request.get('/api/v1/status');
 
