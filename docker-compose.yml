@@ -6,6 +6,8 @@ services:
     container_name: triangleoflove-frontend
     ports:
       - "5173:5173"
+    environment:
+      - BACKEND_URL=${BACKEND_URL:-http://backend:8080}
 
   backend:
     image: ${BACKEND_IMAGE:-triangleoflove-backend:local}
