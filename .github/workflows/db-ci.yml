@@ -50,7 +50,7 @@ jobs:
       - name: Build and optionally publish db image
         uses: docker/build-push-action@v6
         with:
-          context: ./db
+          context: ./services/db
           push: ${{ inputs.publish_images }}
           tags: |
             ghcr.io/${{ github.repository_owner }}/triangleoflove-db:${{ github.sha }}
