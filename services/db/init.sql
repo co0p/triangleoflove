@@ -27,3 +27,12 @@ VALUES (
     '$2a$10$pLlNqI6u3aN1f4qqRCI/huMGLpCgSUd43jon6WxrdYDw2878DeAEi',
     'River'
 );
+
+INSERT INTO checkins (account_id, date, felt_close, positive_energy, supported, communication_healthy, stress_level, note)
+SELECT id, '2026-03-25', 7, 6, 8, 7, 4, 'Good start to the week, felt connected.'       FROM accounts WHERE email = 'river@triangleoflove.app' UNION ALL
+SELECT id, '2026-03-26', 6, 7, 7, 6, 5, 'A bit distracted but overall okay.'              FROM accounts WHERE email = 'river@triangleoflove.app' UNION ALL
+SELECT id, '2026-03-27', 8, 8, 9, 8, 3, 'Really nice evening together.'                   FROM accounts WHERE email = 'river@triangleoflove.app' UNION ALL
+SELECT id, '2026-03-28', 5, 5, 6, 5, 7, 'Stressful day at work, felt a bit distant.'      FROM accounts WHERE email = 'river@triangleoflove.app' UNION ALL
+SELECT id, '2026-03-29', 7, 7, 7, 7, 5, 'Recovered well, good talk in the evening.'       FROM accounts WHERE email = 'river@triangleoflove.app' UNION ALL
+SELECT id, '2026-03-30', 9, 8, 9, 9, 2, 'Best day this week, really close and present.'   FROM accounts WHERE email = 'river@triangleoflove.app' UNION ALL
+SELECT id, '2026-03-31', 8, 7, 8, 8, 3, 'Wrapping up the month on a high note.'           FROM accounts WHERE email = 'river@triangleoflove.app';
