@@ -52,6 +52,9 @@ func main() {
 	authService := service.NewAuthService(accountRepo)
 	healthService := service.NewHealthService(dbConn)
 
+	checkinRepo := repository.NewCheckinRepository(dbConn)
+	checkinService := service.NewCheckinService(checkinRepo)
+
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("/api/v1/health", func(w http.ResponseWriter, r *http.Request) {
@@ -110,6 +113,42 @@ func main() {
 
 		writeJSON(w, http.StatusOK, result)
 	})
+
+	mux.Handle("/api/v1/checkins/today", web.Middleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		accountID, _ := r.Context().Value(web.AccountIDKey).(string)
+
+		switch r.Method {
+		case http.MethodGet:
+			c, err := checkinService.GetToday(r.Context(), accountID)
+			if errors.Is(err, repository.ErrCheckinNotFound) {
+				writeJSON(w, http.StatusNotFound, map[string]string{"error": "no check-in for today"})
+				return
+			}
+			if err != nil {
+				log.Printf("get checkin failed: %v", err)
+				writeJSON(w, http.StatusInternalServerError, map[string]string{"error": "internal server error"})
+				return
+			}
+			writeJSON(w, http.StatusOK, c)
+
+		case http.MethodPut:
+			var body repository.Checkin
+			if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+				writeJSON(w, http.StatusBadRequest, map[string]string{"error": "invalid request"})
+				return
+			}
+			saved, err := checkinService.SaveToday(r.Context(), accountID, body)
+			if err != nil {
+				log.Printf("save checkin failed: %v", err)
+				writeJSON(w, http.StatusInternalServerError, map[string]string{"error": "internal server error"})
+				return
+			}
+			writeJSON(w, http.StatusOK, saved)
+
+		default:
+			writeJSON(w, http.StatusMethodNotAllowed, map[string]string{"error": "method not allowed"})
+		}
+	})))
 
 	mux.Handle("/api/v1/users/me", web.Middleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodGet {

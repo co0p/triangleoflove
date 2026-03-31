@@ -1,7 +1,9 @@
 <template>
   <nav class="navbar">
     <div class="navbar-brand">
-      <img :src="logoSrc" alt="Triangle of Love" width="32" height="32" />
+      <router-link to="/dashboard" aria-label="Go to dashboard">
+        <img :src="logoSrc" alt="Triangle of Love" width="32" height="32" />
+      </router-link>
     </div>
     <span class="navbar-greeting navbar-greeting--truncate" v-if="firstName">Hello, {{ firstName }}</span>
     <div class="avatar" aria-hidden="true">{{ initials }}</div>

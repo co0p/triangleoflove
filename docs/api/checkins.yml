@@ -1,0 +1,120 @@
+openapi: 3.0.0
+info:
+  title: Triangle of Love — Check-in API
+  version: 1.0.0
+
+paths:
+  /api/v1/checkins/today:
+    get:
+      summary: Return today's check-in for the authenticated account
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Today's check-in
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CheckIn'
+        '401':
+          description: Missing or invalid token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: No check-in exists for today yet
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    put:
+      summary: Create or update today's check-in for the authenticated account
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CheckInBody'
+      responses:
+        '200':
+          description: Saved check-in (upserted)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CheckIn'
+        '401':
+          description: Missing or invalid token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    CheckInBody:
+      type: object
+      required:
+        - felt_close
+        - positive_energy
+        - supported
+        - communication_healthy
+        - stress_level
+        - note
+      properties:
+        felt_close:
+          type: integer
+          description: Rating 1–10, or -1 if not yet set
+          example: 7
+        positive_energy:
+          type: integer
+          description: Rating 1–10, or -1 if not yet set
+          example: -1
+        supported:
+          type: integer
+          description: Rating 1–10, or -1 if not yet set
+          example: 8
+        communication_healthy:
+          type: integer
+          description: Rating 1–10, or -1 if not yet set
+          example: 6
+        stress_level:
+          type: integer
+          description: Rating 1–10, or -1 if not yet set
+          example: 4
+        note:
+          type: string
+          description: Optional free-text note; empty string when not entered
+          example: "Felt really connected today."
+    CheckIn:
+      allOf:
+        - $ref: '#/components/schemas/CheckInBody'
+        - type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+            account_id:
+              type: string
+              format: uuid
+            date:
+              type: string
+              format: date
+              description: UTC calendar date of the check-in
+              example: "2026-03-31"
+            saved_at:
+              type: string
+              format: date-time
+    Error:
+      type: object
+      properties:
+        error:
+          type: string

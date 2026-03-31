@@ -5,6 +5,22 @@ CREATE TABLE accounts (
     first_name TEXT NOT NULL
 );
 
+CREATE TABLE checkins (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    account_id UUID NOT NULL REFERENCES accounts(id),
+    date DATE NOT NULL,
+    felt_close SMALLINT NOT NULL CHECK (felt_close = -1 OR felt_close BETWEEN 1 AND 10),
+    positive_energy SMALLINT NOT NULL CHECK (positive_energy = -1 OR positive_energy BETWEEN 1 AND 10),
+    supported SMALLINT NOT NULL CHECK (supported = -1 OR supported BETWEEN 1 AND 10),
+    communication_healthy SMALLINT NOT NULL CHECK (communication_healthy = -1 OR communication_healthy BETWEEN 1 AND 10),
+    stress_level SMALLINT NOT NULL CHECK (stress_level = -1 OR stress_level BETWEEN 1 AND 10),
+    note TEXT NOT NULL DEFAULT '',
+    saved_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    UNIQUE (account_id, date)
+);
+
+CREATE INDEX checkins_account_date_idx ON checkins (account_id, date);
+
 INSERT INTO accounts (email, hashed_password, first_name)
 VALUES (
     'river@triangleoflove.app',

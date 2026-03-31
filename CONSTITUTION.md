@@ -39,7 +39,7 @@ This document defines binding engineering and delivery constraints for the repos
 
 ## Testing Expectations
 
-- Test location: Unit tests are colocated with source. API acceptance tests live in `testing/`.
+- Test location: Unit tests are colocated with source. API acceptance tests live in `testing/`. Frontend component tests use Vitest and @vue/test-utils, are colocated in `services/frontend/src/`, and run via `npm test` inside that directory. The `testing/` folder is for API and browser (Playwright) acceptance tests only.
 - Coverage: Critical backend API flows require acceptance tests. Core business logic paths require unit tests. Browser-driven acceptance tests are used for critical auth and routing flows. Full cross-service user-journey E2E tests are out of scope.
 - Runtime: Acceptance tests must run in CI and must also run locally against the `docker-compose` stack.
 - Mocking: Unit tests may mock ports/adapters. Acceptance tests should hit real API endpoints with real service wiring and controlled test data setup/teardown.

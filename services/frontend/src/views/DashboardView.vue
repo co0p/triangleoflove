@@ -1,9 +1,13 @@
 <template>
   <div class="dashboard-page">
     <NavBar :firstName="firstName" />
+    <header class="container section">
+      <h1>Welcome back, {{ firstName }}</h1>
+    </header>
     <main class="container section">
-      <h1>Dashboard</h1>
-      <p class="text-muted">Welcome back. More here soon.</p>
+      <router-link data-testid="checkin-link" to="/checkin" class="btn btn-primary checkin-entry">
+        Daily check-in
+      </router-link>
     </main>
   </div>
 </template>
