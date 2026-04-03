@@ -9,11 +9,11 @@ CREATE TABLE checkins (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     account_id UUID NOT NULL REFERENCES accounts(id),
     date DATE NOT NULL,
-    felt_close SMALLINT NOT NULL CHECK (felt_close = -1 OR felt_close BETWEEN 1 AND 10),
-    positive_energy SMALLINT NOT NULL CHECK (positive_energy = -1 OR positive_energy BETWEEN 1 AND 10),
-    supported SMALLINT NOT NULL CHECK (supported = -1 OR supported BETWEEN 1 AND 10),
-    communication_healthy SMALLINT NOT NULL CHECK (communication_healthy = -1 OR communication_healthy BETWEEN 1 AND 10),
-    stress_level SMALLINT NOT NULL CHECK (stress_level = -1 OR stress_level BETWEEN 1 AND 10),
+    felt_close SMALLINT NULL CHECK (felt_close IS NULL OR felt_close BETWEEN -5 AND 5),
+    positive_energy SMALLINT NULL CHECK (positive_energy IS NULL OR positive_energy BETWEEN -5 AND 5),
+    supported SMALLINT NULL CHECK (supported IS NULL OR supported BETWEEN -5 AND 5),
+    communication_healthy SMALLINT NULL CHECK (communication_healthy IS NULL OR communication_healthy BETWEEN -5 AND 5),
+    stress_level SMALLINT NULL CHECK (stress_level IS NULL OR stress_level BETWEEN -5 AND 5),
     note TEXT NOT NULL DEFAULT '',
     saved_at TIMESTAMPTZ NOT NULL DEFAULT now(),
     UNIQUE (account_id, date)
@@ -29,10 +29,10 @@ VALUES (
 );
 
 INSERT INTO checkins (account_id, date, felt_close, positive_energy, supported, communication_healthy, stress_level, note)
-SELECT id, '2026-03-25', 7, 6, 8, 7, 4, 'Good start to the week, felt connected.'       FROM accounts WHERE email = 'river@triangleoflove.app' UNION ALL
-SELECT id, '2026-03-26', 6, 7, 7, 6, 5, 'A bit distracted but overall okay.'              FROM accounts WHERE email = 'river@triangleoflove.app' UNION ALL
-SELECT id, '2026-03-27', 8, 8, 9, 8, 3, 'Really nice evening together.'                   FROM accounts WHERE email = 'river@triangleoflove.app' UNION ALL
-SELECT id, '2026-03-28', 5, 5, 6, 5, 7, 'Stressful day at work, felt a bit distant.'      FROM accounts WHERE email = 'river@triangleoflove.app' UNION ALL
-SELECT id, '2026-03-29', 7, 7, 7, 7, 5, 'Recovered well, good talk in the evening.'       FROM accounts WHERE email = 'river@triangleoflove.app' UNION ALL
-SELECT id, '2026-03-30', 9, 8, 9, 9, 2, 'Best day this week, really close and present.'   FROM accounts WHERE email = 'river@triangleoflove.app' UNION ALL
-SELECT id, '2026-03-31', 8, 7, 8, 8, 3, 'Wrapping up the month on a high note.'           FROM accounts WHERE email = 'river@triangleoflove.app';
+SELECT id, DATE '2026-03-25', 2, 1, 3, 2, -1, 'Good start to the week, felt connected.'       FROM accounts WHERE email = 'river@triangleoflove.app' UNION ALL
+SELECT id, DATE '2026-03-26', 1, 2, 2, 1,  0, 'A bit distracted but overall okay.'              FROM accounts WHERE email = 'river@triangleoflove.app' UNION ALL
+SELECT id, DATE '2026-03-27', 3, 3, 4, 3, -2, 'Really nice evening together.'                   FROM accounts WHERE email = 'river@triangleoflove.app' UNION ALL
+SELECT id, DATE '2026-03-28', 0, 0, 1, 0,  2, 'Stressful day at work, felt a bit distant.'      FROM accounts WHERE email = 'river@triangleoflove.app' UNION ALL
+SELECT id, DATE '2026-03-29', 2, 2, 2, 2,  0, 'Recovered well, good talk in the evening.'       FROM accounts WHERE email = 'river@triangleoflove.app' UNION ALL
+SELECT id, DATE '2026-03-30', 4, 3, 4, 4, -3, 'Best day this week, really close and present.'   FROM accounts WHERE email = 'river@triangleoflove.app' UNION ALL
+SELECT id, DATE '2026-03-31', 3, 2, 3, 3, -2, 'Wrapping up the month on a high note.'           FROM accounts WHERE email = 'river@triangleoflove.app';

@@ -63,33 +63,43 @@ components:
     CheckInBody:
       type: object
       required:
-        - felt_close
-        - positive_energy
-        - supported
-        - communication_healthy
-        - stress_level
         - note
       properties:
         felt_close:
           type: integer
-          description: Rating 1–10, or -1 if not yet set
-          example: 7
+          nullable: true
+          minimum: -5
+          maximum: 5
+          description: Rating -5 to +5, or null if not yet set. 0 is a valid set value.
+          example: -3
         positive_energy:
           type: integer
-          description: Rating 1–10, or -1 if not yet set
-          example: -1
+          nullable: true
+          minimum: -5
+          maximum: 5
+          description: Rating -5 to +5, or null if not yet set. 0 is a valid set value.
+          example: null
         supported:
           type: integer
-          description: Rating 1–10, or -1 if not yet set
-          example: 8
+          nullable: true
+          minimum: -5
+          maximum: 5
+          description: Rating -5 to +5, or null if not yet set. 0 is a valid set value.
+          example: 2
         communication_healthy:
           type: integer
-          description: Rating 1–10, or -1 if not yet set
-          example: 6
+          nullable: true
+          minimum: -5
+          maximum: 5
+          description: Rating -5 to +5, or null if not yet set. 0 is a valid set value.
+          example: 1
         stress_level:
           type: integer
-          description: Rating 1–10, or -1 if not yet set
-          example: 4
+          nullable: true
+          minimum: -5
+          maximum: 5
+          description: Rating -5 to +5, or null if not yet set. 0 is a valid set value.
+          example: -2
         note:
           type: string
           description: Optional free-text note; empty string when not entered

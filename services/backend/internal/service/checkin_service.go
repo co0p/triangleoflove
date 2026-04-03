@@ -6,12 +6,18 @@ import (
 	"triangleoflove/backend/internal/repository"
 )
 
-// CheckinService orchestrates loading and saving daily check-ins.
-type CheckinService struct {
-	repo *repository.CheckinRepository
+// CheckinRepo is the storage interface required by CheckinService.
+type CheckinRepo interface {
+	FindToday(ctx context.Context, accountID string) (repository.Checkin, error)
+	Save(ctx context.Context, accountID string, c repository.Checkin) (repository.Checkin, error)
 }
 
-func NewCheckinService(repo *repository.CheckinRepository) *CheckinService {
+// CheckinService orchestrates loading and saving daily check-ins.
+type CheckinService struct {
+	repo CheckinRepo
+}
+
+func NewCheckinService(repo CheckinRepo) *CheckinService {
 	return &CheckinService{repo: repo}
 }
 
@@ -20,7 +26,7 @@ func (s *CheckinService) GetToday(ctx context.Context, accountID string) (reposi
 	return s.repo.FindToday(ctx, accountID)
 }
 
-// SaveToday upserts today's check-in for accountID and returns the saved record.
+// SaveToday saves today's check-in for accountID and returns the saved record.
 func (s *CheckinService) SaveToday(ctx context.Context, accountID string, c repository.Checkin) (repository.Checkin, error) {
-	return s.repo.Upsert(ctx, accountID, c)
+	return s.repo.Save(ctx, accountID, c)
 }

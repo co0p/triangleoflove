@@ -12,11 +12,11 @@ var ErrCheckinNotFound = errors.New("checkin not found")
 
 // Checkin holds a single daily check-in record.
 type Checkin struct {
-	FeltClose            int    `json:"felt_close"`
-	PositiveEnergy       int    `json:"positive_energy"`
-	Supported            int    `json:"supported"`
-	CommunicationHealthy int    `json:"communication_healthy"`
-	StressLevel          int    `json:"stress_level"`
+	FeltClose            *int   `json:"felt_close"`
+	PositiveEnergy       *int   `json:"positive_energy"`
+	Supported            *int   `json:"supported"`
+	CommunicationHealthy *int   `json:"communication_healthy"`
+	StressLevel          *int   `json:"stress_level"`
 	Note                 string `json:"note"`
 }
 
@@ -44,8 +44,8 @@ func (r *CheckinRepository) FindToday(ctx context.Context, accountID string) (Ch
 	return c, err
 }
 
-// Upsert creates or replaces today's check-in for accountID.
-func (r *CheckinRepository) Upsert(ctx context.Context, accountID string, c Checkin) (Checkin, error) {
+// Save creates or replaces today's check-in for accountID.
+func (r *CheckinRepository) Save(ctx context.Context, accountID string, c Checkin) (Checkin, error) {
 	today := time.Now().UTC().Format("2006-01-02")
 	var saved Checkin
 	err := r.db.QueryRowContext(ctx,
