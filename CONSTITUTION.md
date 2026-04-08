@@ -11,6 +11,7 @@ This document defines binding engineering and delivery constraints for the repos
 - Default: Each service has its own `Dockerfile`.
 - Default: Local development uses one root `docker-compose` setup to run all services together.
 - Default: Frontend UI components call an API client layer only. Direct HTTP calls from UI components are not allowed.
+- Default: All shared CSS classes live in `library.css`. When a class appears in two or more components it must be extracted to `library.css`. Component `<style>` blocks contain only single-use layout rules. All color and spacing values in style rules must reference `var(--token)`; raw hex or rgba values are permitted only inside the `:root` block of `library.css`.
 - Default: Backend flow is `handlers/routes -> service/use-case -> repository/data`.
 - Default: All backend routes use the `/api/v1/` prefix.
 - Default: The `services/db` folder contains migrations and seed scripts only.

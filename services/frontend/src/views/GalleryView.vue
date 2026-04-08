@@ -335,7 +335,7 @@ const buttonVariants = [
 .gallery-theme-btn--active {
   background: var(--color-primary);
   border-color: var(--color-primary);
-  color: #ffffff;
+  color: var(--color-text-inverse);
 }
 
 /* ---- Section titles ---- */

@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Triangle of Love — Design System</title>
+  <link rel="stylesheet" href="../services/frontend/src/assets/library.css" />
+  <style>
+    /* ============================================================
+       Gallery-only styles — not shared across components
+       ============================================================ */
+    .gallery-root {
+      min-height: 100vh;
+      background-color: var(--color-bg);
+    }
+
+    /* ---- Header ---- */
+    .gallery-header {
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .gallery-header-top {
+      display: flex;
+      align-items: center;
+      gap: var(--space-4);
+      margin-bottom: var(--space-4);
+    }
+
+    .gallery-logo {
+      width: 56px;
+      height: 56px;
+      flex-shrink: 0;
+    }
+
+    .gallery-theme-row {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      flex-wrap: wrap;
+    }
+
+    .gallery-theme-label {
+      color: var(--color-text-muted);
+    }
+
+    .gallery-theme-btn {
+      padding: var(--space-1) var(--space-3);
+      border-radius: var(--radius-full);
+      background: var(--color-neutral-100);
+      border: 1.5px solid var(--color-border);
+      font-family: var(--font-sans);
+      font-size: var(--font-size-sm);
+      color: var(--color-text);
+      cursor: pointer;
+      transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+    }
+
+    .gallery-theme-btn--active {
+      background: var(--color-primary);
+      border-color: var(--color-primary);
+      color: var(--color-text-inverse);
+    }
+
+    /* ---- Section titles ---- */
+    .gallery-section-title {
+      margin-bottom: var(--space-4);
+      padding-bottom: var(--space-2);
+      border-bottom: 2px solid var(--color-border);
+    }
+
+    .gallery-section-sub {
+      color: var(--color-text-muted);
+      font-size: var(--font-size-sm);
+      margin-bottom: var(--space-2);
+    }
+
+    /* ---- Swatches ---- */
+    .gallery-swatches {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-2);
+    }
+
+    .gallery-swatches--tight {
+      grid-template-columns: repeat(4, 1fr);
+    }
+
+    .gallery-swatch {
+      height: 72px;
+      border-radius: var(--radius-md);
+      padding: var(--space-2);
+      display: flex;
+      align-items: flex-end;
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-medium);
+    }
+
+    .gallery-swatch--sm {
+      height: 48px;
+      align-items: center;
+    }
+
+    /* ---- Typography card ---- */
+    .gallery-type-card {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-4);
+    }
+
+    .gallery-type-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: var(--space-2);
+    }
+
+    .gallery-spec {
+      font-size: var(--font-size-xs);
+      color: var(--color-text-muted);
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    /* ---- Component variant rows ---- */
+    .gallery-variants {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-5);
+    }
+
+    .gallery-variant {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-2);
+    }
+
+    .gallery-variant-label {
+      font-size: var(--font-size-xs);
+      color: var(--color-text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      font-weight: var(--font-weight-semibold);
+    }
+
+    /* ---- Input demo states ---- */
+    /* Simulates the :focus appearance for static gallery display */
+    .gallery-state-focus {
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 3px rgba(122, 171, 122, 0.22);
+    }
+
+    /* ---- Logo sizes ---- */
+    .gallery-logo-sizes {
+      display: flex;
+      align-items: flex-end;
+      gap: var(--space-6);
+      flex-wrap: wrap;
+    }
+
+    .gallery-logo-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--space-1);
+    }
+
+    /* ---- Row layout ---- */
+    .gallery-row {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      flex-wrap: wrap;
+    }
+
+    /* ---- Focus ring demo ---- */
+    /* Simulates the :focus-visible ring for gallery display */
+    .gallery-demo-focused {
+      box-shadow: var(--focus-ring);
+      outline: none;
+    }
+
+    /* ---- NavBar preview ---- */
+    .gallery-navbar-preview {
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      border: 1px solid var(--color-border);
+    }
+  </style>
+</head>
+<body>
+  <div class="gallery-root" id="gallery-root">
+    <div class="container">
+
+      <!-- Header -->
+      <header class="gallery-header section">
+        <div class="gallery-header-top">
+          <img src="../services/frontend/src/assets/logo.svg" alt="Triangle of Love mark" class="gallery-logo" />
+          <div>
+            <h1>Design System</h1>
+            <p class="text-muted">All tokens and component classes — 375 px reference.</p>
+          </div>
+        </div>
+        <div class="gallery-theme-row">
+          <span class="text-sm gallery-theme-label">Theme:</span>
+          <button class="gallery-theme-btn gallery-theme-btn--active" data-theme="">Brand</button>
+          <button class="gallery-theme-btn" data-theme="theme-warm">Warm</button>
+        </div>
+      </header>
+
+      <!-- 1. Color Swatches -->
+      <section class="section">
+        <h2 class="gallery-section-title">Color Swatches</h2>
+
+        <p class="gallery-section-sub">Brand palette</p>
+        <div class="gallery-swatches">
+          <div class="gallery-swatch" style="background: #7aab7a;">
+            <span style="color: rgba(30,27,24,0.85);">Sage 500<br><small>#7aab7a</small></span>
+          </div>
+          <div class="gallery-swatch" style="background: #508a50;">
+            <span style="color: rgba(255,255,255,0.9);">Sage 700<br><small>#508a50</small></span>
+          </div>
+          <div class="gallery-swatch" style="background: #d97d8a;">
+            <span style="color: rgba(30,27,24,0.85);">Rose 400<br><small>#d97d8a</small></span>
+          </div>
+          <div class="gallery-swatch" style="background: #b05568;">
+            <span style="color: rgba(255,255,255,0.9);">Rose 700<br><small>#b05568</small></span>
+          </div>
+          <div class="gallery-swatch" style="background: #d4a843;">
+            <span style="color: rgba(30,27,24,0.85);">Gold 500<br><small>#d4a843</small></span>
+          </div>
+          <div class="gallery-swatch" style="background: #a8832e;">
+            <span style="color: rgba(255,255,255,0.9);">Gold 700<br><small>#a8832e</small></span>
+          </div>
+        </div>
+
+        <p class="gallery-section-sub" style="margin-top: var(--space-4);">Neutrals</p>
+        <div class="gallery-swatches gallery-swatches--tight">
+          <div class="gallery-swatch gallery-swatch--sm" style="background: #faf9f7; border: 1px solid #e8e4dc;">
+            <span style="color: rgba(30,27,24,0.85);"><small>50</small></span>
+          </div>
+          <div class="gallery-swatch gallery-swatch--sm" style="background: #f2f0ec; border: 1px solid #e8e4dc;">
+            <span style="color: rgba(30,27,24,0.85);"><small>100</small></span>
+          </div>
+          <div class="gallery-swatch gallery-swatch--sm" style="background: #e8e4dc; border: 1px solid #e8e4dc;">
+            <span style="color: rgba(30,27,24,0.85);"><small>200</small></span>
+          </div>
+          <div class="gallery-swatch gallery-swatch--sm" style="background: #b8b0a5; border: 1px solid #e8e4dc;">
+            <span style="color: rgba(30,27,24,0.85);"><small>400</small></span>
+          </div>
+          <div class="gallery-swatch gallery-swatch--sm" style="background: #6e665c; border: 1px solid #e8e4dc;">
+            <span style="color: rgba(255,255,255,0.9);"><small>600</small></span>
+          </div>
+          <div class="gallery-swatch gallery-swatch--sm" style="background: #3a3530; border: 1px solid #e8e4dc;">
+            <span style="color: rgba(255,255,255,0.9);"><small>800</small></span>
+          </div>
+          <div class="gallery-swatch gallery-swatch--sm" style="background: #1e1b18; border: 1px solid #e8e4dc;">
+            <span style="color: rgba(255,255,255,0.9);"><small>900</small></span>
+          </div>
+        </div>
+
+        <p class="gallery-section-sub" style="margin-top: var(--space-4);">Semantic tokens — switch theme to see them update</p>
+        <div class="gallery-swatches gallery-swatches--tight">
+          <div class="gallery-swatch gallery-swatch--sm" style="background: var(--color-bg); border: 1px solid var(--color-border);">
+            <span style="color: rgba(30,27,24,0.8);"><small>bg</small></span>
+          </div>
+          <div class="gallery-swatch gallery-swatch--sm" style="background: var(--color-surface); border: 1px solid var(--color-border);">
+            <span style="color: rgba(30,27,24,0.8);"><small>surface</small></span>
+          </div>
+          <div class="gallery-swatch gallery-swatch--sm" style="background: var(--color-primary); border: 1px solid var(--color-border);">
+            <span style="color: rgba(30,27,24,0.8);"><small>primary</small></span>
+          </div>
+          <div class="gallery-swatch gallery-swatch--sm" style="background: var(--color-accent); border: 1px solid var(--color-border);">
+            <span style="color: rgba(30,27,24,0.8);"><small>accent</small></span>
+          </div>
+          <div class="gallery-swatch gallery-swatch--sm" style="background: var(--color-highlight); border: 1px solid var(--color-border);">
+            <span style="color: rgba(30,27,24,0.8);"><small>highlight</small></span>
+          </div>
+          <div class="gallery-swatch gallery-swatch--sm" style="background: var(--color-error); border: 1px solid var(--color-border);">
+            <span style="color: rgba(30,27,24,0.8);"><small>error</small></span>
+          </div>
+        </div>
+      </section>
+
+      <!-- 2. Typography -->
+      <section class="section">
+        <h2 class="gallery-section-title">Typography</h2>
+        <div class="card gallery-type-card">
+          <div class="gallery-type-row">
+            <h1>Heading 1</h1>
+            <code class="gallery-spec">3xl / bold / 1.25lh</code>
+          </div>
+          <div class="gallery-type-row">
+            <h2>Heading 2</h2>
+            <code class="gallery-spec">2xl / semibold</code>
+          </div>
+          <div class="gallery-type-row">
+            <h3>Heading 3</h3>
+            <code class="gallery-spec">xl / semibold</code>
+          </div>
+          <div class="gallery-type-row">
+            <p>Body — long-form copy, 1.625 line-height.</p>
+            <code class="gallery-spec">base / normal</code>
+          </div>
+          <div class="gallery-type-row">
+            <p class="text-muted">Muted — helper text, hints, captions.</p>
+            <code class="gallery-spec">sm / muted</code>
+          </div>
+          <div class="gallery-type-row">
+            <p class="text-sm">Small — labels, metadata.</p>
+            <code class="gallery-spec">sm</code>
+          </div>
+        </div>
+      </section>
+
+      <!-- 3. Buttons -->
+      <section class="section">
+        <h2 class="gallery-section-title">Buttons</h2>
+        <div class="gallery-variants">
+          <div class="gallery-variant">
+            <span class="gallery-variant-label">Primary</span>
+            <button class="btn btn-primary">Continue</button>
+          </div>
+          <div class="gallery-variant">
+            <span class="gallery-variant-label">Primary — disabled</span>
+            <button class="btn btn-primary" disabled>Continue</button>
+          </div>
+          <div class="gallery-variant">
+            <span class="gallery-variant-label">Secondary</span>
+            <button class="btn btn-secondary">Sign up</button>
+          </div>
+          <div class="gallery-variant">
+            <span class="gallery-variant-label">Secondary — disabled</span>
+            <button class="btn btn-secondary" disabled>Sign up</button>
+          </div>
+          <div class="gallery-variant">
+            <span class="gallery-variant-label">Ghost</span>
+            <button class="btn btn-ghost">Cancel</button>
+          </div>
+          <div class="gallery-variant">
+            <span class="gallery-variant-label">Ghost — disabled</span>
+            <button class="btn btn-ghost" disabled>Cancel</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- 4. Inputs -->
+      <section class="section">
+        <h2 class="gallery-section-title">Inputs</h2>
+        <div class="gallery-variants">
+
+          <div class="gallery-variant">
+            <span class="gallery-variant-label">Default</span>
+            <div class="input-group">
+              <label class="input-label">Email</label>
+              <input class="input" type="email" placeholder="you@example.com" />
+            </div>
+          </div>
+
+          <div class="gallery-variant">
+            <span class="gallery-variant-label">Focus (simulated)</span>
+            <div class="input-group">
+              <label class="input-label">Email</label>
+              <input class="input gallery-state-focus" type="email" value="you@example.com" readonly />
+            </div>
+          </div>
+
+          <div class="gallery-variant">
+            <span class="gallery-variant-label">Error</span>
+            <div class="input-group">
+              <label class="input-label">Email</label>
+              <input class="input input--error" type="email" value="not-an-email" readonly />
+              <span class="input-hint input-hint--error">Enter a valid email address.</span>
+            </div>
+          </div>
+
+          <div class="gallery-variant">
+            <span class="gallery-variant-label">Disabled</span>
+            <div class="input-group">
+              <label class="input-label">Email</label>
+              <input class="input" type="email" disabled value="you@example.com" />
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- 5. Error Alert -->
+      <section class="section">
+        <h2 class="gallery-section-title">Error Alert</h2>
+        <div class="alert-error" role="alert">
+          Invalid email or password. Please try again.
+        </div>
+      </section>
+
+      <!-- 6. Card -->
+      <section class="section">
+        <h2 class="gallery-section-title">Card</h2>
+        <div class="card">
+          <h3>Card title</h3>
+          <p class="text-muted" style="margin-top: var(--space-2); margin-bottom: var(--space-4);">
+            White surface with border, elevation shadow, and large border-radius.
+            Contains any content.
+          </p>
+          <button class="btn btn-primary">Primary action</button>
+        </div>
+      </section>
+
+      <!-- 7. Logo Mark -->
+      <section class="section">
+        <h2 class="gallery-section-title">Logo Mark</h2>
+        <div class="gallery-logo-sizes">
+          <div class="gallery-logo-item">
+            <img src="../services/frontend/src/assets/logo.svg" width="80" height="80" alt="Triangle of Love" />
+            <span class="text-muted">80px</span>
+          </div>
+          <div class="gallery-logo-item">
+            <img src="../services/frontend/src/assets/logo.svg" width="48" height="48" alt="Triangle of Love" />
+            <span class="text-muted">48px</span>
+          </div>
+          <div class="gallery-logo-item">
+            <img src="../services/frontend/src/assets/logo.svg" width="32" height="32" alt="Triangle of Love" />
+            <span class="text-muted">32px</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- 8. Avatar Badge -->
+      <section class="section">
+        <h2 class="gallery-section-title">Avatar Badge</h2>
+        <div class="gallery-row">
+          <div class="avatar">JG</div>
+          <div class="avatar">AB</div>
+          <div class="avatar">TL</div>
+        </div>
+      </section>
+
+      <!-- 9. Focus Ring -->
+      <section class="section">
+        <h2 class="gallery-section-title">Focus Ring</h2>
+        <p class="text-muted" style="margin-bottom: var(--space-4);">
+          A warm gold ring appears on all interactive elements during keyboard navigation
+          (<kbd>Tab</kbd> to experience it live on the right button).
+        </p>
+        <div class="gallery-row">
+          <button class="btn btn-secondary gallery-demo-focused" style="width: auto;">
+            Focused (simulated)
+          </button>
+          <button class="btn btn-secondary" style="width: auto;">Tab → me</button>
+        </div>
+      </section>
+
+      <!-- 10. NavBar -->
+      <section class="section">
+        <h2 class="gallery-section-title">NavBar</h2>
+        <p class="text-muted" style="margin-bottom: var(--space-4);">
+          Static preview of <code>.navbar</code>, <code>.navbar-brand</code>, and
+          <code>.navbar-greeting</code>.
+        </p>
+        <div class="navbar gallery-navbar-preview">
+          <div class="navbar-brand">
+            <img src="../services/frontend/src/assets/logo.svg" alt="" width="32" height="32" />
+          </div>
+          <span class="navbar-greeting">Hello, Alex</span>
+          <div class="avatar">AK</div>
+        </div>
+      </section>
+
+    </div>
+  </div>
+
+  <script>
+    const root = document.getElementById('gallery-root');
+    document.querySelectorAll('.gallery-theme-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const theme = btn.dataset.theme;
+        root.className = 'gallery-root' + (theme ? ' ' + theme : '');
+        document.querySelectorAll('.gallery-theme-btn').forEach(b => {
+          b.classList.toggle('gallery-theme-btn--active', b === btn);
+        });
+      });
+    });
+  </script>
+</body>
+</html>
