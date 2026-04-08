@@ -43,12 +43,12 @@ globally in `main.js`. It follows a three-layer structure:
 
 1. **Raw palette tokens** — named colour stops on `:root` (e.g. `--color-sage-500`)
 2. **Semantic tokens** — purpose-driven aliases that components reference (e.g. `--color-primary`)
-3. **Component classes** — selectors that reference only semantic tokens via `var()`; never raw values
+3. **Component classes** — selectors that reference only semantic tokens via `var()`; never raw values. A class used in two or more components must be extracted here from the component's `<style scoped>` block.
 
 A theme is a named block of semantic token overrides applied to a container element. Components
 never reference a theme directly — they inherit overrides through the CSS cascade.
 
-The developer reference is at `/gallery` (unguarded route, not linked from app navigation).
+The developer reference is `docs/design-system.html` — a standalone HTML file that references `library.css` directly and can be opened in any browser without running the app. It is updated in the same commit as any library change.
 
 ### Component conventions
 

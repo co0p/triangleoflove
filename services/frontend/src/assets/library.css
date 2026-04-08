@@ -44,6 +44,7 @@
   --color-error-bg:     #fdf0f2;
   --color-error-border: var(--color-rose-200);
   --color-focus-ring:   var(--color-gold-500);
+  --color-text-inverse: #ffffff;
 
   /* --- Spacing scale --- */
   --space-1:  0.25rem;
@@ -229,7 +230,7 @@ p {
 
 .btn-primary {
   background-color: var(--color-primary);
-  color: #ffffff;
+  color: var(--color-text-inverse);
   border-color: var(--color-primary);
 }
 
@@ -246,7 +247,7 @@ p {
 
 .btn-secondary:hover:not(:disabled) {
   background-color: var(--color-primary);
-  color: #ffffff;
+  color: var(--color-text-inverse);
 }
 
 .btn-ghost {
