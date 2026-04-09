@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router';
 import LoginView from '../views/LoginView.vue';
 import DashboardView from '../views/DashboardView.vue';
 import CheckinView from '../views/CheckinView.vue';
+import PairingView from '../views/PairingView.vue';
 
 const router = createRouter({
   history: createWebHistory(),
@@ -9,7 +10,8 @@ const router = createRouter({
     { path: '/', redirect: '/login' },
     { path: '/login', component: LoginView },
     { path: '/dashboard', component: DashboardView },
-    { path: '/checkin', component: CheckinView }
+    { path: '/checkin', component: CheckinView },
+    { path: '/pairing', component: PairingView }
   ]
 });
 
@@ -19,6 +21,9 @@ router.beforeEach((to) => {
     return '/login';
   }
   if (to.path === '/checkin' && !token) {
+    return '/login';
+  }
+  if (to.path === '/pairing' && !token) {
     return '/login';
   }
   if (to.path === '/login' && token) {

@@ -19,6 +19,10 @@
 | Note | An optional free-text observation attached to a Check-in. Always private to the Account; never shared. Stored as an empty string when not entered. |
 | Check-in Date | The calendar date (UTC) for which a Check-in is recorded; defaults to today when opening the page. One Check-in per Account per date. |
 | Save Check-in | The action of persisting a Check-in (create or update) for the current Check-in Date. Lazy: no record is written until this action is taken. Upsert semantics — no separate create vs update exposed in the UI or API. |
+| Invite Code | A 6-character uppercase alphanumeric code generated for an Account, used to initiate pairing. Ephemeral — replaced after a successful pairing or explicit regeneration. Stored on the Account. |
+| Couple | A permanent bond between exactly two Accounts, formed when one Account submits the other's Invite Code. Owns the formation date and future pair-scoped data. |
+| Pairing | The act of two Accounts forming a Couple via Invite Code exchange. One-time per Couple formation. |
+| Paired | The state of an Account that belongs to a Couple. Derived from Couple membership. |
 
 ## Bounded Contexts
 
@@ -37,6 +41,11 @@
 - **Key concepts**: Check-in, Dimension, Rating, Unset Rating, Note, Check-in Date, Save Check-in
 - **Relationships**: Downstream of Auth — requires a valid Token (Account identity) to record or retrieve a Check-in. Entered from the Home context.
 
+### Pairing
+- **Responsibility**: Manages Invite Code generation and regeneration; forms Couples between Accounts; serves Couple status (partner first name, paired-since date) to authenticated Accounts.
+- **Key concepts**: Invite Code, Couple, Pairing, Paired
+- **Relationships**: Reads Account identity from Auth. Owns the `couples` table and the `invite_code` column on `accounts`.
+
 ## Aggregates
 
 ### Account
@@ -49,6 +58,11 @@ Protects the invariant that at most one Check-in exists per Account per date. Ow
 
 Stored in the `checkins` table. Written lazily — no row exists until Save Check-in is triggered.
 
+### Couple
+Protects the invariant that exactly two distinct Accounts form a Couple and that each Account belongs to at most one Couple. Owns the formation date and will own future pair-scoped fields.
+
+Stored in the `couples` table (id UUID, account_id_a, account_id_b, formed_on TIMESTAMPTZ). The Invite Code is stored as `invite_code` on the `accounts` table — it is ephemeral and belongs to the Account, not the Couple.
+
 ## Value Objects
 
 - **Credentials**: Email + plain-text password supplied at login. Never persisted.
@@ -57,9 +71,11 @@ Stored in the `checkins` table. Written lazily — no row exists until Save Chec
 - **Token**: A signed JWT string with an issuance timestamp. The only Auth artifact that crosses into the Home context.
 - **Rating**: An integer. Valid saved values are 1–10. `-1` means the user has not yet set a value (Unset Rating). Compared by value; no identity.
 - **Note**: A string, may be empty. No identity. Compared by value.
+- **Invite Code**: A 6-character uppercase alphanumeric string. Generated randomly; no identity. Compared by value. Replaced (not mutated) on pairing or explicit regeneration.
 
 ## Domain Events
 
 - **AccountAuthenticated**: Emitted when Credentials are valid. Carries the Token.
 - **AuthenticationFailed**: Emitted when Credentials do not match. Carries no Token.
 - **CheckInSaved**: Emitted when a Check-in is created or updated. Carries `accountId`, `date`, and `savedAt`.
+- **CoupleFormed**: Emitted when two Accounts successfully pair. Carries `accountIdA`, `accountIdB`, `formedOn`.

@@ -230,3 +230,37 @@ Backend notes:
 - Add clear disclaimers: not therapy; if users are in crisis, seek professional help
 
 ---
+
+## Emergent Architecture
+
+> Patterns and structures that emerged through TDD. Updated after each increment. Not a planning document.
+
+### Handler Struct with Per-Route Methods
+
+- **What**: Each handler is a struct (`PairingHandler`) with one method per route — `GetCode`, `Regenerate`, `Connect`, `GetCoupleStatus`. Methods are registered individually on the mux in `main.go` via `http.HandlerFunc(ph.Method)`.
+- **Why it emerged**: A single handler switching on `r.URL.Path` made each route hard to test in isolation and mixed routing concerns into handler logic. Registering discrete methods on the mux keeps routing in `main.go` and makes each endpoint independently testable.
+- **Where used**: `services/backend/internal/web/pairing_handler.go`
+
+### Repository Split by Aggregate
+
+- **What**: When a handler serves two distinct aggregates, each aggregate gets its own repository type and its own service interface. `PairingRepository` owns `invite_code` operations on the `accounts` table; `CoupleRepository` owns the `couples` table. The service takes two named interfaces (`InviteCodeRepo`, `CoupleRepo`) rather than one combined interface.
+- **Why it emerged**: A single `PairingRepo` interface with six methods made the service's dependencies opaque and its mocks unwieldy. Splitting by aggregate clarifies ownership and keeps each mock minimal.
+- **Where used**: `services/backend/internal/repository/pairing_repository.go`, `couple_repository.go`, `services/backend/internal/service/pairing_service.go`
+
+### Page-Level Layout Utility Class
+
+- **What**: A `.page` class in `library.css` provides `min-height: 100vh` and `background-color: var(--color-bg)` for full-height views. Views set `class="page"` on their root element.
+- **Why it emerged**: Each full-height view was defining a scoped per-view class with identical rules. Extracting to `library.css` removes the duplication and follows the existing convention that classes used in two or more components belong in the library.
+- **Where used**: `services/frontend/src/assets/library.css`, `PairingView.vue`, `DashboardView.vue`
+
+### Seed Data Helper Module
+
+- **What**: Seed user data lives in `testing/tests/helpers/users.js` as a `USERS` array of objects (`{ email, password, firstName }`). Other helpers derive their constants from this single source.
+- **Why it emerged**: Email and password strings were duplicated across `auth.js` and test files. Centralising into `users.js` gives tests a single place to update when seed data changes and makes the full user list available for multi-user flows (e.g. pairing connect).
+- **Where used**: `testing/tests/helpers/users.js`, `testing/tests/helpers/auth.js`
+
+| Date | Increment | Changes |
+|------|-----------|---------|
+| 2026-04-09 | Couple Pairing | Handler struct pattern, repository split by aggregate, `.page` layout utility, seed data helper module |
+
+---
