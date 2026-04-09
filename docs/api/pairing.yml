@@ -1,0 +1,113 @@
+openapi: 3.0.0
+info:
+  title: Triangle of Love — Pairing API
+  version: 1.0.0
+
+paths:
+  /api/v1/pairing:
+    get:
+      summary: Return the authenticated account's current invite code
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Current invite code
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InviteCode'
+        '401':
+          description: Missing or invalid token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/v1/pairing/regenerate:
+    post:
+      summary: Regenerate and return a new invite code for the authenticated account
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: New invite code
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InviteCode'
+        '401':
+          description: Missing or invalid token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/v1/pairing/connect:
+    post:
+      summary: Connect the authenticated account to the account that owns the given invite code
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConnectBody'
+      responses:
+        '200':
+          description: Couple formed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectResponse'
+        '400':
+          description: Invalid or unknown invite code; self-pairing attempt; account already paired
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Missing or invalid token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    InviteCode:
+      type: object
+      required:
+        - invite_code
+      properties:
+        invite_code:
+          type: string
+          example: AB12CD
+    ConnectBody:
+      type: object
+      required:
+        - invite_code
+      properties:
+        invite_code:
+          type: string
+          example: AB12CD
+    ConnectResponse:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string
+          example: connected
+    Error:
+      type: object
+      required:
+        - error
+      properties:
+        error:
+          type: string

@@ -44,6 +44,8 @@ This document defines binding engineering and delivery constraints for the repos
 - Coverage: Critical backend API flows require acceptance tests. Core business logic paths require unit tests. Browser-driven acceptance tests are used for critical auth and routing flows. Full cross-service user-journey E2E tests are out of scope.
 - Runtime: Acceptance tests must run in CI and must also run locally against the `docker-compose` stack.
 - Mocking: Unit tests may mock ports/adapters. Acceptance tests should hit real API endpoints with real service wiring and controlled test data setup/teardown.
+- Browser-driven acceptance tests cover user-journey happy paths only. Edge cases (invalid inputs, error states, authorization boundaries) are covered by colocated Go unit tests in the service and handler layers, not by Playwright.
+- Playwright spec files are grouped by feature in subdirectories under `testing/tests/` (e.g. `testing/tests/pairing/pairing.spec.js`). The file name provides feature context; test names use Given-When-Then format without a feature prefix.
 
 ## Artifact Layout
 

@@ -1,5 +1,5 @@
 ![Triangle of Love Coach logo](docs/logo.png)
-[![Build Status](https://github.com/juliangodesa/triangleoflove/workflows/CI/badge.svg)](https://github.com/juliangodesa/triangleoflove/actions)
+[![Build Status](https://github.com/co0p/triangleoflove/workflows/CI%20Orchestrator/badge.svg)](https://github.com/co0p/triangleoflove/actions)
 
 **Live App:** [frontend-production-4509.up.railway.app](https://frontend-production-4509.up.railway.app)
 

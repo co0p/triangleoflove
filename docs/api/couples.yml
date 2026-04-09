@@ -1,0 +1,58 @@
+openapi: 3.0.0
+info:
+  title: Triangle of Love — Couples API
+  version: 1.0.0
+
+paths:
+  /api/v1/couples/me:
+    get:
+      summary: Return the couple status for the authenticated account
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Couple status including partner's first name and paired-since date
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CoupleStatus'
+        '401':
+          description: Missing or invalid token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Account is not yet paired
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    CoupleStatus:
+      type: object
+      required:
+        - partner_first_name
+        - formed_on
+      properties:
+        partner_first_name:
+          type: string
+          example: Jordan
+        formed_on:
+          type: string
+          format: date-time
+          example: "2026-04-09T14:30:00Z"
+    Error:
+      type: object
+      required:
+        - error
+      properties:
+        error:
+          type: string

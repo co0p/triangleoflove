@@ -2,7 +2,16 @@ CREATE TABLE accounts (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     email TEXT NOT NULL UNIQUE,
     hashed_password TEXT NOT NULL,
-    first_name TEXT NOT NULL
+    first_name TEXT NOT NULL,
+    invite_code TEXT NULL
+);
+
+CREATE TABLE couples (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    account_id_a UUID NOT NULL REFERENCES accounts(id),
+    account_id_b UUID NOT NULL REFERENCES accounts(id),
+    formed_on TIMESTAMPTZ NOT NULL DEFAULT now(),
+    UNIQUE (account_id_a, account_id_b)
 );
 
 CREATE TABLE checkins (
@@ -26,6 +35,13 @@ VALUES (
     'river@triangleoflove.app',
     '$2a$10$pLlNqI6u3aN1f4qqRCI/huMGLpCgSUd43jon6WxrdYDw2878DeAEi',
     'River'
+);
+
+INSERT INTO accounts (email, hashed_password, first_name)
+VALUES (
+    'jordan@triangleoflove.app',
+    '$2y$10$cxtnNv8hGdXzDGr11z9BGe30GCFoWI0cWURq1pgyedcWXW82pOyRi',
+    'Jordan'
 );
 
 INSERT INTO checkins (account_id, date, felt_close, positive_energy, supported, communication_healthy, stress_level, note)
