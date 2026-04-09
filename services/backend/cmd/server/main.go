@@ -55,6 +55,10 @@ func main() {
 	checkinRepo := repository.NewCheckinRepository(dbConn)
 	checkinService := service.NewCheckinService(checkinRepo)
 
+	pairingRepo := repository.NewPairingRepository(dbConn)
+	coupleRepo := repository.NewCoupleRepository(dbConn)
+	pairingService := service.NewPairingService(pairingRepo, coupleRepo)
+
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("/api/v1/health", func(w http.ResponseWriter, r *http.Request) {
@@ -115,6 +119,12 @@ func main() {
 	})
 
 	mux.Handle("/api/v1/checkins/today", web.Middleware(web.NewCheckinHandler(checkinService)))
+
+	ph := web.NewPairingHandler(pairingService)
+	mux.Handle("/api/v1/pairing", web.Middleware(http.HandlerFunc(ph.GetCode)))
+	mux.Handle("/api/v1/pairing/regenerate", web.Middleware(http.HandlerFunc(ph.Regenerate)))
+	mux.Handle("/api/v1/pairing/connect", web.Middleware(http.HandlerFunc(ph.Connect)))
+	mux.Handle("/api/v1/couples/me", web.Middleware(http.HandlerFunc(ph.GetCoupleStatus)))
 
 	mux.Handle("/api/v1/users/me", web.Middleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodGet {
