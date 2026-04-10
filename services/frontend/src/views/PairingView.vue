@@ -10,13 +10,15 @@
       </div>
 
       <template v-else>
-        <div class="input-group">
-          <p class="input-label">Your invite code</p>
-          <p data-testid="invite-code" class="invite-code">{{ inviteCode }}</p>
+        <div class="card pairing-card">
+          <div class="input-group">
+            <p class="input-label">Your invite code</p>
+            <p data-testid="invite-code" class="invite-code">{{ inviteCode }}</p>
+          </div>
+          <button class="btn btn-secondary" @click="regenerate">Regenerate</button>
         </div>
-        <button class="btn btn-secondary" @click="regenerate">Regenerate</button>
 
-        <section class="connect-section">
+        <div class="card pairing-card">
           <div class="input-group">
             <label class="input-label" for="partner-code">Partner's code</label>
             <input
@@ -36,7 +38,7 @@
           >Connect</button>
           <p v-if="connectError" role="alert" data-testid="connect-error" class="error-text">{{ connectError }}</p>
           <p v-if="connectSuccess" data-testid="connect-success" class="success-text">Connected!</p>
-        </section>
+        </div>
       </template>
     </main>
   </div>
@@ -95,18 +97,18 @@ async function connect() {
 </script>
 
 <style scoped>
+.pairing-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  margin-bottom: var(--space-6);
+}
+
 .invite-code {
   font-size: 2rem;
   font-weight: bold;
   letter-spacing: 0.25em;
-  padding: var(--space-2);
-}
-
-.connect-section {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-1);
-  margin-top: var(--space-4);
+  padding: var(--space-2) 0;
 }
 
 .paired-since {
