@@ -10,20 +10,25 @@
       </div>
 
       <template v-else>
-        <p>Your invite code</p>
-        <p data-testid="invite-code" class="invite-code">{{ inviteCode }}</p>
+        <div class="input-group">
+          <p class="input-label">Your invite code</p>
+          <p data-testid="invite-code" class="invite-code">{{ inviteCode }}</p>
+        </div>
         <button class="btn btn-secondary" @click="regenerate">Regenerate</button>
 
         <section class="connect-section">
-          <label for="partner-code">Partner's code</label>
-          <input
-            id="partner-code"
-            data-testid="partner-code-input"
-            type="text"
-            maxlength="6"
-            placeholder="Enter 6-character code"
-            v-model="partnerCode"
-          />
+          <div class="input-group">
+            <label class="input-label" for="partner-code">Partner's code</label>
+            <input
+              id="partner-code"
+              data-testid="partner-code-input"
+              type="text"
+              class="input"
+              maxlength="6"
+              placeholder="Enter 6-character code"
+              v-model="partnerCode"
+            />
+          </div>
           <button
             data-testid="connect-button"
             class="btn btn-primary"
