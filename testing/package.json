@@ -6,6 +6,9 @@
   "scripts": {
     "test": "playwright test --reporter=list"
   },
+  "dependencies": {
+    "pg": "8.13.3"
+  },
   "devDependencies": {
     "@playwright/test": "1.58.2"
   }

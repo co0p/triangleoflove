@@ -41,15 +41,19 @@ services:
   api-tests:
     image: ${API_TESTS_IMAGE:-triangleoflove-api-tests:local}
     build:
-      context: ./testing
+      context: . # needed to access services/db/init.sql
+      dockerfile: testing/Dockerfile
     container_name: triangleoflove-api-tests
     environment:
       - API_BASE_URL=http://backend:8080
       - FRONTEND_BASE_URL=http://frontend:5173
+      - DATABASE_URL=postgres://triangle:triangle@db:5432/triangleoflove?sslmode=disable
     depends_on:
       backend:
         condition: service_healthy
       frontend:
+        condition: service_healthy
+      db:
         condition: service_healthy
     profiles:
       - tests

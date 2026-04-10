@@ -1,5 +1,13 @@
 const { test, expect } = require('@playwright/test');
 const { FRONTEND_BASE_URL, SEED_EMAIL_2, SEED_PASSWORD_2, loginViaUI } = require('../helpers/auth');
+const { resetDb } = require('../helpers/seed');
+
+// Reset to unpaired baseline once before the suite.
+// Tests in this file are ordered: the "GivenPaired" tests rely on the pair
+// formed by GivenTwoUnpairedUsers, so per-test resets would break them.
+test.beforeAll(async ({ request }) => {
+  await resetDb(request);
+});
 
 test('GivenUnpaired_WhenVisitsPairingPage_ThenShowsOwnCodeAndInput', async ({ page }) => {
   await loginViaUI(page);
