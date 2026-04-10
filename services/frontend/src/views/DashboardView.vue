@@ -95,18 +95,3 @@ onMounted(async () => {
   line-height: var(--line-height-normal);
 }
 </style>
-
-
-.dashboard-pairing-label {
-  font-size: var(--font-size-sm);
-  line-height: var(--line-height-normal);
-}
-
-.dashboard-pairing-link {
-  align-self: stretch;
-}
-
-.checkin-entry {
-  display: flex;
-}
-</style>
