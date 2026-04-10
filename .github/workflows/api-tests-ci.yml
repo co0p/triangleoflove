@@ -44,7 +44,9 @@ jobs:
         run: docker build -t triangleoflove-db:ci ./services/db
 
       - name: Build local api-tests image
-        run: docker build -t triangleoflove-api-tests:ci ./testing
+        # Build context is the repo root (not ./testing) so the Dockerfile can
+        # COPY services/db/init.sql into the image for the seed server.
+        run: docker build -t triangleoflove-api-tests:ci -f testing/Dockerfile .
 
       - name: Start services from GHCR images
         run: |
