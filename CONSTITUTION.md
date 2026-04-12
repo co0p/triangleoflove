@@ -47,6 +47,18 @@ This document defines binding engineering and delivery constraints for the repos
 - Browser-driven acceptance tests cover user-journey happy paths only. Edge cases (invalid inputs, error states, authorization boundaries) are covered by colocated Go unit tests in the service and handler layers, not by Playwright.
 - Playwright spec files are grouped by feature in subdirectories under `testing/tests/` (e.g. `testing/tests/pairing/pairing.spec.js`). The file name provides feature context; test names use Given-When-Then format without a feature prefix.
 
+### Layer Preference Guide
+
+Place each test at the **lowest layer** that can meaningfully cover it:
+
+| Layer | Own | Example |
+|-------|-----|---------|
+| Go unit (service / handler) | Error paths, auth boundaries, domain logic, input validation | `TestCheckinHandler_GivenNoAuth_WhenGET_ThenReturns401` — no DB, uses `httptest` + mock repo |
+| Vue component (Vitest) | View render states (empty, loaded, error) driven by mock API data | `TestDashboard_GivenNoPartner_WhenRendered_ThenNotConnectedVisible` — no backend, mocks `api/*.js` |
+| API acceptance (Playwright, Docker stack) | Happy-path contracts between frontend and real backend wiring | `GivenValidCredentials_WhenLogin_ThenRedirectsToDashboard` — real HTTP, real DB |
+
+**Rule**: if a mock suffices, don't reach for Docker. If a unit suffices, don't reach for a component test. Service constructors accept repository interfaces (not concrete structs) to enable unit mocking without a database.
+
 ## Artifact Layout
 
 - **CONSTITUTION.md**: Project root

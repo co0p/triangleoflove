@@ -45,9 +45,6 @@ func main() {
 		log.Fatalf("failed to connect to db: %v", err)
 	}
 
-	repo := repository.NewRoundtripRepository(dbConn)
-	roundtripService := service.NewRoundtripService(repo)
-
 	accountRepo := repository.NewAccountRepository(dbConn)
 	authService := service.NewAuthService(accountRepo)
 	healthService := service.NewHealthService(dbConn)
@@ -71,22 +68,6 @@ func main() {
 
 	mux.HandleFunc("/api/v1/status", func(w http.ResponseWriter, _ *http.Request) {
 		writeJSON(w, http.StatusOK, statusResponse{Status: "ok", Code: http.StatusOK})
-	})
-
-	mux.HandleFunc("/api/v1/demo/roundtrip", func(w http.ResponseWriter, r *http.Request) {
-		if r.Method != http.MethodPost {
-			writeJSON(w, http.StatusMethodNotAllowed, map[string]string{"error": "method not allowed"})
-			return
-		}
-
-		result, err := roundtripService.Execute(r.Context())
-		if err != nil {
-			log.Printf("roundtrip execution failed: %v", err)
-			writeJSON(w, http.StatusInternalServerError, map[string]string{"error": "internal server error"})
-			return
-		}
-
-		writeJSON(w, http.StatusOK, result)
 	})
 
 	mux.HandleFunc("/api/v1/auth/login", func(w http.ResponseWriter, r *http.Request) {

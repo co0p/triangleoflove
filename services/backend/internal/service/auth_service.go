@@ -13,12 +13,18 @@ import (
 // ErrInvalidCredentials is returned when email/password do not match.
 var ErrInvalidCredentials = errors.New("invalid credentials")
 
-// AuthService handles login and profile retrieval.
-type AuthService struct {
-	accounts *repository.AccountRepository
+// AccountRepo is the storage interface required by AuthService.
+type AccountRepo interface {
+	FindByEmail(ctx context.Context, email string) (repository.Account, error)
+	FindByID(ctx context.Context, id string) (repository.Account, error)
 }
 
-func NewAuthService(accounts *repository.AccountRepository) *AuthService {
+// AuthService handles login and profile retrieval.
+type AuthService struct {
+	accounts AccountRepo
+}
+
+func NewAuthService(accounts AccountRepo) *AuthService {
 	return &AuthService{accounts: accounts}
 }
 

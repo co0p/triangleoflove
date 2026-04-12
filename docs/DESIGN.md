@@ -262,5 +262,30 @@ Backend notes:
 | Date | Increment | Changes |
 |------|-----------|---------|
 | 2026-04-09 | Couple Pairing | Handler struct pattern, repository split by aggregate, `.page` layout utility, seed data helper module |
+| 2026-04-12 | Apply the Test Pyramid | Vue component test patterns for router-using views, mock reset discipline |
+
+### Vue Component Tests — Router and Mock Reset
+
+- **What**: Views that call `useRouter()` require `vi.mock('vue-router', ...)` at the module level and a `RouterLink` stub via `global.stubs`. `vi.clearAllMocks()` clears call history but does **not** reset `mockResolvedValue` — default return values must always be re-applied in `beforeEach`.
+- **Why it emerged**: `DashboardView.spec.js` — mock state from the `GivenPartnerName` test leaked into the `GivenNoPartner` test when relying on `clearAllMocks()` alone.
+- **Where used**: `services/frontend/src/views/DashboardView.spec.js`
+- **Pattern**:
+  ```js
+  vi.mock('vue-router', () => ({
+    useRouter: vi.fn().mockReturnValue({ push: vi.fn() }),
+  }));
+
+  const stubs = {
+    NavBar: true,
+    RouterLink: { template: '<a><slot /></a>' },
+  };
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    someApi.fn.mockResolvedValue(defaultValue); // explicit reset required
+  });
+
+  mount(MyView, { global: { stubs } });
+  ```
 
 ---
