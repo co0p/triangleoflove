@@ -39,7 +39,9 @@ func (m *mockInviteCodeRepo) ExistsCoupleByAccountID(_ context.Context, _ string
 
 // mockCoupleRepo implements service.CoupleRepo.
 type mockCoupleRepo struct {
-	coupled bool
+	coupled      bool
+	unpairCalled bool
+	unpairErr    error
 }
 
 func (m *mockCoupleRepo) Save(_ context.Context, _, _ string) error {
@@ -49,6 +51,11 @@ func (m *mockCoupleRepo) Save(_ context.Context, _, _ string) error {
 
 func (m *mockCoupleRepo) FindByAccountID(_ context.Context, _ string) (domain.CoupleSummary, error) {
 	return domain.CoupleSummary{}, domain.ErrNotFound
+}
+
+func (m *mockCoupleRepo) Unpair(_ context.Context, _ string) error {
+	m.unpairCalled = true
+	return m.unpairErr
 }
 
 func TestPairingService_Connect_GivenInvalidCode_ThenReturnsErrCodeNotFound(t *testing.T) {
@@ -105,6 +112,36 @@ func TestPairingService_Connect_GivenOwnCode_ThenReturnsErrCodeNotFound(t *testi
 
 	if !errors.Is(err, service.ErrCodeNotFound) {
 		t.Fatalf("expected ErrCodeNotFound for self-pairing, got %v", err)
+	}
+}
+
+func TestUnpairService_GivenPairedCouple_WhenUnpaired_ThenRecordRetainedWithEndedOn(t *testing.T) {
+	couple := &mockCoupleRepo{}
+	svc := service.NewPairingService(&mockInviteCodeRepo{paired: true}, couple)
+
+	err := svc.Unpair(context.Background(), "account-123")
+
+	if err != nil {
+		t.Fatalf("expected nil, got %v", err)
+	}
+	if !couple.unpairCalled {
+		t.Fatal("expected repo Unpair to be called")
+	}
+}
+
+func TestGetCoupleStatus_GivenEndedCouple_WhenCalled_ThenReturnsPairedFalse(t *testing.T) {
+	// mockCoupleRepo.FindByAccountID returns ErrNotFound, simulating the
+	// ended_on IS NULL filter excluding the ended couple from the result set.
+	couple := &mockCoupleRepo{}
+	svc := service.NewPairingService(&mockInviteCodeRepo{}, couple)
+
+	status, err := svc.GetCoupleStatus(context.Background(), "account-123")
+
+	if err != nil {
+		t.Fatalf("expected nil, got %v", err)
+	}
+	if status.Paired {
+		t.Fatal("expected paired=false for ended couple")
 	}
 }
 

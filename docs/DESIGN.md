@@ -263,6 +263,13 @@ Backend notes:
 |------|-----------|---------|
 | 2026-04-09 | Couple Pairing | Handler struct pattern, repository split by aggregate, `.page` layout utility, seed data helper module |
 | 2026-04-12 | Apply the Test Pyramid | Vue component test patterns for router-using views, mock reset discipline |
+| 2026-04-13 | Unpair from couple | Destructive-action confirmation modal pattern |
+
+### Destructive-Action Confirmation Modal
+
+- **What**: A full-viewport overlay (`.modal-overlay`) containing a card (`.modal-card`) with a question and two action buttons (`.modal-actions`). Used before any irreversible user action.
+- **Why it emerged**: The Unpair action is unilateral and permanent; TDD of `PairingView.vue` drove a dedicated confirmation step before the API call.
+- **Where used**: `services/frontend/src/views/PairingView.vue`; classes in `services/frontend/src/assets/library.css`.
 
 ### Vue Component Tests — Router and Mock Reset
 

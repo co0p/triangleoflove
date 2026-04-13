@@ -55,11 +55,11 @@ func (r *PairingRepository) FindByInviteCode(ctx context.Context, code domain.In
 	return accountID, err
 }
 
-// ExistsCoupleByAccountID returns true if the accountID appears in any couple row.
+// ExistsCoupleByAccountID returns true if the accountID appears in any active couple row.
 func (r *PairingRepository) ExistsCoupleByAccountID(ctx context.Context, accountID string) (bool, error) {
 	var count int
 	err := r.db.QueryRowContext(ctx,
-		`SELECT COUNT(*) FROM couples WHERE account_id_a = $1 OR account_id_b = $1`,
+		`SELECT COUNT(*) FROM couples WHERE (account_id_a = $1 OR account_id_b = $1) AND ended_on IS NULL`,
 		accountID,
 	).Scan(&count)
 	return count > 0, err

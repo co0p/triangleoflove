@@ -11,6 +11,7 @@ CREATE TABLE couples (
     account_id_a UUID NOT NULL REFERENCES accounts(id),
     account_id_b UUID NOT NULL REFERENCES accounts(id),
     formed_on TIMESTAMPTZ NOT NULL DEFAULT now(),
+    ended_on TIMESTAMPTZ NULL,
     UNIQUE (account_id_a, account_id_b)
 );
 

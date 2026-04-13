@@ -16,6 +16,9 @@ var ErrCodeNotFound = errors.New("invite code not found")
 // ErrAlreadyPaired is returned when either party is already in a couple.
 var ErrAlreadyPaired = errors.New("already paired")
 
+// ErrNotPaired is returned when an Unpair is attempted but the account has no active couple.
+var ErrNotPaired = errors.New("not paired")
+
 const codeCharset = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 
 // InviteCodeRepo is the storage interface for invite code operations.
@@ -30,6 +33,7 @@ type InviteCodeRepo interface {
 type CoupleRepo interface {
 	Save(ctx context.Context, accountIDA, accountIDB string) error
 	FindByAccountID(ctx context.Context, accountID string) (domain.CoupleSummary, error)
+	Unpair(ctx context.Context, accountID string) error
 }
 
 // CoupleStatus describes whether the caller is paired and, if so, with whom.
@@ -106,6 +110,16 @@ func (s *PairingService) Connect(ctx context.Context, submitterID, partnerCode s
 	}
 
 	_, err = s.issueNewCode(ctx, partnerID)
+	return err
+}
+
+// Unpair ends the active couple for accountID by setting ended_on on the couple record.
+// Returns ErrNotPaired if accountID is not in any active couple.
+func (s *PairingService) Unpair(ctx context.Context, accountID string) error {
+	err := s.couple.Unpair(ctx, accountID)
+	if errors.Is(err, domain.ErrNotFound) {
+		return ErrNotPaired
+	}
 	return err
 }
 

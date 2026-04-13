@@ -106,6 +106,7 @@ func main() {
 	mux.Handle("/api/v1/pairing/regenerate", web.Middleware(http.HandlerFunc(ph.Regenerate)))
 	mux.Handle("/api/v1/pairing/connect", web.Middleware(http.HandlerFunc(ph.Connect)))
 	mux.Handle("/api/v1/couples/me", web.Middleware(http.HandlerFunc(ph.GetCoupleStatus)))
+	mux.Handle("DELETE /api/v1/couples/me", web.Middleware(http.HandlerFunc(ph.Unpair)))
 
 	mux.Handle("/api/v1/users/me", web.Middleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodGet {

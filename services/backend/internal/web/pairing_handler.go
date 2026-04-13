@@ -83,6 +83,26 @@ func (h *PairingHandler) Connect(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, map[string]string{"status": "connected"})
 }
 
+// Unpair handles DELETE /api/v1/couples/me.
+func (h *PairingHandler) Unpair(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodDelete {
+		writeJSON(w, http.StatusMethodNotAllowed, map[string]string{"error": "method not allowed"})
+		return
+	}
+	accountID, _ := r.Context().Value(AccountIDKey).(string)
+	err := h.svc.Unpair(r.Context(), accountID)
+	if errors.Is(err, service.ErrNotPaired) {
+		writeJSON(w, http.StatusConflict, map[string]string{"error": "not paired"})
+		return
+	}
+	if err != nil {
+		log.Printf("unpair failed: %v", err)
+		writeJSON(w, http.StatusInternalServerError, map[string]string{"error": "internal server error"})
+		return
+	}
+	writeJSON(w, http.StatusOK, map[string]string{"status": "unpaired"})
+}
+
 // GetCoupleStatus handles GET /api/v1/couples/me.
 func (h *PairingHandler) GetCoupleStatus(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {

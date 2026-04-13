@@ -20,9 +20,12 @@
 | Check-in Date | The calendar date (UTC) for which a Check-in is recorded; defaults to today when opening the page. One Check-in per Account per date. |
 | Save Check-in | The action of persisting a Check-in (create or update) for the current Check-in Date. Lazy: no record is written until this action is taken. Upsert semantics — no separate create vs update exposed in the UI or API. |
 | Invite Code | A 6-character uppercase alphanumeric code generated for an Account, used to initiate pairing. Ephemeral — replaced after a successful pairing or explicit regeneration. Stored on the Account. |
-| Couple | A permanent bond between exactly two Accounts, formed when one Account submits the other's Invite Code. Owns the formation date and future pair-scoped data. |
+| Couple | A bond between exactly two Accounts, carrying a formation date and optionally an end date. An Active Couple has no end date; an Ended Couple does. |
 | Pairing | The act of two Accounts forming a Couple via Invite Code exchange. One-time per Couple formation. |
-| Paired | The state of an Account that belongs to a Couple. Derived from Couple membership. |
+| Paired | The state of an Account that belongs to an Active Couple. Derived from Couple membership. |
+| Active Couple | A Couple whose `ended_on` is null. Determines the Paired state for both members. Derived from the `couples` table; not a separate record type. |
+| Ended Couple | A Couple whose `ended_on` is set. Both members are considered unpaired but the record is retained for relational history. |
+| Unpair | The act of one Account ending an Active Couple. Unilateral — no partner consent required. Writes `ended_on` to the Couple record; does not delete it. |
 | ErrNotFound | A single shared sentinel error (`domain.ErrNotFound`) returned by any repository method when the requested record does not exist. Replaces per-entity variants. Callers use `errors.Is(err, domain.ErrNotFound)` to detect absence. |
 
 ## Bounded Contexts
@@ -43,9 +46,9 @@
 - **Relationships**: Downstream of Auth — requires a valid Token (Account identity) to record or retrieve a Check-in. Entered from the Home context.
 
 ### Pairing
-- **Responsibility**: Manages Invite Code generation and regeneration; forms Couples between Accounts; serves Couple status (partner first name, paired-since date) to authenticated Accounts.
-- **Key concepts**: Invite Code, Couple, Pairing, Paired
-- **Relationships**: Reads Account identity from Auth. Owns the `couples` table and the `invite_code` column on `accounts`.
+- **Responsibility**: Manages Invite Code generation and regeneration; forms and soft-ends Couples between Accounts; serves Couple status (partner first name, paired-since date, and active/ended state) to authenticated Accounts.
+- **Key concepts**: Invite Code, Couple, Active Couple, Ended Couple, Pairing, Paired, Unpair
+- **Relationships**: Reads Account identity from Auth. Owns the `couples` table (including the `ended_on` column) and the `invite_code` column on `accounts`.
 
 ## Aggregates
 
@@ -60,9 +63,9 @@ Protects the invariant that at most one Check-in exists per Account per date. Ow
 Stored in the `checkins` table. Written lazily — no row exists until Save Check-in is triggered.
 
 ### Couple
-Protects the invariant that exactly two distinct Accounts form a Couple and that each Account belongs to at most one Couple. Owns the formation date and will own future pair-scoped fields.
+Protects two invariants — (1) a Couple can only be formed between two distinct Accounts that are not already in an Active Couple; (2) `Unpair` can only be applied to an Active Couple (`ended_on IS NULL`). Attempting to unpair an Ended Couple is rejected.
 
-Stored in the `couples` table (id UUID, account_id_a, account_id_b, formed_on TIMESTAMPTZ). The Invite Code is stored as `invite_code` on the `accounts` table — it is ephemeral and belongs to the Account, not the Couple.
+Stored in the `couples` table (id UUID, account_id_a, account_id_b, formed_on TIMESTAMPTZ, ended_on TIMESTAMPTZ NULL). The Invite Code is stored as `invite_code` on the `accounts` table — it is ephemeral and belongs to the Account, not the Couple.
 
 ## Value Objects
 
@@ -81,3 +84,4 @@ Stored in the `couples` table (id UUID, account_id_a, account_id_b, formed_on TI
 - **AuthenticationFailed**: Emitted when Credentials do not match. Carries no Token.
 - **CheckInSaved**: Emitted when a Check-in is created or updated. Carries `accountId`, `date`, and `savedAt`.
 - **CoupleFormed**: Emitted when two Accounts successfully pair. Carries `accountIdA`, `accountIdB`, `formedOn`.
+- **CoupleEnded**: Emitted when `Unpair` sets `ended_on`. Carries `coupleID`, `accountIDA`, `accountIDB`, and `endedOn`.

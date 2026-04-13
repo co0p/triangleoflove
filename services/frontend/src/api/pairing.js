@@ -28,6 +28,16 @@ export async function regeneratePairing() {
   return response.json();
 }
 
+export async function unpairCouple() {
+  const token = localStorage.getItem('token');
+  const response = await fetch(`${BASE_URL}/api/v1/couples/me`, {
+    method: 'DELETE',
+    headers: { Authorization: `Bearer ${token}` }
+  });
+  if (!response.ok) throw new Error('failed to unpair');
+  return response.json();
+}
+
 export async function connectPairing(inviteCode) {
   const token = localStorage.getItem('token');
   const response = await fetch(`${BASE_URL}/api/v1/pairing/connect`, {

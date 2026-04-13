@@ -7,6 +7,7 @@
       <div v-if="pairedWith" data-testid="paired-status">
         <p>You are paired with <span data-testid="partner-name">{{ pairedWith }}</span></p>
         <p data-testid="paired-since" class="paired-since">Since {{ pairedSinceFormatted }}</p>
+        <button data-testid="unpair-button" class="btn btn-danger" @click="openUnpairModal">Unpair</button>
       </div>
 
       <template v-else>
@@ -40,6 +41,17 @@
           <p v-if="connectSuccess" data-testid="connect-success" class="success-text">Connected!</p>
         </div>
       </template>
+
+      <div v-if="showUnpairModal" data-testid="unpair-modal" class="modal-overlay">
+        <div class="modal-card">
+          <p class="modal-question">Are you sure you want to unpair from {{ pairedWith }}?</p>
+          <div class="modal-actions">
+            <button data-testid="unpair-modal-confirm" class="btn btn-danger" @click="confirmUnpair">Yes</button>
+            <button data-testid="unpair-modal-cancel" class="btn btn-secondary" @click="closeUnpairModal">Cancel</button>
+          </div>
+          <p v-if="unpairError" role="alert" class="error-text">{{ unpairError }}</p>
+        </div>
+      </div>
     </main>
   </div>
 </template>
@@ -47,7 +59,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-import { getPairing, getCoupleStatus, regeneratePairing, connectPairing } from '../api/pairing.js';
+import { getPairing, getCoupleStatus, regeneratePairing, connectPairing, unpairCouple } from '../api/pairing.js';
 import NavBar from '../components/NavBar.vue';
 
 const inviteCode = ref('');
@@ -56,6 +68,8 @@ const connectError = ref('');
 const connectSuccess = ref(false);
 const pairedWith = ref('');
 const pairedSince = ref('');
+const showUnpairModal = ref(false);
+const unpairError = ref('');
 const router = useRouter();
 
 const pairedSinceFormatted = computed(() => {
@@ -92,6 +106,30 @@ async function connect() {
     connectSuccess.value = true;
   } catch (err) {
     connectError.value = err.message;
+  }
+}
+
+function openUnpairModal() {
+  unpairError.value = '';
+  showUnpairModal.value = true;
+}
+
+function closeUnpairModal() {
+  showUnpairModal.value = false;
+}
+
+async function confirmUnpair() {
+  unpairError.value = '';
+  try {
+    await unpairCouple();
+    pairedWith.value = '';
+    pairedSince.value = '';
+    showUnpairModal.value = false;
+    const data = await getPairing();
+    inviteCode.value = data.invite_code;
+  } catch {
+    unpairError.value = 'Failed to unpair. Please try again.';
+    showUnpairModal.value = false;
   }
 }
 </script>

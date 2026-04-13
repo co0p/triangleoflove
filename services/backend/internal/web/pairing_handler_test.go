@@ -45,8 +45,9 @@ func (m *mockInviteCodeRepo) ExistsCoupleByAccountID(_ context.Context, _ string
 
 // mockCoupleRepo implements service.CoupleRepo.
 type mockCoupleRepo struct {
-	coupled bool
-	summary *domain.CoupleSummary
+	coupled   bool
+	summary   *domain.CoupleSummary
+	unpairErr error
 }
 
 func (m *mockCoupleRepo) Save(_ context.Context, _, _ string) error {
@@ -59,6 +60,10 @@ func (m *mockCoupleRepo) FindByAccountID(_ context.Context, _ string) (domain.Co
 		return domain.CoupleSummary{}, domain.ErrNotFound
 	}
 	return *m.summary, nil
+}
+
+func (m *mockCoupleRepo) Unpair(_ context.Context, _ string) error {
+	return m.unpairErr
 }
 
 func TestPairingHandler_GivenNoStoredCode_WhenGET_ThenReturns6CharCode(t *testing.T) {
@@ -220,6 +225,39 @@ func TestPairingHandler_GivenValidCode_WhenPOSTConnect_ThenReturns200(t *testing
 
 	if rec.Code != http.StatusOK {
 		t.Fatalf("expected 200, got %d: %s", rec.Code, rec.Body.String())
+	}
+}
+
+func TestUnpairHandler_GivenNoAuth_WhenDELETE_ThenReturns401(t *testing.T) {
+	svc := service.NewPairingService(&mockInviteCodeRepo{}, &mockCoupleRepo{})
+	ph := web.NewPairingHandler(svc)
+	handler := web.Middleware(http.HandlerFunc(ph.Unpair))
+
+	req := httptest.NewRequest(http.MethodDelete, "/api/v1/couples/me", nil)
+	// No Authorization header.
+	rec := httptest.NewRecorder()
+	handler.ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusUnauthorized {
+		t.Fatalf("expected 401, got %d: %s", rec.Code, rec.Body.String())
+	}
+}
+
+func TestUnpairHandler_GivenNotPaired_WhenDELETE_ThenReturns409(t *testing.T) {
+	couple := &mockCoupleRepo{unpairErr: service.ErrNotPaired}
+	svc := service.NewPairingService(&mockInviteCodeRepo{}, couple)
+	ph := web.NewPairingHandler(svc)
+	handler := web.Middleware(http.HandlerFunc(ph.Unpair))
+
+	token, _ := auth.SignToken("account-123")
+	req := httptest.NewRequest(http.MethodDelete, "/api/v1/couples/me", nil)
+	req.Header.Set("Authorization", "Bearer "+token)
+
+	rec := httptest.NewRecorder()
+	handler.ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusConflict {
+		t.Fatalf("expected 409, got %d: %s", rec.Code, rec.Body.String())
 	}
 }
 

@@ -62,3 +62,22 @@ test('GivenPaired_WhenVisitsDashboard_ThenShowsPairingStatus', async ({ page }) 
   await expect(page.getByTestId('pairing-status')).toBeVisible();
   await expect(page.getByTestId('pairing-status')).toContainText('Jordan');
 });
+
+test('GivenPaired_WhenUnpairConfirmed_ThenInviteCodeVisible', async ({ page }) => {
+  await loginViaUI(page);
+  await expect(page).toHaveURL(/\/dashboard/);
+  await page.goto(`${FRONTEND_BASE_URL}/pairing`);
+
+  // Confirm paired state is shown before unpairing.
+  await expect(page.getByTestId('unpair-button')).toBeVisible();
+
+  // Open confirmation modal and confirm.
+  await page.getByTestId('unpair-button').click();
+  await expect(page.getByTestId('unpair-modal')).toBeVisible();
+  await page.getByTestId('unpair-modal-confirm').click();
+
+  // After unpairing the invite code flow must be shown.
+  await expect(page.getByTestId('invite-code')).toBeVisible();
+  await expect(page.getByTestId('partner-name')).not.toBeVisible();
+  await expect(page.getByTestId('unpair-button')).not.toBeVisible();
+});

@@ -26,7 +26,8 @@ func (r *CoupleRepository) Save(ctx context.Context, accountIDA, accountIDB stri
 	return err
 }
 
-// FindByAccountID returns the couple summary for the given account, or domain.ErrNotFound when unpaired.
+// FindByAccountID returns the couple summary for the given account's active couple,
+// or domain.ErrNotFound when unpaired or the couple has ended.
 func (r *CoupleRepository) FindByAccountID(ctx context.Context, accountID string) (domain.CoupleSummary, error) {
 	var s domain.CoupleSummary
 	err := r.db.QueryRowContext(ctx, `
@@ -36,7 +37,8 @@ func (r *CoupleRepository) FindByAccountID(ctx context.Context, accountID string
 			WHEN c.account_id_a = $1 THEN c.account_id_b
 			ELSE c.account_id_a
 		END
-		WHERE c.account_id_a = $1 OR c.account_id_b = $1
+		WHERE (c.account_id_a = $1 OR c.account_id_b = $1)
+		  AND c.ended_on IS NULL
 	`, accountID).Scan(&s.PartnerFirstName, &s.FormedOn)
 	if errors.Is(err, sql.ErrNoRows) {
 		return domain.CoupleSummary{}, domain.ErrNotFound
@@ -45,4 +47,26 @@ func (r *CoupleRepository) FindByAccountID(ctx context.Context, accountID string
 		return domain.CoupleSummary{}, err
 	}
 	return s, nil
+}
+
+// Unpair sets ended_on on the active couple record for accountID.
+// Returns domain.ErrNotFound if accountID has no active couple.
+func (r *CoupleRepository) Unpair(ctx context.Context, accountID string) error {
+	res, err := r.db.ExecContext(ctx, `
+		UPDATE couples
+		SET ended_on = now()
+		WHERE (account_id_a = $1 OR account_id_b = $1)
+		  AND ended_on IS NULL
+	`, accountID)
+	if err != nil {
+		return err
+	}
+	n, err := res.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if n == 0 {
+		return domain.ErrNotFound
+	}
+	return nil
 }
