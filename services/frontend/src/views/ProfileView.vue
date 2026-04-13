@@ -1,6 +1,5 @@
 <template>
   <div class="page">
-    <NavBar :firstName="firstName" />
     <main class="container section">
       <h1>Profile</h1>
 
@@ -52,17 +51,19 @@
       <!-- Account card -->
       <div class="card profile-card">
         <h2>Account</h2>
-        <div class="input-group">
-          <label class="input-label" for="email">Email</label>
-          <input
-            id="email"
-            type="email"
-            class="input"
-            :value="email"
-            readonly
-          />
+        <div class="account-fields">
+          <div class="input-group">
+            <label class="input-label" for="email">Email</label>
+            <input
+              id="email"
+              type="email"
+              class="input"
+              :value="email"
+              readonly
+            />
+          </div>
+          <button class="btn btn-secondary" @click="logout">Log out</button>
         </div>
-        <button class="btn btn-secondary" @click="logout">Log out</button>
       </div>
     </main>
   </div>
@@ -71,13 +72,11 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-import NavBar from '../components/NavBar.vue';
 import { getMe } from '../api/users.js';
 import { changePassword } from '../api/auth.js';
 
 const router = useRouter();
 
-const firstName = ref('');
 const email = ref('');
 const currentPassword = ref('');
 const newPassword = ref('');
@@ -89,7 +88,6 @@ const passwordSuccess = ref('');
 onMounted(async () => {
   try {
     const profile = await getMe();
-    firstName.value = profile.firstName;
     email.value = profile.email;
   } catch {
     router.push('/login');
@@ -130,7 +128,8 @@ function logout() {
   margin-top: var(--space-6);
 }
 
-.profile-card form {
+.profile-card form,
+.account-fields {
   display: flex;
   flex-direction: column;
   gap: var(--space-4);

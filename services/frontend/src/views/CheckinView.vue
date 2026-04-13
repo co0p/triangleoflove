@@ -1,6 +1,5 @@
 <template>
   <div class="checkin-page">
-    <NavBar :firstName="firstName" />
     <main class="container section">
       <h1>Daily check-in</h1>
       <p class="text-muted">30–60 seconds · private note optional</p>
@@ -67,11 +66,7 @@
 
 <script setup>
 import { ref, reactive, onMounted } from 'vue';
-import NavBar from '../components/NavBar.vue';
 import { getTodayCheckin, saveTodayCheckin } from '../api/checkin.js';
-
-const firstName = '';
-
 const dimensions = [
   { key: 'felt_close',            label: 'Felt close today',          description: 'Did you feel emotionally connected?' },
   { key: 'positive_energy',       label: 'Positive energy / fun',     description: 'Was there lightness or joy between you?' },

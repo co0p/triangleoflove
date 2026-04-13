@@ -1,6 +1,5 @@
 <template>
   <div class="page">
-    <NavBar />
     <main class="container section">
       <h1>Pairing</h1>
 
@@ -62,7 +61,6 @@
 import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { getPairing, getCoupleStatus, regeneratePairing, connectPairing, unpairCouple } from '../api/pairing.js';
-import NavBar from '../components/NavBar.vue';
 
 const inviteCode = ref('');
 const partnerCode = ref('');

@@ -1,6 +1,5 @@
 <template>
   <div class="page">
-    <NavBar :firstName="firstName" />
     <header class="container section">
       <h1>Welcome back, {{ firstName }}</h1>
     </header>
@@ -41,7 +40,6 @@ import { useRouter } from 'vue-router';
 import { getMe } from '../api/users.js';
 import { getCoupleStatus } from '../api/pairing.js';
 import { getTodayCheckin } from '../api/checkin.js';
-import NavBar from '../components/NavBar.vue';
 
 const firstName = ref('');
 const partnerName = ref('');
