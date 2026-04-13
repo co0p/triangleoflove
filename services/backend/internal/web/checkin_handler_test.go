@@ -9,20 +9,20 @@ import (
 	"testing"
 
 	"triangleoflove/backend/internal/auth"
-	"triangleoflove/backend/internal/repository"
+	"triangleoflove/backend/internal/domain"
 	"triangleoflove/backend/internal/service"
 	"triangleoflove/backend/internal/web"
 )
 
 type mockCheckinRepo struct {
-	saved repository.Checkin
+	saved domain.Checkin
 }
 
-func (m *mockCheckinRepo) FindToday(_ context.Context, _ string) (repository.Checkin, error) {
-	return repository.Checkin{}, repository.ErrCheckinNotFound
+func (m *mockCheckinRepo) FindByAccountAndDate(_ context.Context, _ string) (domain.Checkin, error) {
+	return domain.Checkin{}, domain.ErrNotFound
 }
 
-func (m *mockCheckinRepo) Save(_ context.Context, _ string, c repository.Checkin) (repository.Checkin, error) {
+func (m *mockCheckinRepo) Save(_ context.Context, _ string, c domain.Checkin) (domain.Checkin, error) {
 	m.saved = c
 	return c, nil
 }
@@ -76,7 +76,7 @@ func TestCheckinHandler_GivenMalformedBody_WhenPUT_ThenReturns400(t *testing.T) 
 
 func TestCheckinHandler_GivenValidPUT_ThenSavesBody(t *testing.T) {
 	val := 3
-	payload := repository.Checkin{FeltClose: &val}
+	payload := domain.Checkin{FeltClose: &val}
 
 	mock := &mockCheckinRepo{}
 	svc := service.NewCheckinService(mock)

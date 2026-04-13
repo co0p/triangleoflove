@@ -19,7 +19,7 @@ This document defines binding engineering and delivery constraints for the repos
 - Enforcement signal: PR review blocks feature code that crosses these boundaries.
 
 ### Error Handling
-- Default: Backend services return typed domain errors.
+- Default: Backend services return typed domain errors. All model types and the shared `ErrNotFound` sentinel live in `internal/domain`. Repository methods signal record absence by returning `domain.ErrNotFound`; they do not return per-entity error variants or boolean found-flags.
 - Default: HTTP handlers translate domain errors into HTTP responses.
 - Default: Unexpected errors return a generic HTTP 500 response with no internal details.
 - Exceptions: None for production paths.
@@ -35,6 +35,7 @@ This document defines binding engineering and delivery constraints for the repos
 - Default: External systems are accessed through backend adapters/repositories, not directly from handlers or domain logic.
 - Default: Frontend uses typed API contracts/client wrappers, not ad-hoc request and response shapes.
 - Default: The frontend Vite dev server proxies `/api` to the backend via the `BACKEND_URL` environment variable (defaults to `http://backend:8080`). This is required because the frontend Dockerfile runs the Vite dev server, not a static build.
+- Default: Repository method names follow Spring Data conventions — `FindBy<Field>` for queries, `Save` for create/update, `ExistsBy<Field>` for existence checks. No `Get*`, `Set*`, or `Create*` prefixes. See `docs/adr/2026-04-13-standardize-repository-pattern.md`.
 - Exceptions: Direct dependency calls are allowed only inside dedicated adapter modules.
 - Enforcement signal: Service and domain layers must not import transport or driver packages directly.
 

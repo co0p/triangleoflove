@@ -7,20 +7,20 @@ import (
 
 	"golang.org/x/crypto/bcrypt"
 
-	"triangleoflove/backend/internal/repository"
+	"triangleoflove/backend/internal/domain"
 	"triangleoflove/backend/internal/service"
 )
 
 type mockAccountRepo struct {
-	account repository.Account
+	account domain.Account
 	err     error
 }
 
-func (m *mockAccountRepo) FindByEmail(_ context.Context, _ string) (repository.Account, error) {
+func (m *mockAccountRepo) FindByEmail(_ context.Context, _ string) (domain.Account, error) {
 	return m.account, m.err
 }
 
-func (m *mockAccountRepo) FindByID(_ context.Context, _ string) (repository.Account, error) {
+func (m *mockAccountRepo) FindByID(_ context.Context, _ string) (domain.Account, error) {
 	return m.account, m.err
 }
 
@@ -35,7 +35,7 @@ func hashedPassword(t *testing.T, plain string) string {
 
 func TestAuthService_GivenCorrectPassword_WhenLogin_ThenReturnsToken(t *testing.T) {
 	repo := &mockAccountRepo{
-		account: repository.Account{
+		account: domain.Account{
 			ID:             "acc-1",
 			Email:          "alice@example.com",
 			HashedPassword: hashedPassword(t, "correct-pass"),
@@ -56,7 +56,7 @@ func TestAuthService_GivenCorrectPassword_WhenLogin_ThenReturnsToken(t *testing.
 
 func TestAuthService_GivenWrongPassword_WhenLogin_ThenReturnsError(t *testing.T) {
 	repo := &mockAccountRepo{
-		account: repository.Account{
+		account: domain.Account{
 			ID:             "acc-1",
 			Email:          "alice@example.com",
 			HashedPassword: hashedPassword(t, "correct-pass"),
@@ -73,7 +73,7 @@ func TestAuthService_GivenWrongPassword_WhenLogin_ThenReturnsError(t *testing.T)
 }
 
 func TestAuthService_GivenUnknownEmail_WhenLogin_ThenReturnsError(t *testing.T) {
-	repo := &mockAccountRepo{err: repository.ErrAccountNotFound}
+	repo := &mockAccountRepo{err: domain.ErrNotFound}
 	svc := service.NewAuthService(repo)
 
 	_, err := svc.Login(context.Background(), "nobody@example.com", "any-pass")

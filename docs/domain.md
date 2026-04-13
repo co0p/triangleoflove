@@ -23,6 +23,7 @@
 | Couple | A permanent bond between exactly two Accounts, formed when one Account submits the other's Invite Code. Owns the formation date and future pair-scoped data. |
 | Pairing | The act of two Accounts forming a Couple via Invite Code exchange. One-time per Couple formation. |
 | Paired | The state of an Account that belongs to a Couple. Derived from Couple membership. |
+| ErrNotFound | A single shared sentinel error (`domain.ErrNotFound`) returned by any repository method when the requested record does not exist. Replaces per-entity variants. Callers use `errors.Is(err, domain.ErrNotFound)` to detect absence. |
 
 ## Bounded Contexts
 
@@ -71,7 +72,8 @@ Stored in the `couples` table (id UUID, account_id_a, account_id_b, formed_on TI
 - **Token**: A signed JWT string with an issuance timestamp. The only Auth artifact that crosses into the Home context.
 - **Rating**: An integer. Valid saved values are 1–10. `-1` means the user has not yet set a value (Unset Rating). Compared by value; no identity.
 - **Note**: A string, may be empty. No identity. Compared by value.
-- **Invite Code**: A 6-character uppercase alphanumeric string. Generated randomly; no identity. Compared by value. Replaced (not mutated) on pairing or explicit regeneration.
+- **InviteCode**: A 6-character uppercase alphanumeric string. Implemented as `type InviteCode string` — a typed string to prevent raw string substitution at repository boundaries. Generated randomly; no identity. Compared by value. Replaced (not mutated) on pairing or explicit regeneration.
+- **CoupleSummary**: A read model produced by the Couple aggregate. Holds `PartnerFirstName` (string) and `FormedOn` (UTC timestamp). No identity; compared by value. Never mutated — always replaced by a fresh query.
 
 ## Domain Events
 

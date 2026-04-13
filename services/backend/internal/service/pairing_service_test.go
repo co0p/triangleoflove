@@ -6,7 +6,7 @@ import (
 	"regexp"
 	"testing"
 
-	"triangleoflove/backend/internal/repository"
+	"triangleoflove/backend/internal/domain"
 	"triangleoflove/backend/internal/service"
 )
 
@@ -17,23 +17,23 @@ type mockInviteCodeRepo struct {
 	paired    bool
 }
 
-func (m *mockInviteCodeRepo) GetCode(_ context.Context, _ string) (string, error) {
-	return m.code, nil
+func (m *mockInviteCodeRepo) FindInviteCodeByAccountID(_ context.Context, _ string) (domain.InviteCode, error) {
+	return domain.InviteCode(m.code), nil
 }
 
-func (m *mockInviteCodeRepo) SetCode(_ context.Context, _ string, code string) error {
-	m.code = code
+func (m *mockInviteCodeRepo) SaveInviteCode(_ context.Context, _ string, code domain.InviteCode) error {
+	m.code = string(code)
 	return nil
 }
 
-func (m *mockInviteCodeRepo) FindAccountByCode(_ context.Context, _ string) (string, error) {
+func (m *mockInviteCodeRepo) FindByInviteCode(_ context.Context, _ domain.InviteCode) (string, error) {
 	if m.partnerID == "" {
-		return "", repository.ErrCodeNotFound
+		return "", domain.ErrNotFound
 	}
 	return m.partnerID, nil
 }
 
-func (m *mockInviteCodeRepo) IsAccountPaired(_ context.Context, _ string) (bool, error) {
+func (m *mockInviteCodeRepo) ExistsCoupleByAccountID(_ context.Context, _ string) (bool, error) {
 	return m.paired, nil
 }
 
@@ -42,13 +42,13 @@ type mockCoupleRepo struct {
 	coupled bool
 }
 
-func (m *mockCoupleRepo) CreateCouple(_ context.Context, _, _ string) error {
+func (m *mockCoupleRepo) Save(_ context.Context, _, _ string) error {
 	m.coupled = true
 	return nil
 }
 
-func (m *mockCoupleRepo) GetCoupleSummary(_ context.Context, _ string) (repository.CoupleSummary, bool, error) {
-	return repository.CoupleSummary{}, false, nil
+func (m *mockCoupleRepo) FindByAccountID(_ context.Context, _ string) (domain.CoupleSummary, error) {
+	return domain.CoupleSummary{}, domain.ErrNotFound
 }
 
 func TestPairingService_Connect_GivenInvalidCode_ThenReturnsErrCodeNotFound(t *testing.T) {

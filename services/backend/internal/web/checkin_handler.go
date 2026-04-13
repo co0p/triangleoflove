@@ -6,7 +6,7 @@ import (
 	"log"
 	"net/http"
 
-	"triangleoflove/backend/internal/repository"
+	"triangleoflove/backend/internal/domain"
 	"triangleoflove/backend/internal/service"
 )
 
@@ -27,7 +27,7 @@ func NewCheckinHandler(svc *service.CheckinService) http.Handler {
 		switch r.Method {
 		case http.MethodGet:
 			c, err := svc.GetToday(r.Context(), accountID)
-			if errors.Is(err, repository.ErrCheckinNotFound) {
+			if errors.Is(err, domain.ErrNotFound) {
 				writeJSON(w, http.StatusNotFound, map[string]string{"error": "no check-in for today"})
 				return
 			}
@@ -39,7 +39,7 @@ func NewCheckinHandler(svc *service.CheckinService) http.Handler {
 			writeJSON(w, http.StatusOK, c)
 
 		case http.MethodPut:
-			var body repository.Checkin
+			var body domain.Checkin
 			if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
 				writeJSON(w, http.StatusBadRequest, map[string]string{"error": "invalid request"})
 				return

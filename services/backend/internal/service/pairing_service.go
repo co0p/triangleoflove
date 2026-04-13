@@ -7,7 +7,7 @@ import (
 	"math/big"
 	"time"
 
-	"triangleoflove/backend/internal/repository"
+	"triangleoflove/backend/internal/domain"
 )
 
 // ErrCodeNotFound is returned when the submitted invite code does not match any account.
@@ -20,16 +20,16 @@ const codeCharset = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 
 // InviteCodeRepo is the storage interface for invite code operations.
 type InviteCodeRepo interface {
-	GetCode(ctx context.Context, accountID string) (string, error)
-	SetCode(ctx context.Context, accountID, code string) error
-	FindAccountByCode(ctx context.Context, code string) (string, error)
-	IsAccountPaired(ctx context.Context, accountID string) (bool, error)
+	FindInviteCodeByAccountID(ctx context.Context, accountID string) (domain.InviteCode, error)
+	SaveInviteCode(ctx context.Context, accountID string, code domain.InviteCode) error
+	FindByInviteCode(ctx context.Context, code domain.InviteCode) (string, error)
+	ExistsCoupleByAccountID(ctx context.Context, accountID string) (bool, error)
 }
 
 // CoupleRepo is the storage interface for couple operations.
 type CoupleRepo interface {
-	CreateCouple(ctx context.Context, accountIDA, accountIDB string) error
-	GetCoupleSummary(ctx context.Context, accountID string) (repository.CoupleSummary, bool, error)
+	Save(ctx context.Context, accountIDA, accountIDB string) error
+	FindByAccountID(ctx context.Context, accountID string) (domain.CoupleSummary, error)
 }
 
 // CoupleStatus describes whether the caller is paired and, if so, with whom.
@@ -52,12 +52,12 @@ func NewPairingService(codes InviteCodeRepo, couple CoupleRepo) *PairingService 
 // GetOrCreateCode returns the caller's current invite code, generating and
 // persisting one if none exists yet.
 func (s *PairingService) GetOrCreateCode(ctx context.Context, accountID string) (string, error) {
-	code, err := s.codes.GetCode(ctx, accountID)
+	code, err := s.codes.FindInviteCodeByAccountID(ctx, accountID)
 	if err != nil {
 		return "", err
 	}
 	if code != "" {
-		return code, nil
+		return string(code), nil
 	}
 	return s.issueNewCode(ctx, accountID)
 }
@@ -73,8 +73,8 @@ func (s *PairingService) RegenerateCode(ctx context.Context, accountID string) (
 // ErrAlreadyPaired if either party is already in a couple.
 // After a successful pairing the partner's invite code is replaced.
 func (s *PairingService) Connect(ctx context.Context, submitterID, partnerCode string) error {
-	partnerID, err := s.codes.FindAccountByCode(ctx, partnerCode)
-	if errors.Is(err, repository.ErrCodeNotFound) {
+	partnerID, err := s.codes.FindByInviteCode(ctx, domain.InviteCode(partnerCode))
+	if errors.Is(err, domain.ErrNotFound) {
 		return ErrCodeNotFound
 	}
 	if err != nil {
@@ -85,7 +85,7 @@ func (s *PairingService) Connect(ctx context.Context, submitterID, partnerCode s
 		return ErrCodeNotFound
 	}
 
-	submitterPaired, err := s.codes.IsAccountPaired(ctx, submitterID)
+	submitterPaired, err := s.codes.ExistsCoupleByAccountID(ctx, submitterID)
 	if err != nil {
 		return err
 	}
@@ -93,7 +93,7 @@ func (s *PairingService) Connect(ctx context.Context, submitterID, partnerCode s
 		return ErrAlreadyPaired
 	}
 
-	partnerPaired, err := s.codes.IsAccountPaired(ctx, partnerID)
+	partnerPaired, err := s.codes.ExistsCoupleByAccountID(ctx, partnerID)
 	if err != nil {
 		return err
 	}
@@ -101,7 +101,7 @@ func (s *PairingService) Connect(ctx context.Context, submitterID, partnerCode s
 		return ErrAlreadyPaired
 	}
 
-	if err := s.couple.CreateCouple(ctx, submitterID, partnerID); err != nil {
+	if err := s.couple.Save(ctx, submitterID, partnerID); err != nil {
 		return err
 	}
 
@@ -114,7 +114,7 @@ func (s *PairingService) issueNewCode(ctx context.Context, accountID string) (st
 	if err != nil {
 		return "", err
 	}
-	if err := s.codes.SetCode(ctx, accountID, code); err != nil {
+	if err := s.codes.SaveInviteCode(ctx, accountID, domain.InviteCode(code)); err != nil {
 		return "", err
 	}
 	return code, nil
@@ -123,12 +123,12 @@ func (s *PairingService) issueNewCode(ctx context.Context, accountID string) (st
 // GetCoupleStatus returns whether the caller is paired and, if so, their partner's
 // first name and the date the couple formed.
 func (s *PairingService) GetCoupleStatus(ctx context.Context, accountID string) (CoupleStatus, error) {
-	summary, found, err := s.couple.GetCoupleSummary(ctx, accountID)
+	summary, err := s.couple.FindByAccountID(ctx, accountID)
+	if errors.Is(err, domain.ErrNotFound) {
+		return CoupleStatus{Paired: false}, nil
+	}
 	if err != nil {
 		return CoupleStatus{}, err
-	}
-	if !found {
-		return CoupleStatus{Paired: false}, nil
 	}
 	return CoupleStatus{
 		Paired:           true,

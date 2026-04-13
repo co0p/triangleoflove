@@ -4,10 +4,9 @@ import (
 	"context"
 	"database/sql"
 	"errors"
-)
 
-// ErrCodeNotFound is returned when no account holds the given invite code.
-var ErrCodeNotFound = errors.New("invite code not found")
+	"triangleoflove/backend/internal/domain"
+)
 
 // PairingRepository manages invite codes on the accounts table.
 type PairingRepository struct {
@@ -18,8 +17,8 @@ func NewPairingRepository(db *sql.DB) *PairingRepository {
 	return &PairingRepository{db: db}
 }
 
-// GetCode returns the stored invite_code for the given accountID, or "" if null.
-func (r *PairingRepository) GetCode(ctx context.Context, accountID string) (string, error) {
+// FindInviteCodeByAccountID returns the stored invite code for the given accountID, or "" if none.
+func (r *PairingRepository) FindInviteCodeByAccountID(ctx context.Context, accountID string) (domain.InviteCode, error) {
 	var code sql.NullString
 	err := r.db.QueryRowContext(ctx,
 		`SELECT invite_code FROM accounts WHERE id = $1`,
@@ -31,33 +30,33 @@ func (r *PairingRepository) GetCode(ctx context.Context, accountID string) (stri
 	if !code.Valid {
 		return "", nil
 	}
-	return code.String, nil
+	return domain.InviteCode(code.String), nil
 }
 
-// SetCode persists invite_code for the given accountID.
-func (r *PairingRepository) SetCode(ctx context.Context, accountID, code string) error {
+// SaveInviteCode persists the invite code for the given accountID.
+func (r *PairingRepository) SaveInviteCode(ctx context.Context, accountID string, code domain.InviteCode) error {
 	_, err := r.db.ExecContext(ctx,
 		`UPDATE accounts SET invite_code = $1 WHERE id = $2`,
-		code, accountID,
+		string(code), accountID,
 	)
 	return err
 }
 
-// FindAccountByCode returns the accountID whose invite_code matches, or ErrCodeNotFound.
-func (r *PairingRepository) FindAccountByCode(ctx context.Context, code string) (string, error) {
+// FindByInviteCode returns the accountID whose invite code matches, or domain.ErrNotFound.
+func (r *PairingRepository) FindByInviteCode(ctx context.Context, code domain.InviteCode) (string, error) {
 	var accountID string
 	err := r.db.QueryRowContext(ctx,
 		`SELECT id FROM accounts WHERE invite_code = $1`,
-		code,
+		string(code),
 	).Scan(&accountID)
 	if errors.Is(err, sql.ErrNoRows) {
-		return "", ErrCodeNotFound
+		return "", domain.ErrNotFound
 	}
 	return accountID, err
 }
 
-// IsAccountPaired returns true if the accountID appears in any couple row.
-func (r *PairingRepository) IsAccountPaired(ctx context.Context, accountID string) (bool, error) {
+// ExistsCoupleByAccountID returns true if the accountID appears in any couple row.
+func (r *PairingRepository) ExistsCoupleByAccountID(ctx context.Context, accountID string) (bool, error) {
 	var count int
 	err := r.db.QueryRowContext(ctx,
 		`SELECT COUNT(*) FROM couples WHERE account_id_a = $1 OR account_id_b = $1`,
