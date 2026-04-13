@@ -48,6 +48,8 @@ services:
       - API_BASE_URL=http://backend:8080
       - FRONTEND_BASE_URL=http://frontend:5173
       - DATABASE_URL=postgres://triangle:triangle@db:5432/triangleoflove?sslmode=disable
+    volumes:
+      - ./test-results:/app/test-results
     depends_on:
       backend:
         condition: service_healthy

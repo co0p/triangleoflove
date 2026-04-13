@@ -57,6 +57,14 @@ jobs:
         run: |
           docker compose --profile tests logs backend db || true
 
+      - name: Upload Playwright test results
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-test-results
+          path: test-results/
+          retention-days: 7
+
       - name: Tear down GHCR test stack
         if: always()
         run: docker compose --profile tests down -v
