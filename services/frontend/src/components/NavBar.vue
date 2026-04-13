@@ -5,8 +5,10 @@
         <img :src="logoSrc" alt="Triangle of Love" width="32" height="32" />
       </router-link>
     </div>
-    <span class="navbar-greeting navbar-greeting--truncate" v-if="firstName">Hello, {{ firstName }}</span>
-    <div class="avatar" aria-hidden="true">{{ initials }}</div>
+    <router-link to="/profile" class="navbar-profile-link" aria-label="Go to profile">
+      <span class="navbar-greeting navbar-greeting--truncate" v-if="firstName">Hello, {{ firstName }}</span>
+      <div class="avatar">{{ initials }}</div>
+    </router-link>
   </nav>
 </template>
 

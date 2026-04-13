@@ -402,6 +402,19 @@ p {
   padding-inline: var(--space-2);
 }
 
+.navbar-profile-link {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  text-decoration: none;
+  color: inherit;
+  border-radius: var(--radius-sm);
+}
+
+.navbar-profile-link:hover {
+  opacity: 0.8;
+}
+
 /* ============================================================
    12. DANGER BUTTON
    ============================================================ */

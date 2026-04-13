@@ -37,6 +37,39 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
 
+  /api/v1/auth/password:
+    put:
+      summary: Change the authenticated account's password
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [currentPassword, newPassword]
+              properties:
+                currentPassword:
+                  type: string
+                newPassword:
+                  type: string
+      responses:
+        '200':
+          description: Password changed successfully
+        '401':
+          description: Missing or invalid token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Current password is incorrect
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
   /api/v1/users/me:
     get:
       summary: Return the authenticated account's profile
@@ -52,6 +85,9 @@ paths:
                 properties:
                   firstName:
                     type: string
+                  email:
+                    type: string
+                    format: email
         '401':
           description: Missing or invalid token
           content:

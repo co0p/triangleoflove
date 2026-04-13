@@ -101,6 +101,8 @@ func main() {
 
 	mux.Handle("/api/v1/checkins/today", web.Middleware(web.NewCheckinHandler(checkinService)))
 
+	mux.Handle("PUT /api/v1/auth/password", web.Middleware(web.NewChangePasswordHandler(authService)))
+
 	ph := web.NewPairingHandler(pairingService)
 	mux.Handle("/api/v1/pairing", web.Middleware(http.HandlerFunc(ph.GetCode)))
 	mux.Handle("/api/v1/pairing/regenerate", web.Middleware(http.HandlerFunc(ph.Regenerate)))

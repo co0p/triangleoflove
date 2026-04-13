@@ -30,6 +30,7 @@ fi
 
 echo "Dropping existing tables..."
 psql "$PROD_DATABASE_URL" -c "DROP TABLE IF EXISTS checkins CASCADE;"
+psql "$PROD_DATABASE_URL" -c "DROP TABLE IF EXISTS couples CASCADE;"
 psql "$PROD_DATABASE_URL" -c "DROP TABLE IF EXISTS accounts CASCADE;"
 
 echo "Applying init.sql..."

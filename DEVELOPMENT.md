@@ -129,3 +129,16 @@ If services look stale, restart the stack:
 docker compose down
 docker compose up -d --build frontend backend db
 ```
+
+## Playwright Testing Conventions
+
+### `loginViaUI` — await navigation before leaving the dashboard
+
+After calling `loginViaUI`, the token is stored asynchronously. If you navigate away from the dashboard immediately (e.g. `page.goto('/profile')`), the router auth guard may fire before the token is in `localStorage` and redirect back to `/login`.
+
+Always add this assertion after `loginViaUI` before navigating away:
+
+```js
+await expect(page).toHaveURL(/\/dashboard/);
+await page.goto('/profile');
+```

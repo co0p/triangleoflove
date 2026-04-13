@@ -17,6 +17,7 @@ var ErrInvalidCredentials = errors.New("invalid credentials")
 type AccountRepo interface {
 	FindByEmail(ctx context.Context, email string) (domain.Account, error)
 	FindByID(ctx context.Context, id string) (domain.Account, error)
+	SaveHashedPassword(ctx context.Context, id string, hashedPassword string) error
 }
 
 // AuthService handles login and profile retrieval.
@@ -36,6 +37,7 @@ type LoginResult struct {
 // ProfileResult is the response payload for GET /users/me.
 type ProfileResult struct {
 	FirstName string `json:"firstName"`
+	Email     string `json:"email"`
 }
 
 // Login validates credentials and returns a signed JWT on success.
@@ -70,5 +72,27 @@ func (s *AuthService) GetProfile(ctx context.Context, accountID string) (Profile
 		return ProfileResult{}, err
 	}
 
-	return ProfileResult{FirstName: account.FirstName}, nil
+	return ProfileResult{FirstName: account.FirstName, Email: account.Email}, nil
+}
+
+// ChangePassword verifies the current password and replaces it with a new bcrypt hash.
+func (s *AuthService) ChangePassword(ctx context.Context, accountID, currentPassword, newPassword string) error {
+	account, err := s.accounts.FindByID(ctx, accountID)
+	if errors.Is(err, domain.ErrNotFound) {
+		return ErrInvalidCredentials
+	}
+	if err != nil {
+		return err
+	}
+
+	if err := bcrypt.CompareHashAndPassword([]byte(account.HashedPassword), []byte(currentPassword)); err != nil {
+		return ErrInvalidCredentials
+	}
+
+	newHash, err := bcrypt.GenerateFromPassword([]byte(newPassword), bcrypt.DefaultCost)
+	if err != nil {
+		return err
+	}
+
+	return s.accounts.SaveHashedPassword(ctx, accountID, string(newHash))
 }

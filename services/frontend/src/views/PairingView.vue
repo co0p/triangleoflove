@@ -5,9 +5,11 @@
       <h1>Pairing</h1>
 
       <div v-if="pairedWith" data-testid="paired-status">
+        <div class="card pairing-card">
         <p>You are paired with <span data-testid="partner-name">{{ pairedWith }}</span></p>
         <p data-testid="paired-since" class="paired-since">Since {{ pairedSinceFormatted }}</p>
         <button data-testid="unpair-button" class="btn btn-danger" @click="openUnpairModal">Unpair</button>
+        </div>
       </div>
 
       <template v-else>

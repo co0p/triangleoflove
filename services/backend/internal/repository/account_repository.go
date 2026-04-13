@@ -40,3 +40,11 @@ func (r *AccountRepository) FindByID(ctx context.Context, id string) (domain.Acc
 	}
 	return a, err
 }
+
+func (r *AccountRepository) SaveHashedPassword(ctx context.Context, id string, hashedPassword string) error {
+	_, err := r.db.ExecContext(ctx,
+		`UPDATE accounts SET hashed_password = $1 WHERE id = $2`,
+		hashedPassword, id,
+	)
+	return err
+}

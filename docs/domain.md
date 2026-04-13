@@ -8,7 +8,9 @@
 | Credentials | The email and password pair an Account submits to prove their identity. Password stored hashed; never persisted in plain text |
 | Token | A signed JWT issued by the backend after successful login, stored in the browser to authenticate subsequent requests |
 | Identity | The verified claim that a request comes from a known Account, carried by a Token |
-| Profile | The displayable attributes of an Account — first name for the initial increment |
+| Profile | The displayable attributes of an Account (first name, email) and the entry point for account management actions (logout and password change). |
+| Logout | The act of removing the Token from browser storage, ending the local session. The backend issues no token invalidation — JWTs are stateless. Client-side only. |
+| Password Change | The act of an authenticated Account replacing their password by supplying their current password and a new one. Requires proof of current Credentials. Endpoint: `PUT /api/v1/auth/password`. |
 | Protected Resource | Any backend endpoint that requires a valid Token to respond |
 | Login | The act of submitting Credentials and receiving a Token |
 | Dashboard | The home screen shown to an authenticated Account, displaying a personalised greeting |
@@ -31,14 +33,14 @@
 ## Bounded Contexts
 
 ### Auth
-- **Responsibility**: Verifies Credentials, issues Tokens, enforces that only valid Token holders reach Protected Resources, and serves Profile data.
-- **Key concepts**: Account, Credentials, Token, Identity, Profile, Login, Protected Resource
+- **Responsibility**: Verifies Credentials, issues Tokens, enforces that only valid Token holders reach Protected Resources, serves Profile data, and allows authenticated Accounts to change their own password.
+- **Key concepts**: Account, Credentials, Token, Identity, Profile, Login, Protected Resource, Password Change, Logout
 - **Relationships**: Sole owner of the `accounts` table; upstream identity provider to the Home context.
 
 ### Home
-- **Responsibility**: Displays the Dashboard to an authenticated Account, holds the Token in browser storage, and routes the Account to the login screen when no valid Token exists.
-- **Key concepts**: Dashboard, Token, Profile
-- **Relationships**: Downstream consumer of Auth — calls `POST /api/v1/auth/login` to obtain a Token and `GET /api/v1/users/me` to retrieve Profile data for the greeting. Links to the Check-in context via navigation.
+- **Responsibility**: Displays the Dashboard, holds the Token in browser storage, routes to login when no Token exists, and hosts the Profile page — the account management entry point navigable from the NavBar.
+- **Key concepts**: Dashboard, Token, Profile, Logout
+- **Relationships**: Downstream consumer of Auth — calls `POST /api/v1/auth/login` to obtain a Token and `GET /api/v1/users/me` to retrieve Profile data. Hosts the Profile page which calls `PUT /api/v1/auth/password`.
 
 ### Check-in
 - **Responsibility**: Owns the lifecycle of a Check-in — recording, loading, and updating Ratings and Notes for an Account on a given date.
@@ -53,7 +55,7 @@
 ## Aggregates
 
 ### Account
-Protects the invariant that a login attempt only produces a Token when the supplied Credentials match the stored identity. Owns email, hashed password, and first name.
+Protects two invariants — (1) a login attempt only produces a Token when the supplied Credentials match the stored identity; (2) `changePassword` only succeeds when the supplied current password matches the stored `hashedPassword`. Attempts with a non-matching current password are rejected with `ErrInvalidCredentials`. Owns email, hashed password, and first name; exposes `SaveHashedPassword` as the sole mutation for password updates.
 
 Stored in the `accounts` table (id UUID, email, hashed_password, first_name).
 
@@ -72,6 +74,7 @@ Stored in the `couples` table (id UUID, account_id_a, account_id_b, formed_on TI
 - **Credentials**: Email + plain-text password supplied at login. Never persisted.
 - **Email**: A validated email address. Compared by value; used as the lookup key for an Account.
 - **HashedPassword**: The stored, hashed form of the Account's password. Never returned outside the Auth boundary.
+- **PlainPassword**: The raw password string supplied in a `PUT /api/v1/auth/password` request — for current-password verification or as the new-password candidate. Never persisted; discarded after use.
 - **Token**: A signed JWT string with an issuance timestamp. The only Auth artifact that crosses into the Home context.
 - **Rating**: An integer. Valid saved values are 1–10. `-1` means the user has not yet set a value (Unset Rating). Compared by value; no identity.
 - **Note**: A string, may be empty. No identity. Compared by value.
@@ -81,6 +84,7 @@ Stored in the `couples` table (id UUID, account_id_a, account_id_b, formed_on TI
 ## Domain Events
 
 - **AccountAuthenticated**: Emitted when Credentials are valid. Carries the Token.
+- **PasswordChanged**: Emitted when `changePassword` succeeds. Carries `accountID` and `changedAt`.
 - **AuthenticationFailed**: Emitted when Credentials do not match. Carries no Token.
 - **CheckInSaved**: Emitted when a Check-in is created or updated. Carries `accountId`, `date`, and `savedAt`.
 - **CoupleFormed**: Emitted when two Accounts successfully pair. Carries `accountIdA`, `accountIdB`, `formedOn`.

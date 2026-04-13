@@ -24,6 +24,10 @@ func (m *mockAccountRepo) FindByID(_ context.Context, _ string) (domain.Account,
 	return m.account, m.err
 }
 
+func (m *mockAccountRepo) SaveHashedPassword(_ context.Context, _ string, _ string) error {
+	return nil
+}
+
 func hashedPassword(t *testing.T, plain string) string {
 	t.Helper()
 	h, err := bcrypt.GenerateFromPassword([]byte(plain), bcrypt.MinCost)
