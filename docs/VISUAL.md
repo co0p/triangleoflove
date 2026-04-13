@@ -93,6 +93,32 @@ theme is active — they only see tokens.
 
 ---
 
+## Form Construction
+
+Forms are assembled from three library primitives stacked in order:
+
+1. **`.form-fields`** — the outermost wrapper. Sets `display: flex; flex-direction: column; gap: var(--space-4)` so every direct child (input groups, buttons, alerts) is evenly spaced.
+2. **`.input-group`** — wraps one label + one input. Sets a tighter `gap: var(--space-1)` between the label and the field.
+3. **`.input`** / **`.btn`** — the leaf elements.
+
+```html
+<form class="form-fields">
+  <div class="input-group">
+    <label class="input-label" for="email">Email</label>
+    <input id="email" type="email" class="input" />
+  </div>
+  <div class="input-group">
+    <label class="input-label" for="password">Password</label>
+    <input id="password" type="password" class="input" />
+  </div>
+  <button type="submit" class="btn btn-primary">Sign in</button>
+</form>
+```
+
+The same structure applies to non-`<form>` containers (e.g. a card body grouping a readonly field and a logout button) — use `<div class="form-fields">` in that case.
+
+---
+
 ## Gallery
 
 The gallery renders every component class in every documented state with a live theme switcher.
