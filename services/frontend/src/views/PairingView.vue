@@ -4,7 +4,7 @@
       <h1>Pairing</h1>
 
       <div v-if="pairedWith" data-testid="paired-status">
-        <div class="card pairing-card">
+        <div class="card pairing-card form-fields">
         <p>You are paired with <span data-testid="partner-name">{{ pairedWith }}</span></p>
         <p data-testid="paired-since" class="paired-since">Since {{ pairedSinceFormatted }}</p>
         <button data-testid="unpair-button" class="btn btn-danger" @click="openUnpairModal">Unpair</button>
@@ -12,7 +12,7 @@
       </div>
 
       <template v-else>
-        <div class="card pairing-card">
+        <div class="card pairing-card form-fields">
           <div class="input-group">
             <p class="input-label">Your invite code</p>
             <p data-testid="invite-code" class="invite-code">{{ inviteCode }}</p>
@@ -20,7 +20,7 @@
           <button class="btn btn-secondary" @click="regenerate">Regenerate</button>
         </div>
 
-        <div class="card pairing-card">
+        <div class="card pairing-card form-fields">
           <div class="input-group">
             <label class="input-label" for="partner-code">Partner's code</label>
             <input
@@ -136,9 +136,6 @@ async function confirmUnpair() {
 
 <style scoped>
 .pairing-card {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-4);
   margin-bottom: var(--space-6);
 }
 

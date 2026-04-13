@@ -6,7 +6,7 @@
           <img :src="logoSrc" alt="Triangle of Love" width="64" height="64" />
         </div>
         <h1 class="login-heading">Sign in</h1>
-        <form @submit.prevent="handleSubmit" class="login-form" novalidate>
+        <form @submit.prevent="handleSubmit" class="form-fields" novalidate>
           <div class="input-group">
             <label class="input-label" for="email">Email</label>
             <input
@@ -86,11 +86,5 @@ async function handleSubmit() {
 
 .login-heading {
   text-align: center;
-}
-
-.login-form {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-4);
 }
 </style>

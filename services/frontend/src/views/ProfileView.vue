@@ -6,7 +6,7 @@
       <!-- Security card -->
       <div class="card profile-card">
         <h2>Security</h2>
-        <form @submit.prevent="submitChangePassword">
+        <form class="form-fields" @submit.prevent="submitChangePassword">
           <div class="input-group">
             <label class="input-label" for="current_password">Current password</label>
             <input
@@ -51,7 +51,7 @@
       <!-- Account card -->
       <div class="card profile-card">
         <h2>Account</h2>
-        <div class="account-fields">
+        <div class="form-fields">
           <div class="input-group">
             <label class="input-label" for="email">Email</label>
             <input
@@ -126,13 +126,6 @@ function logout() {
 <style scoped>
 .profile-card {
   margin-top: var(--space-6);
-}
-
-.profile-card form,
-.account-fields {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-4);
 }
 
 .password-success {
