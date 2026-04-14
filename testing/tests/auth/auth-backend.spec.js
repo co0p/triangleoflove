@@ -1,5 +1,5 @@
 const { test, expect } = require('@playwright/test');
-const { SEED_EMAIL, SEED_PASSWORD } = require('./helpers/auth');
+const { SEED_EMAIL, SEED_PASSWORD } = require('../helpers/auth');
 
 test('TestAuthLogin GivenValidCredentials WhenRequested ThenReturns200WithJWT', async ({ request }) => {
   const response = await request.post('/api/v1/auth/login', {

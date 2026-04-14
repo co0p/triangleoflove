@@ -1,5 +1,5 @@
 const { test, expect } = require('@playwright/test');
-const { getToken } = require('./helpers/auth');
+const { getToken } = require('../helpers/auth');
 
 const CHECKIN_PAYLOAD = {
   felt_close: 2,

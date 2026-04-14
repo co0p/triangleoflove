@@ -1,5 +1,5 @@
 const { test, expect } = require('@playwright/test');
-const { getToken } = require('./helpers/auth');
+const { getToken } = require('../helpers/auth');
 
 test('TestUsersMe GivenValidJWT WhenRequested ThenFirstNameReturned', async ({ request }) => {
   const token = await getToken(request);
