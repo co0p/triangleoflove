@@ -65,41 +65,48 @@ components:
       required:
         - note
       properties:
-        felt_close:
+        felt_understood:
           type: integer
-          nullable: true
-          minimum: -5
+          minimum: 0
           maximum: 5
-          description: Rating -5 to +5, or null if not yet set. 0 is a valid set value.
-          example: -3
-        positive_energy:
+          description: Rating 1–5, or 0 if not yet set.
+          example: 4
+        meaningful_sharing:
           type: integer
-          nullable: true
-          minimum: -5
+          minimum: 0
           maximum: 5
-          description: Rating -5 to +5, or null if not yet set. 0 is a valid set value.
-          example: null
-        supported:
+          description: Rating 1–5, or 0 if not yet set.
+          example: 3
+        could_count_on_them:
           type: integer
-          nullable: true
-          minimum: -5
+          minimum: 0
           maximum: 5
-          description: Rating -5 to +5, or null if not yet set. 0 is a valid set value.
-          example: 2
-        communication_healthy:
+          description: Rating 1–5, or 0 if not yet set.
+          example: 5
+        effort_for_us:
           type: integer
-          nullable: true
-          minimum: -5
+          minimum: 0
           maximum: 5
-          description: Rating -5 to +5, or null if not yet set. 0 is a valid set value.
-          example: 1
-        stress_level:
+          description: Rating 1–5, or 0 if not yet set.
+          example: 4
+        desire:
           type: integer
-          nullable: true
-          minimum: -5
+          minimum: 0
           maximum: 5
-          description: Rating -5 to +5, or null if not yet set. 0 is a valid set value.
-          example: -2
+          description: Rating 1–5, or 0 if not yet set.
+          example: 3
+        spark:
+          type: integer
+          minimum: 0
+          maximum: 5
+          description: Rating 1–5, or 0 if not yet set.
+          example: 4
+        mood:
+          type: integer
+          minimum: 0
+          maximum: 5
+          description: Personal mood rating 1–5, or 0 if not yet set.
+          example: 4
         note:
           type: string
           description: Optional free-text note; empty string when not entered

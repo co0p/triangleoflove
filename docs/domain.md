@@ -14,10 +14,15 @@
 | Protected Resource | Any backend endpoint that requires a valid Token to respond |
 | Login | The act of submitting Credentials and receiving a Token |
 | Dashboard | The home screen shown to an authenticated Account, displaying a personalised greeting |
-| Check-in | A daily record of an Account's relational wellbeing, comprising five Ratings and an optional Note, scoped to a single calendar date. One per Account per date. |
-| Dimension | One of the five named relational aspects being rated: "Felt close today", "Positive energy / fun", "Supported / team", "Communication healthy", "My stress level". Fixed enumeration; not user-configurable. |
-| Rating | An integer value representing how strongly an Account felt a Dimension on a given date. Valid saved values are 1–10; -1 means the Rating has not been deliberately set. |
-| Unset Rating | A Rating with value -1; displayed at slider position 5 with a distinct visual style to signal no deliberate choice has been made. Replaced by the actual slider value on first Save Check-in. |
+| Check-in | A daily record of an Account's relational wellbeing, comprising seven Ratings (six Relationship Metrics and one Mood) and an optional Note, scoped to a single calendar date. One per Account per date. |
+| Dimension | One of seven named aspects being rated: six Relationship Metrics (two per triangle side) and one personal Mood context. Fixed enumeration; not user-configurable. |
+| Relationship Metric | One of the six research-grounded proxy questions corresponding to an Intimacy, Commitment, or Passion dimension. |
+| Intimacy Metric | Either of the two Relationship Metrics measuring perceived emotional closeness: felt_understood and meaningful_sharing. |
+| Commitment Metric | Either of the two Relationship Metrics measuring perceived reliability and investment: could_count_on_them and effort_for_us. |
+| Passion Metric | Either of the two Relationship Metrics measuring desire and excitement: desire and spark. |
+| Mood | A personal context rating — "How is your overall mood today?" — recorded alongside the six Relationship Metrics but kept visually separate. Not a Relationship Metric. |
+| Rating | An integer value representing how strongly an Account felt a Dimension on a given date. Valid set values are 1–5; 0 means the Rating has not been deliberately set (Unset). Plain `int`; no pointer. |
+| Unset Rating | A Rating with value 0; displayed with a distinct visual style to signal no deliberate choice has been made. |
 | Note | An optional free-text observation attached to a Check-in. Always private to the Account; never shared. Stored as an empty string when not entered. |
 | Check-in Date | The calendar date (UTC) for which a Check-in is recorded; defaults to today when opening the page. One Check-in per Account per date. |
 | Save Check-in | The action of persisting a Check-in (create or update) for the current Check-in Date. Lazy: no record is written until this action is taken. Upsert semantics — no separate create vs update exposed in the UI or API. |
@@ -44,7 +49,7 @@
 
 ### Check-in
 - **Responsibility**: Owns the lifecycle of a Check-in — recording, loading, and updating Ratings and Notes for an Account on a given date.
-- **Key concepts**: Check-in, Dimension, Rating, Unset Rating, Note, Check-in Date, Save Check-in
+- **Key concepts**: Check-in, Dimension, Relationship Metric, Intimacy Metric, Commitment Metric, Passion Metric, Mood, Rating, Unset Rating, Note, Check-in Date, Save Check-in
 - **Relationships**: Downstream of Auth — requires a valid Token (Account identity) to record or retrieve a Check-in. Entered from the Home context.
 
 ### Pairing
@@ -60,7 +65,7 @@ Protects two invariants — (1) a login attempt only produces a Token when the s
 Stored in the `accounts` table (id UUID, email, hashed_password, first_name).
 
 ### CheckIn
-Protects the invariant that at most one Check-in exists per Account per date. Owns all five Ratings and the Note. Natural identity key is `(accountId, date)`.
+Protects the invariant that at most one Check-in exists per Account per date. Owns seven Ratings (six Relationship Metrics — felt_understood, meaningful_sharing, could_count_on_them, effort_for_us, desire, spark — plus Mood) and the Note. Natural identity key is `(accountId, date)`.
 
 Stored in the `checkins` table. Written lazily — no row exists until Save Check-in is triggered.
 
@@ -76,7 +81,7 @@ Stored in the `couples` table (id UUID, account_id_a, account_id_b, formed_on TI
 - **HashedPassword**: The stored, hashed form of the Account's password. Never returned outside the Auth boundary.
 - **PlainPassword**: The raw password string supplied in a `PUT /api/v1/auth/password` request — for current-password verification or as the new-password candidate. Never persisted; discarded after use.
 - **Token**: A signed JWT string with an issuance timestamp. The only Auth artifact that crosses into the Home context.
-- **Rating**: An integer. Valid saved values are 1–10. `-1` means the user has not yet set a value (Unset Rating). Compared by value; no identity.
+- **Rating**: An integer. Valid set values are 1–5. `0` means the user has not yet set a value (Unset Rating). Plain `int`; no pointer. Compared by value; no identity.
 - **Note**: A string, may be empty. No identity. Compared by value.
 - **InviteCode**: A 6-character uppercase alphanumeric string. Implemented as `type InviteCode string` — a typed string to prevent raw string substitution at repository boundaries. Generated randomly; no identity. Compared by value. Replaced (not mutated) on pairing or explicit regeneration.
 - **CoupleSummary**: A read model produced by the Couple aggregate. Holds `PartnerFirstName` (string) and `FormedOn` (UTC timestamp). No identity; compared by value. Never mutated — always replaced by a fresh query.
