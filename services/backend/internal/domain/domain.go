@@ -20,13 +20,16 @@ type Account struct {
 }
 
 // Checkin holds a single daily check-in record.
+// Rating fields use 0 as the unset sentinel; valid entered values are 1–5.
 type Checkin struct {
-	FeltClose            *int   `json:"felt_close"`
-	PositiveEnergy       *int   `json:"positive_energy"`
-	Supported            *int   `json:"supported"`
-	CommunicationHealthy *int   `json:"communication_healthy"`
-	StressLevel          *int   `json:"stress_level"`
-	Note                 string `json:"note"`
+	FeltUnderstood    int    `json:"felt_understood"`
+	MeaningfulSharing int    `json:"meaningful_sharing"`
+	CouldCountOnThem  int    `json:"could_count_on_them"`
+	EffortForUs       int    `json:"effort_for_us"`
+	Desire            int    `json:"desire"`
+	Spark             int    `json:"spark"`
+	Mood              int    `json:"mood"`
+	Note              string `json:"note"`
 }
 
 // CoupleSummary is a read model describing a paired relationship.
