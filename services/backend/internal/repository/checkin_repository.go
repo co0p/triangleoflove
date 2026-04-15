@@ -23,10 +23,12 @@ func (r *CheckinRepository) FindByAccountAndDate(ctx context.Context, accountID 
 	today := time.Now().UTC().Format("2006-01-02")
 	var c domain.Checkin
 	err := r.db.QueryRowContext(ctx,
-		`SELECT felt_close, positive_energy, supported, communication_healthy, stress_level, note
+		`SELECT felt_understood, meaningful_sharing, could_count_on_them, effort_for_us,
+		        desire, spark, mood, note
 		 FROM checkins WHERE account_id = $1 AND date = $2`,
 		accountID, today,
-	).Scan(&c.FeltClose, &c.PositiveEnergy, &c.Supported, &c.CommunicationHealthy, &c.StressLevel, &c.Note)
+	).Scan(&c.FeltUnderstood, &c.MeaningfulSharing, &c.CouldCountOnThem, &c.EffortForUs,
+		&c.Desire, &c.Spark, &c.Mood, &c.Note)
 	if errors.Is(err, sql.ErrNoRows) {
 		return domain.Checkin{}, domain.ErrNotFound
 	}
@@ -38,19 +40,25 @@ func (r *CheckinRepository) Save(ctx context.Context, accountID string, c domain
 	today := time.Now().UTC().Format("2006-01-02")
 	var saved domain.Checkin
 	err := r.db.QueryRowContext(ctx,
-		`INSERT INTO checkins (account_id, date, felt_close, positive_energy, supported, communication_healthy, stress_level, note, saved_at)
-		 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, now())
+		`INSERT INTO checkins (account_id, date, felt_understood, meaningful_sharing,
+		        could_count_on_them, effort_for_us, desire, spark, mood, note, saved_at)
+		 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, now())
 		 ON CONFLICT (account_id, date) DO UPDATE
-		   SET felt_close = EXCLUDED.felt_close,
-		       positive_energy = EXCLUDED.positive_energy,
-		       supported = EXCLUDED.supported,
-		       communication_healthy = EXCLUDED.communication_healthy,
-		       stress_level = EXCLUDED.stress_level,
-		       note = EXCLUDED.note,
-		       saved_at = now()
-		 RETURNING felt_close, positive_energy, supported, communication_healthy, stress_level, note`,
+		   SET felt_understood    = EXCLUDED.felt_understood,
+		       meaningful_sharing = EXCLUDED.meaningful_sharing,
+		       could_count_on_them = EXCLUDED.could_count_on_them,
+		       effort_for_us      = EXCLUDED.effort_for_us,
+		       desire             = EXCLUDED.desire,
+		       spark              = EXCLUDED.spark,
+		       mood               = EXCLUDED.mood,
+		       note               = EXCLUDED.note,
+		       saved_at           = now()
+		 RETURNING felt_understood, meaningful_sharing, could_count_on_them, effort_for_us,
+		           desire, spark, mood, note`,
 		accountID, today,
-		c.FeltClose, c.PositiveEnergy, c.Supported, c.CommunicationHealthy, c.StressLevel, c.Note,
-	).Scan(&saved.FeltClose, &saved.PositiveEnergy, &saved.Supported, &saved.CommunicationHealthy, &saved.StressLevel, &saved.Note)
+		c.FeltUnderstood, c.MeaningfulSharing, c.CouldCountOnThem, c.EffortForUs,
+		c.Desire, c.Spark, c.Mood, c.Note,
+	).Scan(&saved.FeltUnderstood, &saved.MeaningfulSharing, &saved.CouldCountOnThem, &saved.EffortForUs,
+		&saved.Desire, &saved.Spark, &saved.Mood, &saved.Note)
 	return saved, err
 }

@@ -75,8 +75,7 @@ func TestCheckinHandler_GivenMalformedBody_WhenPUT_ThenReturns400(t *testing.T) 
 }
 
 func TestCheckinHandler_GivenValidPUT_ThenSavesBody(t *testing.T) {
-	val := 3
-	payload := domain.Checkin{FeltClose: &val}
+	payload := domain.Checkin{FeltUnderstood: 3, MeaningfulSharing: 2, Mood: 4}
 
 	mock := &mockCheckinRepo{}
 	svc := service.NewCheckinService(mock)
@@ -95,7 +94,7 @@ func TestCheckinHandler_GivenValidPUT_ThenSavesBody(t *testing.T) {
 	if rec.Code != http.StatusOK {
 		t.Fatalf("expected 200, got %d: %s", rec.Code, rec.Body.String())
 	}
-	if mock.saved.FeltClose == nil || *mock.saved.FeltClose != 3 {
-		t.Fatalf("expected saved FeltClose=3, got %+v", mock.saved.FeltClose)
+	if mock.saved.FeltUnderstood != 3 {
+		t.Fatalf("expected saved FeltUnderstood=3, got %d", mock.saved.FeltUnderstood)
 	}
 }

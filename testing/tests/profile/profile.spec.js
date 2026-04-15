@@ -25,8 +25,9 @@ test('TestProfile_GivenAuthenticated_WhenLogoutClicked_ThenTokenRemovedAndRedire
   await loginViaUI(page);
   await expect(page).toHaveURL(/\/dashboard/);
   await page.goto(`${FRONTEND_BASE_URL}/profile`);
+  await expect(page.locator('h1')).toHaveText('Profile');
 
-  await page.locator('button', { hasText: 'Log out' }).click();
+  await page.getByRole('button', { name: 'Log out' }).click();
 
   await expect(page).toHaveURL(/\/login/);
   const token = await page.evaluate(() => localStorage.getItem('token'));

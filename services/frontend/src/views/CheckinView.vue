@@ -11,15 +11,15 @@
             <input
               :id="dim.key"
               type="range"
-              min="-5"
+              min="1"
               max="5"
-              :value="ratings[dim.key] === null ? 0 : ratings[dim.key]"
-              :data-unset="ratings[dim.key] === null ? 'true' : undefined"
-              :class="['checkin-slider', { 'checkin-slider--unset': ratings[dim.key] === null }]"
+              :value="ratings[dim.key] || 1"
+              :data-unset="ratings[dim.key] === 0 ? 'true' : undefined"
+              :class="['checkin-slider', { 'checkin-slider--unset': ratings[dim.key] === 0 }]"
               @input="onSliderInput(dim.key, $event)"
             />
-            <span class="checkin-value-badge" :class="{ 'checkin-value-badge--unset': ratings[dim.key] === null }">
-              {{ ratings[dim.key] === null ? '—' : (ratings[dim.key] > 0 ? '+' : '') + ratings[dim.key] }}
+            <span class="checkin-value-badge" :class="{ 'checkin-value-badge--unset': ratings[dim.key] === 0 }">
+              {{ ratings[dim.key] === 0 ? '—' : ratings[dim.key] }}
             </span>
           </div>
         </div>
@@ -33,15 +33,15 @@
             <input
               :id="dim.key"
               type="range"
-              min="-5"
+              min="1"
               max="5"
-              :value="ratings[dim.key] === null ? 0 : ratings[dim.key]"
-              :data-unset="ratings[dim.key] === null ? 'true' : undefined"
-              :class="['checkin-slider', { 'checkin-slider--unset': ratings[dim.key] === null }]"
+              :value="ratings[dim.key] || 1"
+              :data-unset="ratings[dim.key] === 0 ? 'true' : undefined"
+              :class="['checkin-slider', { 'checkin-slider--unset': ratings[dim.key] === 0 }]"
               @input="onSliderInput(dim.key, $event)"
             />
-            <span class="checkin-value-badge" :class="{ 'checkin-value-badge--unset': ratings[dim.key] === null }">
-              {{ ratings[dim.key] === null ? '—' : (ratings[dim.key] > 0 ? '+' : '') + ratings[dim.key] }}
+            <span class="checkin-value-badge" :class="{ 'checkin-value-badge--unset': ratings[dim.key] === 0 }">
+              {{ ratings[dim.key] === 0 ? '—' : ratings[dim.key] }}
             </span>
           </div>
         </div>
@@ -67,23 +67,28 @@
 <script setup>
 import { ref, reactive, onMounted } from 'vue';
 import { getTodayCheckin, saveTodayCheckin } from '../api/checkin.js';
-const dimensions = [
-  { key: 'felt_close',            label: 'Felt close today',          description: 'Did you feel emotionally connected?' },
-  { key: 'positive_energy',       label: 'Positive energy / fun',     description: 'Was there lightness or joy between you?' },
-  { key: 'supported',             label: 'Supported / team',          description: 'Did you feel like you had each other\'s backs?' },
-  { key: 'communication_healthy', label: 'Communication healthy',     description: 'Were you able to talk openly and be heard?' },
-  { key: 'stress_level',          label: 'My stress level',           description: 'How much did personal stress weigh on you?' },
+
+const relationshipDimensions = [
+  { key: 'felt_understood',     label: 'Felt understood',      description: 'Did you feel truly heard by your partner?' },
+  { key: 'meaningful_sharing',  label: 'Meaningful sharing',   description: 'Did you share something real together today?' },
+  { key: 'could_count_on_them', label: 'Could count on them',  description: 'Did you feel your partner had your back?' },
+  { key: 'effort_for_us',       label: 'Effort for us',        description: 'Did you notice your partner showing up for the relationship?' },
+  { key: 'desire',              label: 'Desire',               description: 'Did you feel attracted to your partner today?' },
+  { key: 'spark',               label: 'Spark',                description: 'Was there excitement or romance between you?' },
 ];
 
-const relationshipDimensions = dimensions.slice(0, 4);
-const personalDimensions = dimensions.slice(4);
+const personalDimensions = [
+  { key: 'mood', label: 'My mood today', description: 'How is your overall mood today?' },
+];
 
 const ratings = reactive({
-  felt_close: null,
-  positive_energy: null,
-  supported: null,
-  communication_healthy: null,
-  stress_level: null,
+  felt_understood: 0,
+  meaningful_sharing: 0,
+  could_count_on_them: 0,
+  effort_for_us: 0,
+  desire: 0,
+  spark: 0,
+  mood: 0,
 });
 
 const note = ref('');
@@ -99,9 +104,7 @@ onMounted(async () => {
 });
 
 function onSliderInput(key, event) {
-  const val = Number(event.target.value);
-  if (ratings[key] === null && val === 0) return;
-  ratings[key] = val;
+  ratings[key] = Number(event.target.value);
 }
 
 async function save() {

@@ -1,10 +1,13 @@
 const { test, expect } = require('@playwright/test');
-const { FRONTEND_BASE_URL, SEED_EMAIL_2, SEED_PASSWORD_2, loginViaUI } = require('../helpers/auth');
+const { FRONTEND_BASE_URL, SEED_EMAIL_2, SEED_PASSWORD_2, loginViaUI, USERS } = require('../helpers/auth');
 const { resetDb } = require('../helpers/seed');
 
-// Reset to unpaired baseline once before the suite.
-// Tests in this file are ordered: the "GivenPaired" tests rely on the pair
-// formed by GivenTwoUnpairedUsers, so per-test resets would break them.
+// Alex and Sam are pre-paired in the seed. Use them for GivenPaired_* tests
+// so those tests are independent of GivenTwoUnpairedUsers running first.
+const ALEX_EMAIL = USERS[2].email;
+const ALEX_PASSWORD = USERS[2].password;
+const SAM_FIRST_NAME = USERS[3].firstName;
+
 test.beforeAll(async ({ request }) => {
   await resetDb(request);
 });
@@ -27,6 +30,7 @@ test('GivenTwoUnpairedUsers_WhenCodeEntered_ThenCoupleFormed', async ({ browser 
   await loginViaUI(riverPage);
   await expect(riverPage).toHaveURL(/\/dashboard/);
   await riverPage.goto(`${FRONTEND_BASE_URL}/pairing`);
+  await expect(riverPage.getByTestId('invite-code')).not.toHaveText('');
   const riverCode = (await riverPage.getByTestId('invite-code').textContent()).trim();
 
   // Jordan logs in and enters River's code
@@ -44,27 +48,27 @@ test('GivenTwoUnpairedUsers_WhenCodeEntered_ThenCoupleFormed', async ({ browser 
   await jordanContext.close();
 });
 
-// D4: these tests run after the D3 test above has paired River and Jordan
+// GivenPaired_* tests use Alex+Sam (pre-paired in seed) — no ordering dependency.
 test('GivenPaired_WhenVisitsPairingPage_ThenShowsPartnerNameAndSince', async ({ page }) => {
-  await loginViaUI(page);
+  await loginViaUI(page, ALEX_EMAIL, ALEX_PASSWORD);
   await expect(page).toHaveURL(/\/dashboard/);
   await page.goto(`${FRONTEND_BASE_URL}/pairing`);
 
   await expect(page.getByTestId('partner-name')).toBeVisible();
-  await expect(page.getByTestId('partner-name')).toContainText('Jordan');
+  await expect(page.getByTestId('partner-name')).toContainText(SAM_FIRST_NAME);
   await expect(page.getByTestId('paired-since')).toBeVisible();
 });
 
 test('GivenPaired_WhenVisitsDashboard_ThenShowsPairingStatus', async ({ page }) => {
-  await loginViaUI(page);
+  await loginViaUI(page, ALEX_EMAIL, ALEX_PASSWORD);
   await expect(page).toHaveURL(/\/dashboard/);
 
   await expect(page.getByTestId('pairing-status')).toBeVisible();
-  await expect(page.getByTestId('pairing-status')).toContainText('Jordan');
+  await expect(page.getByTestId('pairing-status')).toContainText(SAM_FIRST_NAME);
 });
 
 test('GivenPaired_WhenUnpairConfirmed_ThenInviteCodeVisible', async ({ page }) => {
-  await loginViaUI(page);
+  await loginViaUI(page, ALEX_EMAIL, ALEX_PASSWORD);
   await expect(page).toHaveURL(/\/dashboard/);
   await page.goto(`${FRONTEND_BASE_URL}/pairing`);
 

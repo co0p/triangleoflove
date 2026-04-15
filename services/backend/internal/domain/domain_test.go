@@ -10,8 +10,8 @@ import (
 func TestDomain_GivenDomainPackage_WhenInspected_ThenAllModelTypesDefined(t *testing.T) {
 	_ = domain.Account{ID: "1", Email: "a@b.com", HashedPassword: "h", FirstName: "A"}
 
-	felt := 5
-	_ = domain.Checkin{FeltClose: &felt}
+	_ = domain.Checkin{FeltUnderstood: 4, MeaningfulSharing: 3, CouldCountOnThem: 5,
+		EffortForUs: 2, Desire: 3, Spark: 4, Mood: 4}
 
 	_ = domain.CoupleSummary{PartnerFirstName: "Bob"}
 

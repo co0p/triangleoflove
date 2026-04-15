@@ -46,6 +46,7 @@ This document defines binding engineering and delivery constraints for the repos
 - Runtime: Acceptance tests must run in CI and must also run locally against the `docker-compose` stack.
 - Mocking: Unit tests may mock ports/adapters. Acceptance tests should hit real API endpoints with real service wiring and controlled test data setup/teardown.
 - Browser-driven acceptance tests cover user-journey happy paths only. Edge cases (invalid inputs, error states, authorization boundaries) are covered by colocated Go unit tests in the service and handler layers, not by Playwright.
+- Playwright acceptance tests must simulate real user flows through the UI (navigate, click, fill, assert visible output). They must not call API endpoints directly via `request`. Test data preconditions are established through the seed server, not by calling the API.
 - Playwright spec files are grouped by feature in subdirectories under `testing/tests/` (e.g. `testing/tests/pairing/pairing.spec.js`). The file name provides feature context; test names use Given-When-Then format without a feature prefix.
 
 ### Layer Preference Guide
@@ -56,7 +57,7 @@ Place each test at the **lowest layer** that can meaningfully cover it:
 |-------|-----|---------|
 | Go unit (service / handler) | Error paths, auth boundaries, domain logic, input validation | `TestCheckinHandler_GivenNoAuth_WhenGET_ThenReturns401` — no DB, uses `httptest` + mock repo |
 | Vue component (Vitest) | View render states (empty, loaded, error) driven by mock API data | `TestDashboard_GivenNoPartner_WhenRendered_ThenNotConnectedVisible` — no backend, mocks `api/*.js` |
-| API acceptance (Playwright, Docker stack) | Happy-path contracts between frontend and real backend wiring | `GivenValidCredentials_WhenLogin_ThenRedirectsToDashboard` — real HTTP, real DB |
+| API acceptance (Playwright, Docker stack) | Happy-path user journeys through the real UI with real backend wiring | `GivenValidCredentials_WhenLogin_ThenRedirectsToDashboard` — browser, real DB |
 
 **Rule**: if a mock suffices, don't reach for Docker. If a unit suffices, don't reach for a component test. Service constructors accept repository interfaces (not concrete structs) to enable unit mocking without a database.
 
