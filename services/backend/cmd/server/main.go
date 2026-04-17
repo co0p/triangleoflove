@@ -52,6 +52,9 @@ func main() {
 	checkinRepo := repository.NewCheckinRepository(dbConn)
 	checkinService := service.NewCheckinService(checkinRepo)
 
+	insightsRepo := repository.NewInsightsRepository(dbConn)
+	insightsService := service.NewInsightsService(insightsRepo)
+
 	pairingRepo := repository.NewPairingRepository(dbConn)
 	coupleRepo := repository.NewCoupleRepository(dbConn)
 	pairingService := service.NewPairingService(pairingRepo, coupleRepo)
@@ -100,6 +103,8 @@ func main() {
 	})
 
 	mux.Handle("/api/v1/checkins/today", web.Middleware(web.NewCheckinHandler(checkinService)))
+
+	mux.Handle("GET /api/v1/insights/{date}", web.Middleware(web.NewInsightsHandler(insightsService)))
 
 	mux.Handle("PUT /api/v1/auth/password", web.Middleware(web.NewChangePasswordHandler(authService)))
 
