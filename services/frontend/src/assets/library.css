@@ -15,6 +15,8 @@
   --color-sage-300:    #a8c8a8;
   --color-sage-500:    #7aab7a;
   --color-sage-700:    #508a50;
+  --color-sky-300:     #b7d3e8;
+  --color-sky-700:     #4f7fa8;
   --color-rose-200:    #ebb8c0;
   --color-rose-400:    #d97d8a;
   --color-rose-700:    #b05568;
@@ -40,6 +42,11 @@
   --color-accent:       var(--color-rose-400);
   --color-accent-dark:  var(--color-rose-700);
   --color-highlight:    var(--color-gold-500);
+  --color-insight-very-low: var(--color-rose-700);
+  --color-insight-low:      var(--color-gold-700);
+  --color-insight-moderate: var(--color-sky-700);
+  --color-insight-high:     var(--color-sage-700);
+  --color-insight-unavailable: var(--color-neutral-400);
   --color-error:        var(--color-rose-700);
   --color-error-bg:     #fdf0f2;
   --color-error-border: var(--color-rose-200);

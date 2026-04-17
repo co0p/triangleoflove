@@ -50,6 +50,16 @@ never reference a theme directly — they inherit overrides through the CSS casc
 
 The developer reference is `docs/design-system.html` — a standalone HTML file that references `library.css` directly and can be opened in any browser without running the app. It is updated in the same commit as any library change.
 
+### Score-band presentation pattern
+
+Feature-specific state colors (for example score band cues) follow the same three-layer discipline:
+
+1. Add raw palette stops to `:root` only when no existing stop is suitable.
+2. Add semantic tokens per state (for example `--color-insight-very-low`) that reference palette stops via `var()`.
+3. Add state modifier classes in the component `<style scoped>` block that reference semantic tokens only.
+
+Views derive score-band classes from numeric values. The API returns numeric scores only; band thresholds and color mapping remain frontend concerns.
+
 ### Component conventions
 
 - **NavBar** (`services/frontend/src/components/NavBar.vue`) imports `logo.svg` directly

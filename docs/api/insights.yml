@@ -1,0 +1,86 @@
+openapi: 3.0.0
+info:
+  title: Triangle of Love - Insights API
+  version: 1.0.0
+
+paths:
+  /api/v1/insights/{date}:
+    get:
+      summary: Return daily insight scores for the authenticated account on a given date
+      description: |
+        Scores are normalized to 0-100.
+        A score of -1 means both proxy metrics for that dimension were unset (0)
+        in the check-in, so the dimension is unavailable.
+        The requested date is implied by the path parameter and is not repeated
+        in the response body.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: date
+          in: path
+          required: true
+          description: Calendar date in YYYYMMDD format (UTC)
+          schema:
+            type: string
+            pattern: '^\\d{8}$'
+            example: "20260417"
+      responses:
+        "200":
+          description: Daily insight scores
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DailyInsight"
+        "400":
+          description: Invalid date format
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Missing or invalid token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: No check-in found for this date
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    DailyInsight:
+      type: object
+      required:
+        - intimacy
+        - commitment
+        - passion
+      properties:
+        intimacy:
+          type: integer
+          description: 0-100, or -1 if both proxy metrics were unset.
+          example: 75
+        commitment:
+          type: integer
+          description: 0-100, or -1 if both proxy metrics were unset.
+          example: 50
+        passion:
+          type: integer
+          description: 0-100, or -1 if both proxy metrics were unset.
+          example: -1
+    Error:
+      type: object
+      required:
+        - error
+      properties:
+        error:
+          type: string
+          example: invalid date format
