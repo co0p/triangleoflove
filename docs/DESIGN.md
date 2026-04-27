@@ -274,6 +274,7 @@ Backend notes:
 | 2026-04-09 | Couple Pairing | Handler struct pattern, repository split by aggregate, `.page` layout utility, seed data helper module |
 | 2026-04-12 | Apply the Test Pyramid | Vue component test patterns for router-using views, mock reset discipline |
 | 2026-04-13 | Unpair from couple | Destructive-action confirmation modal pattern |
+| 2026-04-27 | Weekly Insights Matrix | RouterLink stub `v-bind="$attrs"` for `to` prop assertability in component tests |
 
 ### Destructive-Action Confirmation Modal
 
@@ -283,8 +284,8 @@ Backend notes:
 
 ### Vue Component Tests — Router and Mock Reset
 
-- **What**: Views that call `useRouter()` require `vi.mock('vue-router', ...)` at the module level and a `RouterLink` stub via `global.stubs`. `vi.clearAllMocks()` clears call history but does **not** reset `mockResolvedValue` — default return values must always be re-applied in `beforeEach`.
-- **Why it emerged**: `DashboardView.spec.js` — mock state from the `GivenPartnerName` test leaked into the `GivenNoPartner` test when relying on `clearAllMocks()` alone.
+- **What**: Views that call `useRouter()` require `vi.mock('vue-router', ...)` at the module level and a `RouterLink` stub via `global.stubs`. `vi.clearAllMocks()` clears call history but does **not** reset `mockResolvedValue` — default return values must always be re-applied in `beforeEach`. When a test needs to assert on the `to` prop of a `RouterLink`, use `{ template: '<a v-bind="$attrs"><slot />' }` so the prop is forwarded to the rendered anchor and assertable via `wrapper.find('a').attributes('href')` or equivalent.
+- **Why it emerged**: `DashboardView.spec.js` — mock state from the `GivenPartnerName` test leaked into the `GivenNoPartner` test when relying on `clearAllMocks()` alone. The `v-bind="$attrs"` addition came from the Weekly Insights increment when asserting that the insights entry link pointed to `/insights`.
 - **Where used**: `services/frontend/src/views/DashboardView.spec.js`
 - **Pattern**:
   ```js
@@ -294,7 +295,7 @@ Backend notes:
 
   const stubs = {
     NavBar: true,
-    RouterLink: { template: '<a><slot /></a>' },
+    RouterLink: { template: '<a v-bind="$attrs"><slot /></a>' },
   };
 
   beforeEach(() => {

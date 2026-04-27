@@ -10,6 +10,15 @@ type DailyInsight struct {
 	Passion    int `json:"passion"`
 }
 
+// WeeklyInsight holds insight scores for a single day in the 7-day window.
+// Each score is 0–100 when available, or -1 when no check-in exists for that day.
+type WeeklyInsight struct {
+	Date       string `json:"date"`
+	Intimacy   int    `json:"intimacy"`
+	Commitment int    `json:"commitment"`
+	Passion    int    `json:"passion"`
+}
+
 // CalculateDimensionScore computes a normalized 0–100 score from two proxy metrics (each 0–5).
 // Both 0 → -1 (unavailable). One 0 → normalize the non-zero value. Both set → normalize the average.
 func CalculateDimensionScore(a, b int) int {

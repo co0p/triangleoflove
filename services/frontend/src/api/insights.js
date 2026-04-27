@@ -1,5 +1,21 @@
 const BASE_URL = import.meta.env.VITE_API_BASE_URL || '';
 
+export async function getWeeklyInsights() {
+  const token = localStorage.getItem('token');
+  const response = await fetch(`${BASE_URL}/api/v1/insights`, {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+
+  if (response.status === 401) {
+    throw new Error('unauthorized');
+  }
+  if (!response.ok) {
+    throw new Error('failed to load weekly insights');
+  }
+
+  return response.json();
+}
+
 export async function getInsights(date) {
   const token = localStorage.getItem('token');
   const response = await fetch(`${BASE_URL}/api/v1/insights/${date}`, {

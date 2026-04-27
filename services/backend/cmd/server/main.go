@@ -104,6 +104,7 @@ func main() {
 
 	mux.Handle("/api/v1/checkins/today", web.Middleware(web.NewCheckinHandler(checkinService)))
 
+	mux.Handle("GET /api/v1/insights", web.Middleware(web.NewInsightsWeeklyHandler(insightsService)))
 	mux.Handle("GET /api/v1/insights/{date}", web.Middleware(web.NewInsightsHandler(insightsService)))
 
 	mux.Handle("PUT /api/v1/auth/password", web.Middleware(web.NewChangePasswordHandler(authService)))

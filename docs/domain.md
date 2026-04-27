@@ -34,6 +34,9 @@
 | Ended Couple | A Couple whose `ended_on` is set. Both members are considered unpaired but the record is retained for relational history. |
 | Unpair | The act of one Account ending an Active Couple. Unilateral — no partner consent required. Writes `ended_on` to the Couple record; does not delete it. |
 | ErrNotFound | A single shared sentinel error (`domain.ErrNotFound`) returned by any repository method when the requested record does not exist. Replaces per-entity variants. Callers use `errors.Is(err, domain.ErrNotFound)` to detect absence. |
+| Daily Insight | Normalized dimension scores derived from a single Check-in. Each of Intimacy, Commitment, and Passion is expressed as an integer 0–100, or -1 if both proxy metrics were unset. Computed server-side; never persisted. |
+| Weekly Insight | A single day's insight scores within the Weekly Insights Window. Carries a date (YYYYMMDD) and Intimacy, Commitment, and Passion scores. A score of -1 indicates no Check-in exists for that day and dimension. |
+| Weekly Insights Window | The rolling 7-day period from 6 days ago through yesterday (UTC), used for the weekly matrix view. Determined by server clock; index 0 = oldest day, index 6 = yesterday. |
 
 ## Bounded Contexts
 
@@ -56,6 +59,11 @@
 - **Responsibility**: Manages Invite Code generation and regeneration; forms and soft-ends Couples between Accounts; serves Couple status (partner first name, paired-since date, and active/ended state) to authenticated Accounts.
 - **Key concepts**: Invite Code, Couple, Active Couple, Ended Couple, Pairing, Paired, Unpair
 - **Relationships**: Reads Account identity from Auth. Owns the `couples` table (including the `ended_on` column) and the `invite_code` column on `accounts`.
+
+### Insights
+- **Responsibility**: Derives and serves normalized insight scores from Check-in data — both daily (single date) and weekly (7-day rolling window). Owns no persistent data of its own; reads from the Check-in aggregate's table.
+- **Key concepts**: Daily Insight, Weekly Insight, Weekly Insights Window
+- **Relationships**: Downstream of Auth — requires a valid Token. Reads check-in rows via InsightsRepository; does not depend on CheckinService.
 
 ## Aggregates
 
@@ -85,6 +93,8 @@ Stored in the `couples` table (id UUID, account_id_a, account_id_b, formed_on TI
 - **Note**: A string, may be empty. No identity. Compared by value.
 - **InviteCode**: A 6-character uppercase alphanumeric string. Implemented as `type InviteCode string` — a typed string to prevent raw string substitution at repository boundaries. Generated randomly; no identity. Compared by value. Replaced (not mutated) on pairing or explicit regeneration.
 - **CoupleSummary**: A read model produced by the Couple aggregate. Holds `PartnerFirstName` (string) and `FormedOn` (UTC timestamp). No identity; compared by value. Never mutated — always replaced by a fresh query.
+- **DailyInsight**: A read model computed from one Check-in. Holds Intimacy, Commitment, and Passion as 0–100 integers, or -1 when both proxy metrics are unset. Never persisted; produced by `domain.NewDailyInsight`.
+- **WeeklyInsight**: A read model for one day in the Weekly Insights Window. Holds a date string (YYYYMMDD) and three dimension scores (0–100 or -1). Produced per day in the 7-day window; days with no Check-in yield all -1 scores.
 
 ## Domain Events
 

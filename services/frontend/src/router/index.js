@@ -5,6 +5,7 @@ import CheckinView from '../views/CheckinView.vue';
 import PairingView from '../views/PairingView.vue';
 import ProfileView from '../views/ProfileView.vue';
 import InsightsView from '../views/InsightsView.vue';
+import InsightsWeeklyView from '../views/InsightsWeeklyView.vue';
 
 const router = createRouter({
   history: createWebHistory(),
@@ -15,6 +16,7 @@ const router = createRouter({
     { path: '/checkin', component: CheckinView },
     { path: '/pairing', component: PairingView },
     { path: '/profile', component: ProfileView },
+    { path: '/insights', component: InsightsWeeklyView },
     { path: '/insights/:date', component: InsightsView }
   ]
 });
@@ -31,6 +33,9 @@ router.beforeEach((to) => {
     return '/login';
   }
   if (to.path === '/profile' && !token) {
+    return '/login';
+  }
+  if (to.path === '/insights' && !token) {
     return '/login';
   }
   if (to.path.startsWith('/insights/') && !token) {

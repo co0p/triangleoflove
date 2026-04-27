@@ -30,6 +30,12 @@
           {{ partnerName ? 'View pairing' : 'Connect with partner' }}
         </router-link>
       </div>
+
+      <div class="card dashboard-card">
+        <router-link data-testid="insights-link" to="/insights" class="btn btn-secondary">
+          Weekly insights
+        </router-link>
+      </div>
     </main>
   </div>
 </template>
