@@ -4,6 +4,33 @@ info:
   version: 1.0.0
 
 paths:
+  /api/v1/insights:
+    get:
+      summary: Return weekly insight scores for the authenticated account
+      description: |
+        Returns 7 day objects ordered oldest-first (index 0 = 6 days ago, index 6 = yesterday).
+        A score of -1 means no check-in exists for that day/dimension.
+        The backend determines the window via server clock; the frontend sorts defensively by date string.
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Weekly insight scores
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/WeeklyDayInsight"
+                minItems: 7
+                maxItems: 7
+        "401":
+          description: Missing or invalid token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
   /api/v1/insights/{date}:
     get:
       summary: Return daily insight scores for the authenticated account on a given date
@@ -75,6 +102,30 @@ components:
         passion:
           type: integer
           description: 0-100, or -1 if both proxy metrics were unset.
+          example: -1
+    WeeklyDayInsight:
+      type: object
+      required:
+        - date
+        - intimacy
+        - commitment
+        - passion
+      properties:
+        date:
+          type: string
+          description: Calendar date in YYYYMMDD format (UTC)
+          example: "20260421"
+        intimacy:
+          type: integer
+          description: 0-100, or -1 if no check-in exists for this day.
+          example: 75
+        commitment:
+          type: integer
+          description: 0-100, or -1 if no check-in exists for this day.
+          example: 50
+        passion:
+          type: integer
+          description: 0-100, or -1 if no check-in exists for this day.
           example: -1
     Error:
       type: object

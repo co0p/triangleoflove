@@ -41,3 +41,14 @@ test('TestInsights_GivenUnpairedUser_WhenRequested_ThenReturnsScores', async ({ 
   await expect(page.getByTestId('insight-commitment')).toHaveText('100');
   await expect(page.getByTestId('insight-passion')).toHaveText('100');
 });
+
+test('TestInsightsWeekly_GivenMobileViewport_WhenTableRendered_ThenReadableWithoutTooltip', async ({ page }) => {
+  await loginViaUI(page);
+  await expect(page).toHaveURL(/\/dashboard/);
+
+  await page.getByTestId('insights-link').click();
+
+  await expect(page).toHaveURL(/\/insights$/);
+  await expect(page.getByTestId('weekly-row')).toHaveCount(3);
+  await expect(page.getByTestId('weekly-cell')).toHaveCount(21);
+});

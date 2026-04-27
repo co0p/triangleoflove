@@ -23,7 +23,7 @@ vi.mock('../api/checkin.js', () => ({
 
 const stubs = {
   NavBar: true,
-  RouterLink: { template: '<a><slot /></a>' },
+  RouterLink: { template: '<a v-bind="$attrs"><slot /></a>' },
 };
 
 describe('DashboardView', () => {
@@ -58,5 +58,14 @@ describe('DashboardView', () => {
     await flushPromises();
 
     expect(wrapper.text()).toContain('Checked in today');
+  });
+
+  it('TestDashboard_GivenPrimaryNavigation_WhenInsightsLinkClicked_ThenOpensWeeklyInsights', async () => {
+    const wrapper = mount(DashboardView, { global: { stubs } });
+    await flushPromises();
+
+    const insightsLink = wrapper.find('[data-testid="insights-link"]');
+    expect(insightsLink.exists()).toBe(true);
+    expect(insightsLink.attributes('to')).toBe('/insights');
   });
 });
