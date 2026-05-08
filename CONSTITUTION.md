@@ -39,6 +39,13 @@ This document defines binding engineering and delivery constraints for the repos
 - Exceptions: Direct dependency calls are allowed only inside dedicated adapter modules.
 - Enforcement signal: Service and domain layers must not import transport or driver packages directly.
 
+### Development Workflow
+- Default: When the repository root `Makefile` exposes a supported local development task, contributors and LLMs should invoke the make target from the repository root instead of reconstructing the underlying command.
+- Default: The `Makefile` is the canonical entrypoint for supported local development tasks only; stack lifecycle, deployment, and other unsupported workflows may continue to use direct commands until a make target exists for them.
+- Default: Root make targets remain thin wrappers over the existing Go, npm, Docker Compose, and Docker workflows rather than redefining those workflows.
+- Exceptions: If no root make target exists for a task, direct tool-specific commands are allowed.
+- Enforcement signal: `DEVELOPMENT.md` and automation guidance reference supported make targets first.
+
 ## Testing Expectations
 
 - Test location: Unit tests are colocated with source. API acceptance tests live in `testing/`. Frontend component tests use Vitest and @vue/test-utils, are colocated in `services/frontend/src/`, and run via `npm test` inside that directory. The `testing/` folder is for API and browser (Playwright) acceptance tests only.

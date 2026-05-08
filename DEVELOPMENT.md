@@ -2,10 +2,30 @@
 
 This document explains how to run the local stack and API tests.
 
+## Canonical Task Entrypoint
+
+For the supported repository-root development tasks in this repo, contributors and LLMs should prefer the root `Makefile` instead of reconstructing the underlying commands.
+
+Supported targets:
+
+| Task | Command |
+| --- | --- |
+| Show supported tasks | `make help` |
+| Run backend tests | `make backend-test` |
+| Run frontend tests | `make frontend-test` |
+| Build the frontend bundle | `make frontend-build` |
+| Run Docker acceptance tests | `make acceptance-test` |
+| Build local Docker images | `make docker-build` |
+
+Tasks outside that supported set, such as starting or stopping the local stack, still use the direct commands documented below.
+
 ## Prerequisites
 
 - Docker Desktop (or Docker Engine + Docker Compose plugin)
 - A shell with `docker` and `docker compose` available
+- `make`
+- Go toolchain for local backend tests
+- Node.js 20+ for local frontend tests and builds
 
 ## Local Development (Low Effort)
 
@@ -86,18 +106,60 @@ curl --fail "http://localhost:${BACKEND_PORT}/health"
 curl --fail "http://localhost:${BACKEND_PORT}/status"
 ```
 
+## Run Backend Tests
+
+Use the canonical root target:
+
+```bash
+make backend-test
+```
+
+## Run Frontend Tests
+
+Use the canonical root target:
+
+```bash
+make frontend-test
+```
+
+The target installs frontend dependencies into `services/frontend/node_modules` on first run via `npm ci`.
+
+## Build Frontend
+
+Use the canonical root target:
+
+```bash
+make frontend-build
+```
+
 ## Run API Tests
 
-Run the Dockerized Playwright API test suite using the same orchestration pattern as CI:
+Use the canonical root target:
+
+```bash
+make acceptance-test
+```
+
+Underlying command used by the make target:
 
 ```bash
 docker compose --profile tests up --build --abort-on-container-exit --exit-code-from api-tests api-tests
 ```
 
-After tests finish (pass or fail), clean up containers and volumes:
+The make target cleans up containers and volumes automatically after the run.
+
+## Build Docker Images
+
+Use the canonical root target:
 
 ```bash
-docker compose --profile tests down -v
+make docker-build
+```
+
+Underlying command used by the make target:
+
+```bash
+docker compose --profile tests build frontend backend db api-tests
 ```
 
 ## Stop and Clean Up
@@ -119,8 +181,7 @@ docker compose down -v
 If tests fail after changing dependencies, force image rebuild:
 
 ```bash
-docker compose --profile tests up --build --abort-on-container-exit --exit-code-from api-tests api-tests
-docker compose --profile tests down -v
+make acceptance-test
 ```
 
 If services look stale, restart the stack:
