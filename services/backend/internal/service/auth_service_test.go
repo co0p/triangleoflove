@@ -15,6 +15,7 @@ type mockAccountRepo struct {
 	account     domain.Account
 	err         error
 	registerErr error
+	registered  domain.Account
 }
 
 func (m *mockAccountRepo) FindByEmail(_ context.Context, _ string) (domain.Account, error) {
@@ -29,7 +30,8 @@ func (m *mockAccountRepo) SaveHashedPassword(_ context.Context, _ string, _ stri
 	return nil
 }
 
-func (m *mockAccountRepo) Register(_ context.Context, _ domain.Account) error {
+func (m *mockAccountRepo) Register(_ context.Context, account domain.Account) error {
+	m.registered = account
 	return m.registerErr
 }
 
@@ -102,6 +104,23 @@ func TestAuthService_GivenShortPassword_WhenRegister_ThenValidationError(t *test
 
 	if !errors.Is(err, service.ErrPasswordTooShort) {
 		t.Fatalf("expected ErrPasswordTooShort, got %v", err)
+	}
+}
+
+func TestAuthService_GivenValidRegistration_WhenRegister_ThenCreatesInactiveAccount(t *testing.T) {
+	repo := &mockAccountRepo{}
+	svc := service.NewAuthService(repo)
+
+	err := svc.Register(context.Background(), "new@example.com", "securepass", "Tester")
+
+	if err != nil {
+		t.Fatalf("expected no error, got %v", err)
+	}
+	if repo.registered.Email != "new@example.com" {
+		t.Fatalf("expected registered email to be preserved, got %q", repo.registered.Email)
+	}
+	if repo.registered.IsActive {
+		t.Fatal("expected newly registered account to be inactive")
 	}
 }
 

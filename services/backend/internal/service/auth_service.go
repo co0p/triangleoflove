@@ -86,7 +86,7 @@ func (s *AuthService) Login(ctx context.Context, email, password string) (LoginR
 	return LoginResult{Token: token}, nil
 }
 
-// Register creates a new account with role user and active status.
+// Register creates a new account with role user and inactive status.
 func (s *AuthService) Register(ctx context.Context, email, password, firstName string) error {
 	if len(password) < 8 {
 		return ErrPasswordTooShort
@@ -103,7 +103,7 @@ func (s *AuthService) Register(ctx context.Context, email, password, firstName s
 		HashedPassword: string(hashed),
 		FirstName:      firstName,
 		Role:           domain.RoleUser,
-		IsActive:       true,
+		IsActive:       false,
 	}
 
 	if err := s.accounts.Register(ctx, account); err != nil {
