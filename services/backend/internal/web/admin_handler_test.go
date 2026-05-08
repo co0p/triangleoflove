@@ -17,8 +17,8 @@ import (
 // --- mock ---
 
 type mockAdminSvc struct {
-	users    []domain.AccountSummary
-	listErr  error
+	users     []domain.AccountSummary
+	listErr   error
 	activeErr error
 }
 

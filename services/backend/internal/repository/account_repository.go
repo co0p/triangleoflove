@@ -10,7 +10,6 @@ import (
 	"triangleoflove/backend/internal/domain"
 )
 
-
 // AccountRepository reads account records from Postgres.
 type AccountRepository struct {
 	db *sql.DB
