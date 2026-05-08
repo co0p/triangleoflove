@@ -5,4 +5,7 @@ const USERS = [
   { email: 'sam@triangleoflove.app', password: 'lovecoach4', firstName: 'Sam' },
 ];
 
-module.exports = { USERS };
+const ADMIN_EMAIL = 'admin@triangleoflove.app';
+const ADMIN_PASSWORD = 'adminpass1';
+
+module.exports = { USERS, ADMIN_EMAIL, ADMIN_PASSWORD };

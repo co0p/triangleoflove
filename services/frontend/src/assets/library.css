@@ -158,6 +158,26 @@ body {
   padding-block: var(--space-8);
 }
 
+/* Auth page layout shared by login and registration views */
+.login-page {
+  min-height: 100vh;
+  display: flex;
+  /* Keep form near top when mobile keyboard shrinks viewport */
+  align-items: flex-start;
+  padding-block: var(--space-10);
+  background-color: var(--color-bg);
+}
+
+.login-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.login-heading {
+  text-align: center;
+}
+
 /* ============================================================
    5. CARD
    ============================================================ */

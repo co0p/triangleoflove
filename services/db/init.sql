@@ -3,7 +3,10 @@ CREATE TABLE accounts (
     email TEXT NOT NULL UNIQUE,
     hashed_password TEXT NOT NULL,
     first_name TEXT NOT NULL,
-    invite_code TEXT NULL
+    invite_code TEXT NULL,
+    role TEXT NOT NULL DEFAULT 'user',
+    is_active BOOLEAN NOT NULL DEFAULT TRUE,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
 CREATE TABLE couples (
@@ -32,6 +35,14 @@ CREATE TABLE checkins (
 );
 
 CREATE INDEX checkins_account_date_idx ON checkins (account_id, date);
+
+INSERT INTO accounts (email, hashed_password, first_name, role)
+VALUES (
+    'admin@triangleoflove.app',
+    '$2a$10$bfOlmuMfOzSg6mYVbPPYX.Hj7ktgS7jKVtzydtsjJq2i.gXJIhcue',
+    'Admin',
+    'admin'
+);
 
 INSERT INTO accounts (email, hashed_password, first_name)
 VALUES (

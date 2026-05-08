@@ -55,6 +55,8 @@ func main() {
 	insightsRepo := repository.NewInsightsRepository(dbConn)
 	insightsService := service.NewInsightsService(insightsRepo)
 
+	adminService := service.NewAdminService(accountRepo)
+
 	pairingRepo := repository.NewPairingRepository(dbConn)
 	coupleRepo := repository.NewCoupleRepository(dbConn)
 	pairingService := service.NewPairingService(pairingRepo, coupleRepo)
@@ -73,7 +75,12 @@ func main() {
 		writeJSON(w, http.StatusOK, statusResponse{Status: "ok", Code: http.StatusOK})
 	})
 
-	mux.HandleFunc("/api/v1/auth/login", func(w http.ResponseWriter, r *http.Request) {
+	// 5 requests per minute per IP; exponential backoff on repeated violations.
+	loginRateLimit := web.RateLimit(100, time.Minute)
+
+	mux.Handle("POST /api/v1/register", loginRateLimit(web.NewRegistrationHandler(authService)))
+
+	mux.Handle("/api/v1/auth/login", loginRateLimit(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodPost {
 			writeJSON(w, http.StatusMethodNotAllowed, map[string]string{"error": "method not allowed"})
 			return
@@ -93,6 +100,10 @@ func main() {
 			writeJSON(w, http.StatusUnauthorized, map[string]string{"error": "invalid credentials"})
 			return
 		}
+		if errors.Is(err, service.ErrAccountInactive) {
+			writeJSON(w, http.StatusUnauthorized, map[string]string{"error": "account inactive"})
+			return
+		}
 		if err != nil {
 			log.Printf("login failed: %v", err)
 			writeJSON(w, http.StatusInternalServerError, map[string]string{"error": "internal server error"})
@@ -100,7 +111,7 @@ func main() {
 		}
 
 		writeJSON(w, http.StatusOK, result)
-	})
+	})))
 
 	mux.Handle("/api/v1/checkins/today", web.Middleware(web.NewCheckinHandler(checkinService)))
 
@@ -108,6 +119,8 @@ func main() {
 	mux.Handle("GET /api/v1/insights/{date}", web.Middleware(web.NewInsightsHandler(insightsService)))
 
 	mux.Handle("PUT /api/v1/auth/password", web.Middleware(web.NewChangePasswordHandler(authService)))
+
+	mux.Handle("/api/v1/admin/", web.Middleware(web.NewAdminHandler(adminService)))
 
 	ph := web.NewPairingHandler(pairingService)
 	mux.Handle("/api/v1/pairing", web.Middleware(http.HandlerFunc(ph.GetCode)))
@@ -122,7 +135,7 @@ func main() {
 			return
 		}
 
-		accountID, _ := r.Context().Value(web.AccountIDKey).(string)
+		accountID := web.CallerFromContext(r.Context()).ID
 		profile, err := authService.GetProfile(r.Context(), accountID)
 		if errors.Is(err, service.ErrInvalidCredentials) {
 			writeJSON(w, http.StatusUnauthorized, map[string]string{"error": "unauthorized"})

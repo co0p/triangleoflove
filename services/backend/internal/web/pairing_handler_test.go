@@ -72,7 +72,7 @@ func TestPairingHandler_GivenNoStoredCode_WhenGET_ThenReturns6CharCode(t *testin
 	ph := web.NewPairingHandler(svc)
 	handler := web.Middleware(http.HandlerFunc(ph.GetCode))
 
-	token, _ := auth.SignToken("account-123")
+	token, _ := auth.SignToken("account-123", "user")
 	req := httptest.NewRequest(http.MethodGet, "/api/v1/pairing", nil)
 	req.Header.Set("Authorization", "Bearer "+token)
 
@@ -103,7 +103,7 @@ func TestPairingHandler_GivenStoredCode_WhenGET_ThenReturnsSameCode(t *testing.T
 	ph := web.NewPairingHandler(svc)
 	handler := web.Middleware(http.HandlerFunc(ph.GetCode))
 
-	token, _ := auth.SignToken("account-123")
+	token, _ := auth.SignToken("account-123", "user")
 	req := httptest.NewRequest(http.MethodGet, "/api/v1/pairing", nil)
 	req.Header.Set("Authorization", "Bearer "+token)
 
@@ -127,7 +127,7 @@ func TestPairingHandler_GivenStoredCode_WhenPOSTRegenerate_ThenReturnsNewCode(t 
 	ph := web.NewPairingHandler(svc)
 	handler := web.Middleware(http.HandlerFunc(ph.Regenerate))
 
-	token, _ := auth.SignToken("account-123")
+	token, _ := auth.SignToken("account-123", "user")
 	req := httptest.NewRequest(http.MethodPost, "/api/v1/pairing/regenerate", nil)
 	req.Header.Set("Authorization", "Bearer "+token)
 
@@ -156,7 +156,7 @@ func TestPairingHandler_GivenStoredCode_WhenPOSTRegenerate_ThenOldCodeReplaced(t
 	ph := web.NewPairingHandler(svc)
 	handler := web.Middleware(http.HandlerFunc(ph.Regenerate))
 
-	token, _ := auth.SignToken("account-123")
+	token, _ := auth.SignToken("account-123", "user")
 	req := httptest.NewRequest(http.MethodPost, "/api/v1/pairing/regenerate", nil)
 	req.Header.Set("Authorization", "Bearer "+token)
 
@@ -174,7 +174,7 @@ func TestPairingHandler_GivenInvalidCode_WhenPOSTConnect_ThenReturns422(t *testi
 	ph := web.NewPairingHandler(svc)
 	handler := web.Middleware(http.HandlerFunc(ph.Connect))
 
-	token, _ := auth.SignToken("account-123")
+	token, _ := auth.SignToken("account-123", "user")
 	payload, _ := json.Marshal(map[string]string{"invite_code": "BADCOD"})
 	req := httptest.NewRequest(http.MethodPost, "/api/v1/pairing/connect", bytes.NewReader(payload))
 	req.Header.Set("Authorization", "Bearer "+token)
@@ -194,7 +194,7 @@ func TestPairingHandler_GivenAlreadyPaired_WhenPOSTConnect_ThenReturns409(t *tes
 	ph := web.NewPairingHandler(svc)
 	handler := web.Middleware(http.HandlerFunc(ph.Connect))
 
-	token, _ := auth.SignToken("account-123")
+	token, _ := auth.SignToken("account-123", "user")
 	payload, _ := json.Marshal(map[string]string{"invite_code": "VALIDC"})
 	req := httptest.NewRequest(http.MethodPost, "/api/v1/pairing/connect", bytes.NewReader(payload))
 	req.Header.Set("Authorization", "Bearer "+token)
@@ -214,7 +214,7 @@ func TestPairingHandler_GivenValidCode_WhenPOSTConnect_ThenReturns200(t *testing
 	ph := web.NewPairingHandler(svc)
 	handler := web.Middleware(http.HandlerFunc(ph.Connect))
 
-	token, _ := auth.SignToken("account-123")
+	token, _ := auth.SignToken("account-123", "user")
 	payload, _ := json.Marshal(map[string]string{"invite_code": "VALIDC"})
 	req := httptest.NewRequest(http.MethodPost, "/api/v1/pairing/connect", bytes.NewReader(payload))
 	req.Header.Set("Authorization", "Bearer "+token)
@@ -249,7 +249,7 @@ func TestUnpairHandler_GivenNotPaired_WhenDELETE_ThenReturns409(t *testing.T) {
 	ph := web.NewPairingHandler(svc)
 	handler := web.Middleware(http.HandlerFunc(ph.Unpair))
 
-	token, _ := auth.SignToken("account-123")
+	token, _ := auth.SignToken("account-123", "user")
 	req := httptest.NewRequest(http.MethodDelete, "/api/v1/couples/me", nil)
 	req.Header.Set("Authorization", "Bearer "+token)
 
@@ -266,7 +266,7 @@ func TestPairingHandler_GivenNotPaired_WhenGETCouplesMe_ThenReturnsPairedFalse(t
 	ph := web.NewPairingHandler(svc)
 	handler := web.Middleware(http.HandlerFunc(ph.GetCoupleStatus))
 
-	token, _ := auth.SignToken("account-123")
+	token, _ := auth.SignToken("account-123", "user")
 	req := httptest.NewRequest(http.MethodGet, "/api/v1/couples/me", nil)
 	req.Header.Set("Authorization", "Bearer "+token)
 
@@ -294,7 +294,7 @@ func TestPairingHandler_GivenPaired_WhenGETCouplesMe_ThenReturnsPartnerName(t *t
 	ph := web.NewPairingHandler(svc)
 	handler := web.Middleware(http.HandlerFunc(ph.GetCoupleStatus))
 
-	token, _ := auth.SignToken("account-123")
+	token, _ := auth.SignToken("account-123", "user")
 	req := httptest.NewRequest(http.MethodGet, "/api/v1/couples/me", nil)
 	req.Header.Set("Authorization", "Bearer "+token)
 

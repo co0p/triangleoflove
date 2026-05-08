@@ -36,6 +36,10 @@ func (m *mockChangePasswordAccountRepo) SaveHashedPassword(_ context.Context, _ 
 	return m.saveErr
 }
 
+func (m *mockChangePasswordAccountRepo) Register(_ context.Context, _ domain.Account) error {
+	return nil
+}
+
 func hashedPasswordForTest(t *testing.T, plain string) string {
 	t.Helper()
 	h, err := bcrypt.GenerateFromPassword([]byte(plain), bcrypt.MinCost)
@@ -77,7 +81,7 @@ func TestChangePasswordHandler_GivenWrongCurrentPassword_WhenPUT_ThenReturns409(
 	svc := service.NewAuthService(repo)
 	handler := web.Middleware(web.NewChangePasswordHandler(svc))
 
-	token, err := auth.SignToken("acc-1")
+	token, err := auth.SignToken("acc-1", "user")
 	if err != nil {
 		t.Fatalf("sign token: %v", err)
 	}

@@ -26,7 +26,7 @@ func (h *PairingHandler) GetCode(w http.ResponseWriter, r *http.Request) {
 		writeJSON(w, http.StatusMethodNotAllowed, map[string]string{"error": "method not allowed"})
 		return
 	}
-	accountID, _ := r.Context().Value(AccountIDKey).(string)
+	accountID := CallerFromContext(r.Context()).ID
 	code, err := h.svc.GetOrCreateCode(r.Context(), accountID)
 	if err != nil {
 		log.Printf("get or create invite code failed: %v", err)
@@ -42,7 +42,7 @@ func (h *PairingHandler) Regenerate(w http.ResponseWriter, r *http.Request) {
 		writeJSON(w, http.StatusMethodNotAllowed, map[string]string{"error": "method not allowed"})
 		return
 	}
-	accountID, _ := r.Context().Value(AccountIDKey).(string)
+	accountID := CallerFromContext(r.Context()).ID
 	code, err := h.svc.RegenerateCode(r.Context(), accountID)
 	if err != nil {
 		log.Printf("regenerate invite code failed: %v", err)
@@ -58,7 +58,7 @@ func (h *PairingHandler) Connect(w http.ResponseWriter, r *http.Request) {
 		writeJSON(w, http.StatusMethodNotAllowed, map[string]string{"error": "method not allowed"})
 		return
 	}
-	accountID, _ := r.Context().Value(AccountIDKey).(string)
+	accountID := CallerFromContext(r.Context()).ID
 	var body struct {
 		InviteCode string `json:"invite_code"`
 	}
@@ -89,7 +89,7 @@ func (h *PairingHandler) Unpair(w http.ResponseWriter, r *http.Request) {
 		writeJSON(w, http.StatusMethodNotAllowed, map[string]string{"error": "method not allowed"})
 		return
 	}
-	accountID, _ := r.Context().Value(AccountIDKey).(string)
+	accountID := CallerFromContext(r.Context()).ID
 	err := h.svc.Unpair(r.Context(), accountID)
 	if errors.Is(err, service.ErrNotPaired) {
 		writeJSON(w, http.StatusConflict, map[string]string{"error": "not paired"})
@@ -109,7 +109,7 @@ func (h *PairingHandler) GetCoupleStatus(w http.ResponseWriter, r *http.Request)
 		writeJSON(w, http.StatusMethodNotAllowed, map[string]string{"error": "method not allowed"})
 		return
 	}
-	accountID, _ := r.Context().Value(AccountIDKey).(string)
+	accountID := CallerFromContext(r.Context()).ID
 	status, err := h.svc.GetCoupleStatus(r.Context(), accountID)
 	if err != nil {
 		log.Printf("get couple status failed: %v", err)

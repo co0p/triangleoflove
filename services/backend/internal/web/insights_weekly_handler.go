@@ -29,7 +29,7 @@ func (h *InsightsWeeklyHandler) handle(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	accountID, _ := r.Context().Value(AccountIDKey).(string)
+	accountID := CallerFromContext(r.Context()).ID
 
 	weekly, err := h.svc.GetWeekly(r.Context(), accountID)
 	if err != nil {

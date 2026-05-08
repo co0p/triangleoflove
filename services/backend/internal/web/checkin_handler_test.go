@@ -45,7 +45,7 @@ func TestCheckinHandler_GivenNoEntry_WhenGET_ThenReturns404(t *testing.T) {
 	svc := service.NewCheckinService(&mockCheckinRepo{})
 	handler := web.Middleware(web.NewCheckinHandler(svc))
 
-	token, _ := auth.SignToken("account-123")
+	token, _ := auth.SignToken("account-123", "user")
 	req := httptest.NewRequest(http.MethodGet, "/api/v1/checkins/today", nil)
 	req.Header.Set("Authorization", "Bearer "+token)
 
@@ -61,7 +61,7 @@ func TestCheckinHandler_GivenMalformedBody_WhenPUT_ThenReturns400(t *testing.T) 
 	svc := service.NewCheckinService(&mockCheckinRepo{})
 	handler := web.Middleware(web.NewCheckinHandler(svc))
 
-	token, _ := auth.SignToken("account-123")
+	token, _ := auth.SignToken("account-123", "user")
 	req := httptest.NewRequest(http.MethodPut, "/api/v1/checkins/today", bytes.NewReader([]byte("not-json")))
 	req.Header.Set("Authorization", "Bearer "+token)
 	req.Header.Set("Content-Type", "application/json")
@@ -82,7 +82,7 @@ func TestCheckinHandler_GivenValidPUT_ThenSavesBody(t *testing.T) {
 	handler := web.Middleware(web.NewCheckinHandler(svc))
 
 	body, _ := json.Marshal(payload)
-	token, _ := auth.SignToken("account-123")
+	token, _ := auth.SignToken("account-123", "user")
 
 	req := httptest.NewRequest(http.MethodPut, "/api/v1/checkins/today", bytes.NewReader(body))
 	req.Header.Set("Authorization", "Bearer "+token)

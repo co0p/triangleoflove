@@ -19,10 +19,10 @@ func writeJSON(w http.ResponseWriter, code int, payload any) {
 }
 
 // NewCheckinHandler returns an http.Handler for GET/PUT /api/v1/checkins/today.
-// The handler expects AccountIDKey to be set in context (i.e. wrapped by Middleware).
+// The handler expects CallerAccount to be set in context (i.e. wrapped by Middleware).
 func NewCheckinHandler(svc *service.CheckinService) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		accountID, _ := r.Context().Value(AccountIDKey).(string)
+		accountID := CallerFromContext(r.Context()).ID
 
 		switch r.Method {
 		case http.MethodGet:

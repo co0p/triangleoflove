@@ -7,12 +7,24 @@ import (
 	"strings"
 
 	"triangleoflove/backend/internal/auth"
+	"triangleoflove/backend/internal/domain"
 )
 
 type contextKey string
 
-// AccountIDKey is the context key for the authenticated account ID.
-const AccountIDKey contextKey = "accountID"
+const callerKey contextKey = "caller"
+
+// CallerAccount holds the identity claims extracted from a validated JWT.
+type CallerAccount struct {
+	ID   string
+	Role domain.Role
+}
+
+// CallerFromContext returns the CallerAccount injected by Middleware.
+func CallerFromContext(ctx context.Context) CallerAccount {
+	v, _ := ctx.Value(callerKey).(CallerAccount)
+	return v
+}
 
 func writeUnauthorized(w http.ResponseWriter) {
 	w.Header().Set("Content-Type", "application/json")
@@ -20,7 +32,7 @@ func writeUnauthorized(w http.ResponseWriter) {
 	json.NewEncoder(w).Encode(map[string]string{"error": "unauthorized"})
 }
 
-// Middleware validates the Bearer token and injects the account ID into context.
+// Middleware validates the Bearer token and injects a CallerAccount into context.
 func Middleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		header := r.Header.Get("Authorization")
@@ -34,7 +46,11 @@ func Middleware(next http.Handler) http.Handler {
 			writeUnauthorized(w)
 			return
 		}
-		ctx := context.WithValue(r.Context(), AccountIDKey, claims.AccountID)
+		caller := CallerAccount{
+			ID:   claims.AccountID,
+			Role: domain.Role(claims.Role),
+		}
+		ctx := context.WithValue(r.Context(), callerKey, caller)
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }

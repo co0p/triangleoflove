@@ -61,7 +61,7 @@ func TestInsightsWeekly_GivenAuthenticatedUser_WhenRequested_ThenReturnsSevenDay
 	svc.SetClock(func() time.Time { return fixedNow })
 	handler := web.Middleware(web.NewInsightsWeeklyHandler(svc))
 
-	token, _ := auth.SignToken("account-123")
+	token, _ := auth.SignToken("account-123", "user")
 	req := httptest.NewRequest(http.MethodGet, "/api/v1/insights", nil)
 	req.Header.Set("Authorization", "Bearer "+token)
 	rec := httptest.NewRecorder()
@@ -107,7 +107,7 @@ func TestInsightsWeekly_GivenRepoError_WhenRequested_ThenReturns500(t *testing.T
 	svc := service.NewInsightsService(repo)
 	handler := web.Middleware(web.NewInsightsWeeklyHandler(svc))
 
-	token, _ := auth.SignToken("account-123")
+	token, _ := auth.SignToken("account-123", "user")
 	req := httptest.NewRequest(http.MethodGet, "/api/v1/insights", nil)
 	req.Header.Set("Authorization", "Bearer "+token)
 	rec := httptest.NewRecorder()
