@@ -98,6 +98,12 @@ Views derive score-band classes from numeric values. The API returns numeric sco
   - daily check-in should be upserted by (user_id, date)
   - weekly review upserted by (user_id, week_start_date)
 
+### Layering note: shared domain sentinel errors
+
+- Shared sentinel errors that must be imported by both repositories and services live in `internal/domain`.
+- Example: `ErrDuplicateEmail` belongs in `domain` rather than `service` to avoid a circular import (`repository` must not import `service`).
+- This keeps layering compliant with `repository -> domain` and `service -> domain`.
+
 ### Suggested endpoint list (MVP)
 - Auth:
   - `POST /api/v1/auth/register`

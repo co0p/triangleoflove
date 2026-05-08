@@ -31,7 +31,7 @@ func (h *InsightsHandler) handle(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	accountID, _ := r.Context().Value(AccountIDKey).(string)
+	accountID := CallerFromContext(r.Context()).ID
 	date := r.PathValue("date")
 
 	insight, err := h.svc.GetByDate(r.Context(), accountID, date)

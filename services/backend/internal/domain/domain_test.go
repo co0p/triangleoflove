@@ -25,3 +25,18 @@ func TestDomain_GivenDomainPackage_WhenInspected_ThenSingleErrNotFoundDefined(t 
 		t.Fatal("domain.ErrNotFound must satisfy errors.Is with itself")
 	}
 }
+
+func TestRole_GivenNewAccount_WhenCreated_ThenRoleIsUser(t *testing.T) {
+	a := domain.Account{
+		ID:             "1",
+		Email:          "new@example.com",
+		HashedPassword: "hashed",
+		FirstName:      "New",
+		Role:           domain.RoleUser,
+		IsActive:       true,
+	}
+
+	if a.Role != domain.RoleUser {
+		t.Fatalf("expected role %q, got %q", domain.RoleUser, a.Role)
+	}
+}

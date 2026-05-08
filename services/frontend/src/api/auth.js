@@ -1,5 +1,20 @@
 const BASE_URL = import.meta.env.VITE_API_BASE_URL || '';
 
+export async function register(email, password, firstName) {
+  const response = await fetch(`${BASE_URL}/api/v1/register`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, password, firstName })
+  });
+
+  if (response.status === 409) {
+    throw new Error('duplicate email');
+  }
+  if (!response.ok) {
+    throw new Error('registration failed');
+  }
+}
+
 export async function login(email, password) {
   const response = await fetch(`${BASE_URL}/api/v1/auth/login`, {
     method: 'POST',

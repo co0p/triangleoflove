@@ -14,13 +14,15 @@ const devSecret = "triangleoflove-dev-secret-not-for-production"
 // Claims are the JWT payload fields.
 type Claims struct {
 	AccountID string `json:"accountId"`
+	Role      string `json:"role"`
 	jwt.RegisteredClaims
 }
 
-// SignToken issues a signed JWT for the given account ID.
-func SignToken(accountID string) (string, error) {
+// SignToken issues a signed JWT for the given account ID and role.
+func SignToken(accountID, role string) (string, error) {
 	claims := Claims{
 		AccountID: accountID,
+		Role:      role,
 		RegisteredClaims: jwt.RegisteredClaims{
 			IssuedAt: jwt.NewNumericDate(time.Now()),
 		},

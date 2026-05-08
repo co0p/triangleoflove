@@ -31,7 +31,7 @@ func (h *ChangePasswordHandler) handle(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	accountID, _ := r.Context().Value(AccountIDKey).(string)
+	accountID := CallerFromContext(r.Context()).ID
 
 	var body struct {
 		CurrentPassword string `json:"current_password"`
