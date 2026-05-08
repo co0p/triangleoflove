@@ -22,7 +22,10 @@ async function loginViaUI(page, email, password) {
   await page.goto(`${FRONTEND_BASE_URL}/login`);
   await page.fill('input[type="email"]', loginEmail);
   await page.fill('input[type="password"]', loginPassword);
-  await page.click('button[type="submit"]');
+  await Promise.all([
+    page.waitForURL('**/dashboard'),
+    page.click('button[type="submit"]')
+  ]);
 }
 
 module.exports = { SEED_EMAIL, SEED_PASSWORD, SEED_EMAIL_2, SEED_PASSWORD_2, USERS, FRONTEND_BASE_URL, getToken, loginViaUI };

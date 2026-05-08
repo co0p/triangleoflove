@@ -5,6 +5,7 @@ export async function getTodayCheckin() {
   const response = await fetch(`${BASE_URL}/api/v1/checkins/today`, {
     headers: { Authorization: `Bearer ${token}` }
   });
+  if (response.status === 401) throw new Error('unauthorized');
   if (response.status === 404) return null;
   if (!response.ok) throw new Error('failed to load check-in');
   return response.json();

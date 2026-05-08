@@ -58,7 +58,10 @@ onMounted(async () => {
     firstName.value = profile.firstName;
     if (status.paired) partnerName.value = status.partner_first_name;
     checkedIn.value = todayCheckin !== null;
-  } catch {
+  } catch (error) {
+    if (!(error instanceof Error) || error.message !== 'unauthorized') {
+      return;
+    }
     localStorage.removeItem('token');
     router.push('/login');
   }

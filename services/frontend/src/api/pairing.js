@@ -14,6 +14,7 @@ export async function getCoupleStatus() {
   const response = await fetch(`${BASE_URL}/api/v1/couples/me`, {
     headers: { Authorization: `Bearer ${token}` }
   });
+  if (response.status === 401) throw new Error('unauthorized');
   if (!response.ok) throw new Error('failed to load couple status');
   return response.json();
 }

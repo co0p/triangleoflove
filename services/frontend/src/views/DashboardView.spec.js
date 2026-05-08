@@ -5,8 +5,12 @@ import * as usersApi from '../api/users.js';
 import * as pairingApi from '../api/pairing.js';
 import * as checkinApi from '../api/checkin.js';
 
+const { push } = vi.hoisted(() => ({
+  push: vi.fn(),
+}));
+
 vi.mock('vue-router', () => ({
-  useRouter: vi.fn().mockReturnValue({ push: vi.fn() }),
+  useRouter: vi.fn().mockReturnValue({ push }),
 }));
 
 vi.mock('../api/users.js', () => ({
@@ -67,5 +71,31 @@ describe('DashboardView', () => {
     const insightsLink = wrapper.find('[data-testid="insights-link"]');
     expect(insightsLink.exists()).toBe(true);
     expect(insightsLink.attributes('to')).toBe('/insights');
+  });
+
+  it('TestDashboard_GivenUnauthorizedLoad_WhenRendered_ThenClearsTokenAndRedirectsToLogin', async () => {
+    const removeItemSpy = vi.spyOn(Storage.prototype, 'removeItem');
+    usersApi.getMe.mockRejectedValue(new Error('unauthorized'));
+
+    mount(DashboardView, { global: { stubs } });
+    await flushPromises();
+
+    expect(removeItemSpy).toHaveBeenCalledWith('token');
+    expect(push).toHaveBeenCalledWith('/login');
+
+    removeItemSpy.mockRestore();
+  });
+
+  it('TestDashboard_GivenNonAuthLoadError_WhenRendered_ThenSessionRemainsIntact', async () => {
+    const removeItemSpy = vi.spyOn(Storage.prototype, 'removeItem');
+    pairingApi.getCoupleStatus.mockRejectedValue(new Error('failed to load couple status'));
+
+    mount(DashboardView, { global: { stubs } });
+    await flushPromises();
+
+    expect(removeItemSpy).not.toHaveBeenCalled();
+    expect(push).not.toHaveBeenCalled();
+
+    removeItemSpy.mockRestore();
   });
 });

@@ -5,8 +5,11 @@ export async function getMe() {
   const response = await fetch(`${BASE_URL}/api/v1/users/me`, {
     headers: { Authorization: `Bearer ${token}` }
   });
-  if (!response.ok) {
+  if (response.status === 401) {
     throw new Error('unauthorized');
+  }
+  if (!response.ok) {
+    throw new Error('failed to load profile');
   }
   return response.json();
 }
