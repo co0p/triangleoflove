@@ -155,26 +155,6 @@ onMounted(async () => {
   line-height: var(--line-height-tight);
 }
 
-.insight-value--very-low {
-  color: var(--color-insight-very-low);
-}
-
-.insight-value--low {
-  color: var(--color-insight-low);
-}
-
-.insight-value--moderate {
-  color: var(--color-insight-moderate);
-}
-
-.insight-value--high {
-  color: var(--color-insight-high);
-}
-
-.insight-value--unavailable {
-  color: var(--color-insight-unavailable);
-}
-
 .insight-empty {
   padding: var(--space-6);
   text-align: center;

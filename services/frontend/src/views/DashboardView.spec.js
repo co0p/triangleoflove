@@ -28,6 +28,7 @@ vi.mock('../api/checkin.js', () => ({
 const stubs = {
   NavBar: true,
   RouterLink: { template: '<a v-bind="$attrs"><slot /></a>' },
+  InsightsMatrix: { template: '<div data-testid="monthly-matrix" />' },
 };
 
 describe('DashboardView', () => {
@@ -97,5 +98,12 @@ describe('DashboardView', () => {
     expect(push).not.toHaveBeenCalled();
 
     removeItemSpy.mockRestore();
+  });
+
+  it('TestDashboard_GivenMonthlyInsights_WhenDashboardLoads_ThenInsightsSectionVisible', async () => {
+    const wrapper = mount(DashboardView, { global: { stubs } });
+    await flushPromises();
+
+    expect(wrapper.find('[data-testid="monthly-matrix"]').exists()).toBe(true);
   });
 });

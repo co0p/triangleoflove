@@ -36,6 +36,8 @@
           Weekly insights
         </router-link>
       </div>
+
+      <InsightsMatrix :past="31" />
     </main>
   </div>
 </template>
@@ -46,6 +48,7 @@ import { useRouter } from 'vue-router';
 import { getMe } from '../api/users.js';
 import { getCoupleStatus } from '../api/pairing.js';
 import { getTodayCheckin } from '../api/checkin.js';
+import InsightsMatrix from '../components/InsightsMatrix.vue';
 
 const firstName = ref('');
 const partnerName = ref('');

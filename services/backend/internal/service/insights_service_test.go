@@ -88,3 +88,51 @@ func TestInsightsService_GetWeekly_GivenRepoError_WhenRequested_ThenPropagatesEr
 		t.Fatal("expected error, got nil")
 	}
 }
+
+func TestInsightsService_GetWindow_GivenPast3_WhenToday_ThenReturns3ItemsWithTodayLast(t *testing.T) {
+	// today = 2026-05-11 → window: 20260509, 20260510, 20260511
+	fixedNow := time.Date(2026, 5, 11, 0, 0, 0, 0, time.UTC)
+	repo := &mockInsightsRepoWeekly{
+		checkins: map[string]domain.Checkin{
+			"20260511": {FeltUnderstood: 5, MeaningfulSharing: 5, CouldCountOnThem: 5, EffortForUs: 5, Desire: 5, Spark: 5},
+		},
+	}
+	svc := service.NewInsightsService(repo)
+	svc.SetClock(func() time.Time { return fixedNow })
+
+	result, err := svc.GetWindow(context.Background(), "account-1", 3)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if len(result) != 3 {
+		t.Fatalf("expected 3 items, got %d", len(result))
+	}
+	// Index 2 must be today
+	if result[2].Date != "20260511" {
+		t.Errorf("expected result[2].Date=20260511 (today), got %s", result[2].Date)
+	}
+	// Index 0 must be 2 days ago
+	if result[0].Date != "20260509" {
+		t.Errorf("expected result[0].Date=20260509, got %s", result[0].Date)
+	}
+	// Today has a check-in; score should be 100
+	if result[2].Intimacy != 100 {
+		t.Errorf("expected result[2].Intimacy=100, got %d", result[2].Intimacy)
+	}
+	// Days without check-ins must have -1
+	if result[0].Intimacy != -1 {
+		t.Errorf("expected result[0].Intimacy=-1 (no check-in), got %d", result[0].Intimacy)
+	}
+}
+
+func TestInsightsService_GetWindow_GivenRepoError_WhenRequested_ThenPropagatesError(t *testing.T) {
+	fixedNow := time.Date(2026, 5, 11, 0, 0, 0, 0, time.UTC)
+	repo := &mockInsightsRepoWeekly{err: errors.New("db error")}
+	svc := service.NewInsightsService(repo)
+	svc.SetClock(func() time.Time { return fixedNow })
+
+	_, err := svc.GetWindow(context.Background(), "account-1", 3)
+	if err == nil {
+		t.Fatal("expected error, got nil")
+	}
+}

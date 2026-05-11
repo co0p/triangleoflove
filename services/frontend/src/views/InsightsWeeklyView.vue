@@ -42,7 +42,7 @@ function cellClass(score) {
 
 onMounted(async () => {
   try {
-    const data = await getWeeklyInsights();
+    const data = await getWeeklyInsights(7);
     weeklyData.value = [...data].sort((a, b) => a.date.localeCompare(b.date));
   } catch (error) {
     if (error instanceof Error && error.message === 'unauthorized') {
