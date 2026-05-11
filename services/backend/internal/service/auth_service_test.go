@@ -107,11 +107,33 @@ func TestAuthService_GivenShortPassword_WhenRegister_ThenValidationError(t *test
 	}
 }
 
-func TestAuthService_GivenValidRegistration_WhenRegister_ThenCreatesInactiveAccount(t *testing.T) {
+func TestAuthService_GivenInvalidEmail_WhenRegister_ThenValidationError(t *testing.T) {
+	repo := &mockAccountRepo{}
+	svc := service.NewAuthService(repo)
+
+	err := svc.Register(context.Background(), "invalid-email", "securepass!", "Tester")
+
+	if !errors.Is(err, service.ErrInvalidEmailFormat) {
+		t.Fatalf("expected ErrInvalidEmailFormat, got %v", err)
+	}
+}
+
+func TestAuthService_GivenPasswordWithoutSpecialChar_WhenRegister_ThenValidationError(t *testing.T) {
 	repo := &mockAccountRepo{}
 	svc := service.NewAuthService(repo)
 
 	err := svc.Register(context.Background(), "new@example.com", "securepass", "Tester")
+
+	if !errors.Is(err, service.ErrPasswordMissingSpecialChar) {
+		t.Fatalf("expected ErrPasswordMissingSpecialChar, got %v", err)
+	}
+}
+
+func TestAuthService_GivenValidRegistration_WhenRegister_ThenCreatesInactiveAccount(t *testing.T) {
+	repo := &mockAccountRepo{}
+	svc := service.NewAuthService(repo)
+
+	err := svc.Register(context.Background(), "new@example.com", "securepass!", "Tester")
 
 	if err != nil {
 		t.Fatalf("expected no error, got %v", err)

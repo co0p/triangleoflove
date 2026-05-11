@@ -51,8 +51,16 @@ func (h *RegistrationHandler) handle(w http.ResponseWriter, r *http.Request) {
 		writeJSON(w, http.StatusConflict, map[string]string{"error": "email already exists"})
 		return
 	}
+	if errors.Is(err, service.ErrInvalidEmailFormat) {
+		writeJSON(w, http.StatusBadRequest, map[string]string{"error": "Enter a valid email address."})
+		return
+	}
 	if errors.Is(err, service.ErrPasswordTooShort) {
-		writeJSON(w, http.StatusBadRequest, map[string]string{"error": "password must be at least 8 characters"})
+		writeJSON(w, http.StatusBadRequest, map[string]string{"error": "Password must be at least 8 characters."})
+		return
+	}
+	if errors.Is(err, service.ErrPasswordMissingSpecialChar) {
+		writeJSON(w, http.StatusBadRequest, map[string]string{"error": "Password must include a special character."})
 		return
 	}
 	if err != nil {

@@ -275,12 +275,19 @@ Backend notes:
 - **Why it emerged**: Email and password strings were duplicated across `auth.js` and test files. Centralising into `users.js` gives tests a single place to update when seed data changes and makes the full user list available for multi-user flows (e.g. pairing connect).
 - **Where used**: `testing/tests/helpers/users.js`, `testing/tests/helpers/auth.js`
 
+### Dual-Layer Registration Credential Policy
+
+- **What**: Registration evaluates the same credential rules twice: immediate signals and submit-time guards in the registration view, then final enforcement in the backend auth service. The auth API client preserves backend validation messages instead of replacing them with a generic failure.
+- **Why it emerged**: The increment required real-time guidance during form entry and also guaranteed rejection if invalid data still reached account creation. Keeping the same rule set on both sides reduced drift between UI guidance and backend enforcement.
+- **Where used**: `services/frontend/src/views/RegisterView.vue`, `services/frontend/src/api/auth.js`, `services/backend/internal/service/auth_service.go`, `services/backend/internal/web/registration_handler.go`
+
 | Date | Increment | Changes |
 |------|-----------|---------|
 | 2026-04-09 | Couple Pairing | Handler struct pattern, repository split by aggregate, `.page` layout utility, seed data helper module |
 | 2026-04-12 | Apply the Test Pyramid | Vue component test patterns for router-using views, mock reset discipline |
 | 2026-04-13 | Unpair from couple | Destructive-action confirmation modal pattern |
 | 2026-04-27 | Weekly Insights Matrix | RouterLink stub `v-bind="$attrs"` for `to` prop assertability in component tests |
+| 2026-05-11 | Registration Flow Clarity and Validation | Dual-layer registration credential policy and backend validation-message passthrough at the auth API boundary |
 
 ### Destructive-Action Confirmation Modal
 

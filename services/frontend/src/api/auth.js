@@ -7,11 +7,14 @@ export async function register(email, password, firstName) {
     body: JSON.stringify({ email, password, firstName })
   });
 
+  const data = await response.json().catch(() => null);
+  const errorMessage = typeof data?.error === 'string' ? data.error : 'Registration failed. Please try again.';
+
   if (response.status === 409) {
     throw new Error('duplicate email');
   }
   if (!response.ok) {
-    throw new Error('registration failed');
+    throw new Error(errorMessage);
   }
 }
 

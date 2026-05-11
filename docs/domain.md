@@ -13,7 +13,14 @@
 | Password Change | The act of an authenticated Account replacing their password by supplying their current password and a new one. Requires proof of current Credentials. Endpoint: `PUT /api/v1/auth/password`. |
 | Protected Resource | Any backend endpoint that requires a valid Token to respond |
 | Login | The act of submitting Credentials and receiving a Token |
-| Registration | The self-service act of a visitor creating an Account by supplying email, password, and first name. |
+| Visitor | A person who is not signed in and is trying to create an Account or reach sign-in. |
+| Registration | The self-service act of a Visitor creating an Account by supplying first name, email address, password, and password confirmation, then returning to sign-in after success. |
+| Password Confirmation | The second password entry used during Registration to confirm the Visitor intended the submitted password. |
+| Password Rule | A single requirement a registration password must satisfy before account creation is accepted. Current rules: minimum length and at least one non-alphanumeric character. |
+| Validation Signal | Immediate feedback shown while a Visitor types, indicating whether a registration rule is currently satisfied. |
+| Validation Error | Clear blocking feedback shown when Registration cannot proceed because a required rule failed. |
+| Registration Success Message | The visible confirmation shown on the sign-in page after successful Registration. |
+| Sign-in Entry Point | The visible path from the sign-in page to the registration form. |
 | Role | A fixed label assigned to an Account at creation time, governing permissions. Two values: `user` and `admin`. |
 | Active Account | An Account whose `is_active` flag is `true`; can log in and receive a Token. |
 | Inactive Account | An Account whose `is_active` flag is `false`; login is rejected regardless of credential correctness. |
@@ -48,8 +55,8 @@
 ## Bounded Contexts
 
 ### Auth
-- **Responsibility**: Verifies Credentials, issues Tokens carrying role claims, handles Registration, enforces that Inactive Accounts cannot log in, serves Profile data, and allows authenticated Accounts to change their own password.
-- **Key concepts**: Account, Registration, Role, Active Account, Inactive Account, Credentials, Token, Identity, Profile, Login, Protected Resource, Password Change, Rate Limit, Logout
+- **Responsibility**: Verifies Credentials, issues Tokens carrying role claims, handles Registration, evaluates credential policy for email format and password rules, enforces that Inactive Accounts cannot log in, serves Profile data, and allows authenticated Accounts to change their own password.
+- **Key concepts**: Visitor, Account, Registration, Password Confirmation, Password Rule, Validation Signal, Validation Error, Registration Success Message, Sign-in Entry Point, Role, Active Account, Inactive Account, Credentials, Token, Identity, Profile, Login, Protected Resource, Password Change, Rate Limit, Logout
 - **Relationships**: Sole owner of the `accounts` table; upstream identity provider to other contexts.
 
 ### Admin
@@ -80,7 +87,7 @@
 ## Aggregates
 
 ### Account
-Protects three invariants — (1) a login attempt only produces a Token when supplied Credentials match the stored identity and the Account is Active; (2) `changePassword` only succeeds when the supplied current password matches the stored `hashedPassword`; (3) Registration is rejected when email is already taken or password is shorter than 8 characters. Attempts with a non-matching current password are rejected with `ErrInvalidCredentials`.
+Protects three invariants — (1) a login attempt only produces a Token when supplied Credentials match the stored identity and the Account is Active; (2) `changePassword` only succeeds when the supplied current password matches the stored `hashedPassword`; (3) Registration is rejected when email is already taken, email format is invalid, password is shorter than 8 characters, or password lacks a non-alphanumeric character. Password confirmation remains a registration-time interaction rule and is not persisted on the Account. Attempts with a non-matching current password are rejected with `ErrInvalidCredentials`.
 
 Stored in the `accounts` table (id UUID, email, hashed_password, first_name, role, is_active, created_at).
 

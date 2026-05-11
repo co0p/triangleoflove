@@ -28,7 +28,7 @@ test('TestAuthLogin GivenInvalidCredentials WhenRequested ThenReturns401', async
 test('TestRegistration_GivenValidInput_WhenSubmitted_ThenAccountCreated', async ({ request }) => {
   const email = `reg-${Date.now()}@example.com`;
   const response = await request.post('/api/v1/register', {
-    data: { email, password: 'securepass', firstName: 'Tester' }
+    data: { email, password: 'securepass!', firstName: 'Tester' }
   });
   expect(response.status(), await response.text()).toBe(201);
 });

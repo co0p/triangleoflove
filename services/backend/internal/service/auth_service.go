@@ -5,6 +5,7 @@ import (
 	"crypto/rand"
 	"errors"
 	"fmt"
+	"regexp"
 
 	"golang.org/x/crypto/bcrypt"
 
@@ -29,8 +30,16 @@ var ErrAccountInactive = errors.New("account inactive")
 // ErrPasswordTooShort is returned when a registration password is shorter than 8 characters.
 var ErrPasswordTooShort = errors.New("password too short")
 
+// ErrInvalidEmailFormat is returned when a registration email does not match the expected format.
+var ErrInvalidEmailFormat = errors.New("invalid email format")
+
+// ErrPasswordMissingSpecialChar is returned when a registration password lacks a non-alphanumeric character.
+var ErrPasswordMissingSpecialChar = errors.New("password missing special character")
+
 // ErrEmailAlreadyExists is returned when a registration email is already taken.
 var ErrEmailAlreadyExists = errors.New("email already exists")
+
+var registrationEmailPattern = regexp.MustCompile(`^[^\s@]+@[^\s@]+\.[^\s@]+$`)
 
 // AccountRepo is the storage interface required by AuthService.
 type AccountRepo interface {
@@ -88,8 +97,16 @@ func (s *AuthService) Login(ctx context.Context, email, password string) (LoginR
 
 // Register creates a new account with role user and inactive status.
 func (s *AuthService) Register(ctx context.Context, email, password, firstName string) error {
+	if !registrationEmailPattern.MatchString(email) {
+		return ErrInvalidEmailFormat
+	}
+
 	if len(password) < 8 {
 		return ErrPasswordTooShort
+	}
+
+	if !regexp.MustCompile(`[^A-Za-z0-9]`).MatchString(password) {
+		return ErrPasswordMissingSpecialChar
 	}
 
 	hashed, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
