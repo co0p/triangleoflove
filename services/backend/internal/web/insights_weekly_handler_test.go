@@ -117,3 +117,79 @@ func TestInsightsWeekly_GivenRepoError_WhenRequested_ThenReturns500(t *testing.T
 		t.Fatalf("expected 500, got %d: %s", rec.Code, rec.Body.String())
 	}
 }
+
+func TestInsightsWeekly_GivenPastParam31_WhenRequested_ThenReturns31DaysWithTodayLast(t *testing.T) {
+	fixedNow := time.Date(2026, 5, 11, 0, 0, 0, 0, time.UTC)
+	repo := &mockInsightsWeeklyRepo{checkins: map[string]domain.Checkin{}}
+	svc := service.NewInsightsService(repo)
+	svc.SetClock(func() time.Time { return fixedNow })
+	handler := web.Middleware(web.NewInsightsWeeklyHandler(svc))
+
+	token, _ := auth.SignToken("account-123", "user")
+	req := httptest.NewRequest(http.MethodGet, "/api/v1/insights?past=31", nil)
+	req.Header.Set("Authorization", "Bearer "+token)
+	rec := httptest.NewRecorder()
+	handler.ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusOK {
+		t.Fatalf("expected 200, got %d: %s", rec.Code, rec.Body.String())
+	}
+	var result []domain.WeeklyInsight
+	if err := json.NewDecoder(rec.Body).Decode(&result); err != nil {
+		t.Fatalf("failed to decode response: %v", err)
+	}
+	if len(result) != 31 {
+		t.Fatalf("expected 31 items, got %d", len(result))
+	}
+	if result[30].Date != "20260511" {
+		t.Errorf("expected result[30].Date=20260511 (today), got %s", result[30].Date)
+	}
+}
+
+func TestInsightsWeekly_GivenPastParam0_WhenRequested_ThenReturns400(t *testing.T) {
+	repo := &mockInsightsWeeklyRepo{checkins: map[string]domain.Checkin{}}
+	svc := service.NewInsightsService(repo)
+	handler := web.Middleware(web.NewInsightsWeeklyHandler(svc))
+
+	token, _ := auth.SignToken("account-123", "user")
+	req := httptest.NewRequest(http.MethodGet, "/api/v1/insights?past=0", nil)
+	req.Header.Set("Authorization", "Bearer "+token)
+	rec := httptest.NewRecorder()
+	handler.ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusBadRequest {
+		t.Fatalf("expected 400, got %d", rec.Code)
+	}
+}
+
+func TestInsightsWeekly_GivenPastParam101_WhenRequested_ThenReturns400(t *testing.T) {
+	repo := &mockInsightsWeeklyRepo{checkins: map[string]domain.Checkin{}}
+	svc := service.NewInsightsService(repo)
+	handler := web.Middleware(web.NewInsightsWeeklyHandler(svc))
+
+	token, _ := auth.SignToken("account-123", "user")
+	req := httptest.NewRequest(http.MethodGet, "/api/v1/insights?past=101", nil)
+	req.Header.Set("Authorization", "Bearer "+token)
+	rec := httptest.NewRecorder()
+	handler.ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusBadRequest {
+		t.Fatalf("expected 400, got %d", rec.Code)
+	}
+}
+
+func TestInsightsWeekly_GivenPastParamNonNumeric_WhenRequested_ThenReturns400(t *testing.T) {
+	repo := &mockInsightsWeeklyRepo{checkins: map[string]domain.Checkin{}}
+	svc := service.NewInsightsService(repo)
+	handler := web.Middleware(web.NewInsightsWeeklyHandler(svc))
+
+	token, _ := auth.SignToken("account-123", "user")
+	req := httptest.NewRequest(http.MethodGet, "/api/v1/insights?past=abc", nil)
+	req.Header.Set("Authorization", "Bearer "+token)
+	rec := httptest.NewRecorder()
+	handler.ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusBadRequest {
+		t.Fatalf("expected 400, got %d", rec.Code)
+	}
+}

@@ -4,6 +4,7 @@ import (
 	"context"
 	"log"
 	"net/http"
+	"strconv"
 
 	"triangleoflove/backend/internal/domain"
 )
@@ -11,6 +12,7 @@ import (
 // InsightsWeeklyService is the interface required by InsightsWeeklyHandler.
 type InsightsWeeklyService interface {
 	GetWeekly(ctx context.Context, accountID string) ([]domain.WeeklyInsight, error)
+	GetWindow(ctx context.Context, accountID string, past int) ([]domain.WeeklyInsight, error)
 }
 
 // InsightsWeeklyHandler handles GET /api/v1/insights.
@@ -31,12 +33,29 @@ func (h *InsightsWeeklyHandler) handle(w http.ResponseWriter, r *http.Request) {
 
 	accountID := CallerFromContext(r.Context()).ID
 
-	weekly, err := h.svc.GetWeekly(r.Context(), accountID)
-	if err != nil {
-		log.Printf("get weekly insights failed: %v", err)
-		writeJSON(w, http.StatusInternalServerError, map[string]string{"error": "internal server error"})
+	pastStr := r.URL.Query().Get("past")
+	if pastStr == "" {
+		weekly, err := h.svc.GetWeekly(r.Context(), accountID)
+		if err != nil {
+			log.Printf("get weekly insights failed: %v", err)
+			writeJSON(w, http.StatusInternalServerError, map[string]string{"error": "internal server error"})
+			return
+		}
+		writeJSON(w, http.StatusOK, weekly)
 		return
 	}
 
-	writeJSON(w, http.StatusOK, weekly)
+	past, err := strconv.Atoi(pastStr)
+	if err != nil || past < 1 || past > 100 {
+		writeJSON(w, http.StatusBadRequest, map[string]string{"error": "past must be an integer between 1 and 100"})
+		return
+	}
+
+	window, err := h.svc.GetWindow(r.Context(), accountID, past)
+	if err != nil {
+		log.Printf("get window insights failed: %v", err)
+		writeJSON(w, http.StatusInternalServerError, map[string]string{"error": "internal server error"})
+		return
+	}
+	writeJSON(w, http.StatusOK, window)
 }

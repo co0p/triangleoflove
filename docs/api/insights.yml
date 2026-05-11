@@ -6,24 +6,46 @@ info:
 paths:
   /api/v1/insights:
     get:
-      summary: Return weekly insight scores for the authenticated account
+      summary: Return insight scores for the authenticated account
       description: |
-        Returns 7 day objects ordered oldest-first (index 0 = 6 days ago, index 6 = yesterday).
+        When `past` is absent: returns 7 day objects, oldest-first (index 0 = 6 days ago,
+        index 6 = yesterday). Backward-compatible default.
+        When `past` is provided: returns N day objects, oldest-first (index 0 = N-1 days ago,
+        index N-1 = today). Window is anchored at today UTC.
         A score of -1 means no check-in exists for that day/dimension.
-        The backend determines the window via server clock; the frontend sorts defensively by date string.
+        Valid range for `past`: 1–100. Out-of-range or non-integer values return 400.
       security:
         - bearerAuth: []
+      parameters:
+        - name: past
+          in: query
+          required: false
+          description: |
+            Number of days to include in the window (1–100).
+            Omit to use the default 7-day window ending yesterday.
+            When provided, the window ends at today (index N-1 = today).
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            example: 31
       responses:
         "200":
-          description: Weekly insight scores
+          description: Insight scores
           content:
             application/json:
               schema:
                 type: array
                 items:
                   $ref: "#/components/schemas/WeeklyDayInsight"
-                minItems: 7
-                maxItems: 7
+                minItems: 1
+                maxItems: 100
+        "400":
+          description: Invalid `past` parameter (out of range or non-integer)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
         "401":
           description: Missing or invalid token
           content:

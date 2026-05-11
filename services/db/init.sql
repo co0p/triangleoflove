@@ -88,3 +88,13 @@ SELECT id, DATE '2026-03-28', 2, 1, 2, 2, 1, 2, 2, 'Stressful day at work, felt 
 SELECT id, DATE '2026-03-29', 4, 3, 4, 4, 3, 3, 4, 'Recovered well, good talk in the evening.'    FROM accounts WHERE email = 'river@triangleoflove.app' UNION ALL
 SELECT id, DATE '2026-03-30', 5, 5, 5, 5, 5, 5, 5, 'Best day this week, really close and present.' FROM accounts WHERE email = 'river@triangleoflove.app' UNION ALL
 SELECT id, DATE '2026-03-31', 4, 4, 4, 4, 4, 4, 4, 'Wrapping up the month on a high note.'        FROM accounts WHERE email = 'river@triangleoflove.app';
+
+-- Relative-date check-ins so the monthly matrix always shows colored cells on any run date.
+INSERT INTO checkins (account_id, date, felt_understood, meaningful_sharing, could_count_on_them, effort_for_us, desire, spark, mood, note)
+SELECT id, CURRENT_DATE - 6, 4, 3, 5, 4, 3, 4, 4, 'Recent check-in 6 days ago.' FROM accounts WHERE email = 'river@triangleoflove.app' UNION ALL
+SELECT id, CURRENT_DATE - 5, 3, 4, 4, 3, 4, 3, 3, 'Recent check-in 5 days ago.' FROM accounts WHERE email = 'river@triangleoflove.app' UNION ALL
+SELECT id, CURRENT_DATE - 4, 5, 4, 5, 5, 4, 5, 5, 'Recent check-in 4 days ago.' FROM accounts WHERE email = 'river@triangleoflove.app' UNION ALL
+SELECT id, CURRENT_DATE - 3, 2, 1, 2, 2, 1, 2, 2, 'Recent check-in 3 days ago.' FROM accounts WHERE email = 'river@triangleoflove.app' UNION ALL
+SELECT id, CURRENT_DATE - 2, 4, 3, 4, 4, 3, 3, 4, 'Recent check-in 2 days ago.' FROM accounts WHERE email = 'river@triangleoflove.app' UNION ALL
+SELECT id, CURRENT_DATE - 1, 5, 5, 5, 5, 5, 5, 5, 'Recent check-in yesterday.'  FROM accounts WHERE email = 'river@triangleoflove.app' UNION ALL
+SELECT id, CURRENT_DATE,     4, 4, 4, 4, 4, 4, 4, 'Recent check-in today.'       FROM accounts WHERE email = 'river@triangleoflove.app';
