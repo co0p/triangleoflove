@@ -4,7 +4,9 @@
       <h1>Welcome back, {{ firstName }}</h1>
     </header>
     <main class="container section">
-      <CheckinMatrix :past="31" />
+      <div class="card">
+        <CheckinMatrix :past="31" />
+      </div>
 
       <div class="card dashboard-card">
         <div class="dashboard-status-row">
