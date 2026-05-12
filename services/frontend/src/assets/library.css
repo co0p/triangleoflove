@@ -175,6 +175,11 @@ body {
   padding-block: var(--space-8);
 }
 
+/* Content block: wraps a single piece of page content with bottom spacing. */
+.block {
+  padding-bottom: var(--space-6);
+}
+
 /* Auth page layout shared by login and registration views */
 .login-page {
   min-height: 100vh;
