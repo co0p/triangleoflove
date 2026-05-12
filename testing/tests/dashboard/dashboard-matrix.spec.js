@@ -10,13 +10,13 @@ test('TestDashboardMatrix_GivenRecentCheckins_WhenDashboardLoads_ThenMonthlyMatr
   await loginViaUI(page);
   await expect(page).toHaveURL(/\/dashboard/);
 
-  const matrix = page.getByTestId('monthly-matrix');
+  const matrix = page.getByTestId('checkin-history');
   await expect(matrix).toBeVisible();
 
   // At least one cell should have a color class (not unavailable) because
   // init.sql seeds 7 relative-date check-ins for the past week.
   const coloredCell = matrix.locator(
-    '[data-testid="matrix-cell"]:not(.insight-value--unavailable)'
+    '[data-testid="matrix-cell"]:not(.cell-unavailable)'
   ).first();
   await expect(coloredCell).toBeVisible();
 });
@@ -25,6 +25,6 @@ test('TestDashboardMatrix_GivenRecentCheckins_WhenDashboardLoads_ThenAllThreeDim
   await loginViaUI(page);
   await expect(page).toHaveURL(/\/dashboard/);
 
-  const rows = page.getByTestId('monthly-matrix').getByTestId('matrix-row');
+  const rows = page.getByTestId('checkin-history').getByTestId('matrix-row');
   await expect(rows).toHaveCount(3);
 });
