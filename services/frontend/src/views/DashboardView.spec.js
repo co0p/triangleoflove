@@ -28,7 +28,7 @@ vi.mock('../api/checkin.js', () => ({
 const stubs = {
   NavBar: true,
   RouterLink: { template: '<a v-bind="$attrs"><slot /></a>' },
-  InsightsMatrix: { template: '<div data-testid="monthly-matrix" />' },
+  CheckinMatrix: { template: '<div data-testid="checkin-history" />' },
 };
 
 describe('DashboardView', () => {
@@ -104,6 +104,6 @@ describe('DashboardView', () => {
     const wrapper = mount(DashboardView, { global: { stubs } });
     await flushPromises();
 
-    expect(wrapper.find('[data-testid="monthly-matrix"]').exists()).toBe(true);
+    expect(wrapper.find('[data-testid="checkin-history"]').exists()).toBe(true);
   });
 });

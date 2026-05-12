@@ -12,14 +12,17 @@
    ============================================================ */
 :root {
   /* --- Raw palette --- */
+  --color-sage-100:    #e8f2e8;
   --color-sage-300:    #a8c8a8;
   --color-sage-500:    #7aab7a;
   --color-sage-700:    #508a50;
   --color-sky-300:     #b7d3e8;
   --color-sky-700:     #4f7fa8;
+  --color-rose-100:    #fae8eb;
   --color-rose-200:    #ebb8c0;
   --color-rose-400:    #d97d8a;
   --color-rose-700:    #b05568;
+  --color-gold-100:    #faf0d7;
   --color-gold-300:    #e8c97a;
   --color-gold-500:    #d4a843;
   --color-gold-700:    #a8832e;
@@ -47,6 +50,20 @@
   --color-insight-moderate: var(--color-sky-700);
   --color-insight-high:     var(--color-sage-700);
   --color-insight-unavailable: var(--color-neutral-400);
+
+  /* --- Per-dimension history tokens --- */
+  --color-intimacy-very-low:    var(--color-rose-100);
+  --color-intimacy-low:         var(--color-rose-200);
+  --color-intimacy-moderate:    var(--color-rose-400);
+  --color-intimacy-high:        var(--color-rose-700);
+  --color-commitment-very-low:  var(--color-sage-100);
+  --color-commitment-low:       var(--color-sage-300);
+  --color-commitment-moderate:  var(--color-sage-500);
+  --color-commitment-high:      var(--color-sage-700);
+  --color-passion-very-low:     var(--color-gold-100);
+  --color-passion-low:          var(--color-gold-300);
+  --color-passion-moderate:     var(--color-gold-500);
+  --color-passion-high:         var(--color-gold-700);
   --color-error:        var(--color-rose-700);
   --color-error-bg:     #fdf0f2;
   --color-error-border: var(--color-rose-200);
@@ -503,7 +520,7 @@ p {
 
 /* ============================================================
    14. INSIGHT COLOR BANDS
-   Shared across InsightsView, InsightsWeeklyView, InsightsMatrix.
+   Shared across InsightsView, InsightsWeeklyView, CheckinMatrix.
    ============================================================ */
 .insight-value--very-low    { color: var(--color-insight-very-low); }
 .insight-value--low         { color: var(--color-insight-low); }

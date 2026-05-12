@@ -55,6 +55,7 @@ This document defines binding engineering and delivery constraints for the repos
 - Browser-driven acceptance tests cover user-journey happy paths only. Edge cases (invalid inputs, error states, authorization boundaries) are covered by colocated Go unit tests in the service and handler layers, not by Playwright.
 - Playwright acceptance tests must simulate real user flows through the UI (navigate, click, fill, assert visible output). They must not call API endpoints directly via `request`. Test data preconditions are established through the seed server, not by calling the API.
 - Playwright spec files are grouped by feature in subdirectories under `testing/tests/` (e.g. `testing/tests/pairing/pairing.spec.js`). The file name provides feature context; test names use Given-When-Then format without a feature prefix.
+- Vue component specs: When a component template uses `<router-link>`, the test must pass a `RouterLink` stub via `global.stubs` in the `mount` call. A `vi.mock('vue-router')` export does not auto-register the component globally and will produce a "Failed to resolve component: router-link" warning without the stub.
 
 ### Layer Preference Guide
 

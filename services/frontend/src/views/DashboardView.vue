@@ -4,6 +4,8 @@
       <h1>Welcome back, {{ firstName }}</h1>
     </header>
     <main class="container section">
+      <CheckinMatrix :past="31" />
+
       <div class="card dashboard-card">
         <div class="dashboard-status-row">
           <span class="dashboard-dot" :class="checkedIn ? 'dashboard-dot--done' : 'dashboard-dot--pending'" aria-hidden="true"></span>
@@ -37,7 +39,6 @@
         </router-link>
       </div>
 
-      <InsightsMatrix :past="31" />
     </main>
   </div>
 </template>
@@ -48,7 +49,7 @@ import { useRouter } from 'vue-router';
 import { getMe } from '../api/users.js';
 import { getCoupleStatus } from '../api/pairing.js';
 import { getTodayCheckin } from '../api/checkin.js';
-import InsightsMatrix from '../components/InsightsMatrix.vue';
+import CheckinMatrix from '../components/CheckinMatrix.vue';
 
 const firstName = ref('');
 const partnerName = ref('');

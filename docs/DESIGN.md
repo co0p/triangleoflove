@@ -60,6 +60,26 @@ Feature-specific state colors (for example score band cues) follow the same thre
 
 Views derive score-band classes from numeric values. The API returns numeric scores only; band thresholds and color mapping remain frontend concerns.
 
+### Per-dimension color token pattern
+
+When multiple named dimensions each need their own color family, extend the
+score-band pattern with dimension-scoped semantic tokens:
+
+1. Add raw palette stops per family to `:root` only when no existing stop is
+   suitable (e.g. `--color-sage-100`, `--color-rose-100`, `--color-gold-100`
+   added for the very-low shade of each dimension family).
+2. Add semantic tokens scoped to the dimension and band:
+   `--color-{dimension}-{band}` (e.g. `--color-intimacy-very-low`).
+   These reference palette stops via `var()`.
+3. In the component, derive a CSS class per cell that encodes both dimension
+   and band (e.g. `intimacy-very-low`), and bind one class per cell in the
+   template. Component `<style scoped>` maps each class to its semantic token.
+
+This keeps color concerns fully in CSS, allows per-dimension theming without
+JavaScript, and is tree-shaken at build time per component.
+
+*Emerged during CheckinMatrix (check-in history grid), May 2026.*
+
 ### Component conventions
 
 - **NavBar** (`services/frontend/src/components/NavBar.vue`) imports `logo.svg` directly
