@@ -14,19 +14,14 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { computed, onMounted } from 'vue';
 import logoSrc from '../assets/logo.svg';
-import { getMe } from '../api/users.js';
+import { useCurrentUser } from '../composables/useCurrentUser.js';
 
-const firstName = ref('');
+const { firstName, load } = useCurrentUser();
 
 onMounted(async () => {
-  try {
-    const profile = await getMe();
-    firstName.value = profile.firstName;
-  } catch {
-    // token invalid or missing — router guard will redirect
-  }
+  await load();
 });
 
 const initials = computed(() =>

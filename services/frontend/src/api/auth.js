@@ -25,11 +25,14 @@ export async function login(email, password) {
     body: JSON.stringify({ email, password })
   });
 
+  console.log('login: response status:', response.status);
   if (!response.ok) {
     throw new Error('invalid credentials');
   }
 
-  return response.json();
+  const result = await response.json();
+  console.log('login: response json:', result);
+  return result;
 }
 
 export async function changePassword(currentPassword, newPassword) {

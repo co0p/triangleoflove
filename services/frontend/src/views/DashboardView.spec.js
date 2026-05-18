@@ -4,6 +4,7 @@ import DashboardView from './DashboardView.vue';
 import * as usersApi from '../api/users.js';
 import * as pairingApi from '../api/pairing.js';
 import * as checkinApi from '../api/checkin.js';
+import { useCurrentUser } from '../composables/useCurrentUser.js';
 
 const { push } = vi.hoisted(() => ({
   push: vi.fn(),
@@ -34,6 +35,8 @@ const stubs = {
 describe('DashboardView', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    localStorage.setItem('token', 'test-token');
+    useCurrentUser().reset();
     usersApi.getMe.mockResolvedValue({ firstName: 'Alice' });
     pairingApi.getCoupleStatus.mockResolvedValue({ paired: false, partner_first_name: '' });
     checkinApi.getTodayCheckin.mockResolvedValue(null);
@@ -76,7 +79,7 @@ describe('DashboardView', () => {
 
   it('TestDashboard_GivenUnauthorizedLoad_WhenRendered_ThenClearsTokenAndRedirectsToLogin', async () => {
     const removeItemSpy = vi.spyOn(Storage.prototype, 'removeItem');
-    usersApi.getMe.mockRejectedValue(new Error('unauthorized'));
+    pairingApi.getCoupleStatus.mockRejectedValue(new Error('unauthorized'));
 
     mount(DashboardView, { global: { stubs } });
     await flushPromises();
@@ -105,5 +108,12 @@ describe('DashboardView', () => {
     await flushPromises();
 
     expect(wrapper.find('[data-testid="checkin-history"]').exists()).toBe(true);
+  });
+
+  it('TestDashboard_GivenSharedUserState_WhenRendered_ThenWelcomeHeadingMatchesNavBar', async () => {
+    const wrapper = mount(DashboardView, { global: { stubs } });
+    await flushPromises();
+
+    expect(wrapper.text()).toContain('Welcome back, Alice');
   });
 });

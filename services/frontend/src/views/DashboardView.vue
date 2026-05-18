@@ -48,20 +48,19 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-import { getMe } from '../api/users.js';
 import { getCoupleStatus } from '../api/pairing.js';
 import { getTodayCheckin } from '../api/checkin.js';
+import { useCurrentUser } from '../composables/useCurrentUser.js';
 import CheckinMatrix from '../components/CheckinMatrix.vue';
 
-const firstName = ref('');
+const { firstName, load } = useCurrentUser();
 const partnerName = ref('');
 const checkedIn = ref(false);
 const router = useRouter();
 
 onMounted(async () => {
   try {
-    const [profile, status, todayCheckin] = await Promise.all([getMe(), getCoupleStatus(), getTodayCheckin()]);
-    firstName.value = profile.firstName;
+    const [, status, todayCheckin] = await Promise.all([load(), getCoupleStatus(), getTodayCheckin()]);
     if (status.paired) partnerName.value = status.partner_first_name;
     checkedIn.value = todayCheckin !== null;
   } catch (error) {

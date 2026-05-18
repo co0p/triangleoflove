@@ -48,6 +48,7 @@
 import { computed, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { login } from '../api/auth.js';
+import { useCurrentUser } from '../composables/useCurrentUser.js';
 import logoSrc from '../assets/logo.svg';
 
 const email = ref('');
@@ -55,6 +56,7 @@ const password = ref('');
 const error = ref('');
 const route = useRoute();
 const router = useRouter();
+const { load } = useCurrentUser();
 const successMessage = computed(() =>
   route.query.registered === '1' ? 'Account created. You can now sign in.' : ''
 );
@@ -64,6 +66,7 @@ async function handleSubmit() {
   try {
     const { token } = await login(email.value, password.value);
     localStorage.setItem('token', token);
+    await load();
     router.push('/dashboard');
   } catch {
     error.value = 'Invalid email or password.';

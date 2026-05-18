@@ -301,6 +301,12 @@ Backend notes:
 - **Why it emerged**: The increment required real-time guidance during form entry and also guaranteed rejection if invalid data still reached account creation. Keeping the same rule set on both sides reduced drift between UI guidance and backend enforcement.
 - **Where used**: `services/frontend/src/views/RegisterView.vue`, `services/frontend/src/api/auth.js`, `services/backend/internal/service/auth_service.go`, `services/backend/internal/web/registration_handler.go`
 
+### Session-Scoped Shared User State Composable
+
+- **What**: A Vue composable can own session-scoped shared server state by keeping its reactive refs and in-flight guard promise at module scope. `useCurrentUser` exposes a shared `firstName` ref, an idempotent `load()` method, and a `reset()` method for logout and test isolation.
+- **Why it emerged**: The NavBar greeting and dashboard heading both needed the same authenticated user name without duplicate `getMe()` requests or route-transition flicker. A module-scoped composable provided shared state without introducing a store library.
+- **Where used**: `services/frontend/src/composables/useCurrentUser.js`, `services/frontend/src/components/NavBar.vue`, `services/frontend/src/views/LoginView.vue`, `services/frontend/src/views/DashboardView.vue`
+
 | Date | Increment | Changes |
 |------|-----------|---------|
 | 2026-04-09 | Couple Pairing | Handler struct pattern, repository split by aggregate, `.page` layout utility, seed data helper module |
@@ -308,6 +314,7 @@ Backend notes:
 | 2026-04-13 | Unpair from couple | Destructive-action confirmation modal pattern |
 | 2026-04-27 | Weekly Insights Matrix | RouterLink stub `v-bind="$attrs"` for `to` prop assertability in component tests |
 | 2026-05-11 | Registration Flow Clarity and Validation | Dual-layer registration credential policy and backend validation-message passthrough at the auth API boundary |
+| 2026-05-18 | Stable NavBar Greeting via Shared User State | Session-scoped shared user state composable with idempotent load and reset semantics |
 
 ### Destructive-Action Confirmation Modal
 

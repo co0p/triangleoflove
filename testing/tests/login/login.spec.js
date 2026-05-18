@@ -16,7 +16,8 @@ test('GivenValidCredentials WhenSubmitted ThenJWTStoredInBrowser', async ({ page
 test('GivenValidCredentials WhenSubmitted ThenDashboardShowsFirstName', async ({ page }) => {
   await loginViaUI(page);
   await expect(page).toHaveURL(/\/dashboard/);
-  await expect(page.locator('header')).toContainText('River');
+  // Wait for the firstName to load and be displayed in the header
+  await expect(page.locator('header h1')).toContainText('Welcome back, River', { timeout: 10000 });
 });
 
 test('GivenInvalidCredentials WhenSubmitted ThenErrorShownOnLoginPage', async ({ page }) => {
@@ -33,5 +34,6 @@ test('GivenStoredJWT WhenPageRefreshed ThenDashboardStillShown', async ({ page }
   await expect(page).toHaveURL(/\/dashboard/);
   await page.reload();
   await expect(page).toHaveURL(/\/dashboard/);
-  await expect(page.locator('header')).toContainText('River');
+  // After reload, wait for firstName to load again
+  await expect(page.locator('header h1')).toContainText('Welcome back, River', { timeout: 10000 });
 });
