@@ -76,7 +76,6 @@ Place each test at the **lowest layer** that can meaningfully cover it:
 - **ADRs**: `docs/adr/` using `YYYY-MM-DD-short-title.md` naming (unnumbered)
 - **API contracts**: `docs/api/` with OpenAPI as the canonical contract when present
 - **Other docs**: `docs/`
-- **Working context**: `.4dc/` (temporary, gitignored)
 
 ## Target Audience
 
@@ -85,7 +84,9 @@ Place each test at the **lowest layer** that can meaningfully cover it:
 - Default: Interactive elements must meet a 44 px minimum tap target height.
 - Default: Layouts must remain usable when the soft keyboard is open and reduces the visible
   viewport by up to 300 px.
+- Default: Any PRD for this product must include a Mobile Interaction Model section that defines binding touch-first interaction constraints before any feature descriptions. At minimum it must specify: how required inputs are handled without a keyboard; and the 44 px tap target enforcement.
 - Enforcement signal: Visual review at 375 px is required before marking any frontend deliverable Done.
+- Enforcement signal: PRDs without a Mobile Interaction Model section are not ready for the plan phase.
 
 ## Delivery Practices
 

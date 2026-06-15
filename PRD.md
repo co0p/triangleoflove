@@ -1,213 +1,300 @@
-# PRD — Triangle of Love Coach (Mobile PWA)
+# PRD — Triangle of Love (Mobile PWA)
 
 ## Document Role
 
-This document defines product intent, user-facing behavior, scope, and success criteria.
+This document defines product intent, user-facing behaviour, feature scope, and success signals. It is the authoritative reference for what the product does and why.
 
 ---
 
 ## 1. Summary
 
-Triangle of Love Coach is a relationship improvement and tracking app for couples. Each partner privately logs short **daily check-ins** (max 5 star questions) and a **weekly review** (triangle ratings + private reflections). The app visualizes trends and gently identifies areas for alignment, then provides **coach-style impulses** (micro-actions) and **gamified achievements** that help couples build mature relationship habits over time.
+Triangle of Love is a relationship health app for adults who want to do the work on their relationship — individually and together. Each person completes a short **weekly session** (under 5 minutes, fully doable on a phone during a commute) that rates how the relationship felt across three dimensions, captures two private reflections, and surfaces one actionable impulse for the week ahead.
 
-Reflections are **private by default** and are not shared in-app; partners can choose to discuss them verbally.
+Once enough data exists, the app suggests an optional **monthly shared conversation** — a set of trigger questions drawn from the month's patterns for partners to discuss offline.
+
+There is no success state. Relationships are healthy, worth watching, or need attention. The app helps you see which, and gives you something concrete to do about it.
 
 ---
 
 ## 2. Goals & Non-goals
 
 ### Goals (MVP)
-1. Help couples understand where they are in the **love triangle** and how it changes over time.
-2. Encourage consistent engagement with minimal effort:
-   - daily: 30–60 seconds
-   - weekly: ~5 minutes
-3. Provide actionable, personalized **impulses** that feel like a wingman:
-   - specific, time-bounded, doable
-4. Reinforce growth behaviors via **achievements** (habit gamification), including:
-   - secret/private achievements (default)
-   - optional partner-confirmation achievements
-5. Improve relationship maturity skills:
-   - appreciation
-   - listening and non-interruption
-   - conflict hygiene and repair
-   - planning and reliability
+
+1. Help each person understand where their relationship stands across the three dimensions of the love triangle (Intimacy, Passion, Commitment) and how that changes over time.
+2. Make reflection sustainable: one weekly session, completable in under 5 minutes on a phone, with no typing required.
+3. Provide one concrete, actionable impulse per session — something specific and doable this week.
+4. Surface a monthly shared conversation prompt when there is enough data, so partners can talk about what the app has noticed — on their own terms, offline.
+5. Show relationship health as a continuous signal, not a score.
 
 ### Non-goals (MVP)
-- Not a substitute for therapy; no diagnosis, no mental health claims.
+
+- No daily check-ins or daily habit tracking.
+- No gamification — no achievements, streaks, badges, points, or leaderboards.
+- No success/failure framing of any kind.
+- Not a substitute for therapy; no diagnosis, no clinical claims.
+- No in-app partner messaging or chat.
 - No public social feed or community.
-- No in-app partner messaging replacement.
-- No “leaderboards” or competitive scoring between partners.
 
 ---
 
-## 3. Target Users & Personas
+## 3. Product Principles
 
-### Primary
-- **Growth-minded couples** who want structure and accountability.
-- **Busy couples** who want quick, focused prompts and a “what should we do this week?” plan.
-
-### Secondary (handled carefully)
-- Couples with mild friction who want a gentle, non-blaming way to improve communication.
-
----
-
-## 4. Product Principles
-
-1. **Private-by-default reflections:** text prompts are personal; sharing happens offline by choice.
-2. **No weaponization:** avoid UIs that encourage blame or “scorekeeping.”
-3. **Coach voice:** warm, direct, playful where appropriate; never clinical or shaming.
-4. **Small actions win:** always turn insight into a next step (impulse).
-5. **Two perspectives are data:** differences indicate “alignment opportunity,” not right/wrong.
-6. **Low friction:** every loop must feel lightweight and sustainable.
+1. **Health, not success.** The product frame is medical, not competitive. A relationship is healthy or it needs attention. Nothing about the product should imply winning or losing.
+2. **Touch first.** Every required interaction is a tap. Writing is always optional and always brief.
+3. **Private by default.** Reflection text belongs to the person who wrote it and is never shared automatically.
+4. **No blame UI.** Nothing in the product should make it easy to turn data into a weapon. Differences between partners are "alignment opportunities", not right/wrong.
+5. **Coach voice.** Warm, direct, specific. Never clinical, never shaming, never vague.
+6. **Small actions win.** Every insight must connect to a next step.
+7. **Personal tier is complete.** The app works fully without a partner. Couple features are an additive unlock, not a required path.
 
 ---
 
-## 5. Core Loop
+## 4. Mobile Interaction Model
 
-### Daily (30–60 seconds)
-1. User completes daily check-in (max 5 star questions).
-2. Optional one-line note (private).
-3. App confirms completion and optionally shows a micro-tip.
+The primary use context is a phone in one hand — on the subway, during a coffee break, before bed. Every interaction is designed for this context.
 
-### Weekly (~5 minutes)
-1. User rates Intimacy/Passion/Commitment (1–5 each).
-2. User writes two private reflections:
-   - “What was nice last week?”
-   - “What was annoying or hard last week?”
-3. App suggests:
-   - 1 primary impulse for the week
-   - 1 optional bonus impulse
-4. User selects a focus and optionally schedules a reminder.
+### Binding constraints (apply to every feature)
+
+| Rule | Detail |
+|------|--------|
+| Touch controls for all required input | Star tap, button press, or swipe — never a text field for required input |
+| Text is always optional | Reflection notes, labels, and any free-text field can be skipped without penalty |
+| Short text only | When text is offered, the field is capped at ≤140 characters |
+| One screen per logical step | No pagination within a single step; scroll is preferred over page transitions |
+| Session completable with no typing | A full weekly session from open to close must be achievable without opening the keyboard |
+| 44 px minimum tap target | Every interactive element meets the minimum touch target height |
+| Soft-keyboard safe | Layouts remain usable when the keyboard reduces the visible viewport by up to 300 px |
+
+*The 44 px tap target, soft-keyboard safety, and 375 px baseline are set by `CONSTITUTION.md` (Target Audience section); the values here are derivative. If they diverge, CONSTITUTION is authoritative.*
+
+### What each input type is used for
+
+| Input | Used for |
+|-------|---------|
+| Star tap (1–5) | All 5 weekly questions |
+| Large button / card tap | Impulse selection, monthly session opt-in, navigation |
+| Optional short-text field | Reflection notes (two per session, both skippable) |
+| Read-only card display | Monthly shared session trigger questions — no input required |
 
 ---
 
-## 6. Core Features (MVP)
+## 5. Feature Gate Model
 
-### 6.1 Onboarding & Couple Pairing
-- Create account
-- Pair with partner via invite link/code
-- Set cadence:
-  - daily reminder time window
-  - weekly review day/time
-- Short “rules of engagement” screen (growth mindset, no blame).
+Every feature belongs to exactly one tier. The Personal tier is a complete, self-contained product. The Couple tier adds shared features that require an active partner pairing.
 
-### 6.2 Daily Check-in (Max 5 Questions)
-Format: **1–5 stars** each (required), optional note.
+### Personal tier — no partner required
 
-Default question set (can be iterated):
-1. “I felt close to my partner today.” *(Intimacy proxy)*
-2. “We had positive energy / fun today.” *(Passion proxy)*
-3. “I felt supported / we were a team today.” *(Commitment proxy)*
-4. “Communication felt healthy today.” *(Skill proxy)*
-5. “My stress level today.” *(Context; personal)*
+| Feature | Description |
+|---------|-------------|
+| Weekly session | Answer 5 questions by tapping stars → triangle scores calculated → two optional reflection prompts → one impulse |
+| Personal dashboard | Your own triangle trend over time, with health state label + trend line per dimension |
+| Impulses | One actionable suggestion per session, drawn from your own data |
+| Private reflections | Stored to your account only, never shared automatically |
 
-### 6.3 Weekly Review
-Required:
-- Triangle ratings (1–5): **Intimacy**, **Passion**, **Commitment**
-- Private prompts:
-  - “What was nice last week?”
-  - “What was annoying or hard last week?”
+### Couple tier — requires active pairing
 
-Optional:
-- Choose one focus area for next week: Intimacy / Passion / Commitment / Communication.
+| Feature | Description |
+|---------|-------------|
+| Monthly shared session | Offered when ≥2 data points exist in the calendar month; surfaces trigger questions for an offline conversation |
+| Couple trend view | Aggregated triangle trend across both partners — alignment framing, no raw per-partner numbers |
+| Partner invite | Send and accept a pairing invite; manage pairing state (active / dissolved) |
 
-### 6.4 Dashboard & Insights
-- **Triangle trend view** over time (4–8 weeks)
-- **Health metrics trend** (daily roll-ups, weekly averages)
-- **Alignment summary** (gentle):
-  - highlight dimension(s) trending lower and recommend actions
-  - avoid presenting partner vs you as a “competition”
+### Unpaired user experience
 
-**Recommended MVP default:** show *personal trends* and a *couple aggregate* without revealing exact partner-vs-you numbers.
+Couple features are visible to unpaired users with a single, calm prompt: *"Invite your partner to unlock this."* No empty states that look broken, no guilt, no pressure.
 
-### 6.5 Impulses (“Wingman moves”)
-Impulses are micro-interventions:
-- tailored to the weakest triangle side, recent trend dips, or chosen focus
-- phrased as an actionable suggestion (“Here’s your move”)
-- scoped to *one week*
+---
+
+## 6. Core Loop
+
+| Cadence | Tier | Time | What happens |
+|---------|------|------|-------------|
+| Weekly | Personal | ~3–5 min | 5 questions → triangle scores → reflections → impulse |
+| Monthly | Couple (opt-in) | ~20 min offline | Trigger questions surfaced → partners discuss offline |
+
+---
+
+## 7. Weekly Session (Personal tier)
+
+The weekly session is the only regular input. It is designed to be completed in one uninterrupted sitting of 3–5 minutes.
+
+### Flow
+
+1. **5 questions** — all presented on a single scrollable screen. Each answered by tapping a star (1–5). No pagination. No "next" button per question.
+2. **Triangle scores calculated** — each question is designed to proxy one or more of the three dimensions (Intimacy, Passion, Commitment). The mapping is handled internally; the user sees dimension scores, not raw question averages.
+3. **Two reflection prompts** — one at a time, each with an optional short-text field (≤140 chars, skippable):
+   - *"What was nice about us last week?"*
+   - *"What was hard or frustrating last week?"*
+4. **One impulse** — a single actionable suggestion for the week ahead, displayed as a large card. The user taps to accept or skip.
+
+### Default question set
+
+| # | Question | Dimension(s) proxied |
+|---|----------|---------------------|
+| 1 | "I felt emotionally close to my partner this week." | Intimacy |
+| 2 | "There was positive energy and warmth between us." | Intimacy, Passion |
+| 3 | "We had fun or did something enjoyable together." | Passion |
+| 4 | "I felt like we were on the same team this week." | Commitment |
+| 5 | "We handled things together reliably and with care." | Commitment |
+
+*The question set is iterable. Mapping weights are an implementation concern, not a PRD concern.*
+
+### Impulses
+
+Impulses are micro-interventions — specific, time-bounded, and doable this week.
+
+- Tailored to the weakest triangle dimension or a notable trend dip
+- Phrased as a direct suggestion, not a question
+- Scoped to one week
 
 Examples:
-- **Intimacy:** “10-minute no-phone ‘High/Low’ talk + one appreciation.”
-- **Passion:** “Plan one novelty date (new place or new activity).”
-- **Commitment:** “15-minute team planning: calendar + logistics + one shared goal.”
-- **Communication:** “Try the ‘reflect back’ rule: repeat their point before responding.”
+- **Intimacy:** "10-minute no-phone catch-up tonight — each person shares one high and one low from this week."
+- **Passion:** "Plan something neither of you has done before. Book it before Sunday."
+- **Commitment:** "15 minutes this week: calendar sync, one shared decision, one thing you're each handling."
 
-### 6.6 Achievements (Gamification)
-Achievements reinforce habits without creating competition.
-
-Properties:
-- Category: Romance / Excitement / Intimacy / Commitment / Communication
-- Visibility:
-  - **Secret/private** (default)
-  - **Partner-confirmed** (optional per achievement)
-- Measurement:
-  - self-claim (default)
-  - optional confirmation request sent to partner (user-triggered only)
-
-Seed examples:
-- **Romantic — “Flower Man”**: weekly fresh flowers, 4-week streak.
-- **Excitement — “Date Night Architect”**: plan 3 different date nights in a month.
-- **Communication — “The Listener”**: 4 serious talks in a month without interrupting (best as partner-confirmed, but can remain secret).
+*Full impulse library content and curation are deferred to a future increment.*
 
 ---
 
-## 7. Notifications & Reminders (MVP)
-- Daily reminder within chosen time window.
-- Weekly reminder on chosen day/time.
-- Gentle nudge when a weekly review is pending (no guilt language).
-- Optional mid-week reminder for the selected impulse.
+## 8. Monthly Shared Session (Couple tier)
+
+### Trigger
+
+The monthly shared session becomes available when ≥2 weekly data points exist within the current calendar month. Either partner's data counts — both completing sessions is not required.
+
+When the trigger fires, the app surfaces a single opt-in prompt. No notification pressure. No automatic sharing of any data.
+
+### What the session provides
+
+The app selects 2–3 trigger questions from a curated library, matched to the month's triangle dimension patterns.
+
+Questions are displayed as read-only cards. No input is required. The purpose is to give the couple something concrete and relevant to talk about offline — not to capture their conversation.
+
+### Trigger question library (seed set — full library is a future increment)
+
+Questions are mapped to triangle dimension + trend direction:
+
+| Pattern | Example trigger question |
+|---------|-------------------------|
+| Intimacy trending down | "What would help you feel closer this month?" |
+| Passion flat or low | "When did we last do something that genuinely surprised us both — what was it?" |
+| Commitment dip | "What's one thing on our plate right now that feels like it belongs to both of us but doesn't?" |
+| All dimensions healthy | "What's one thing you want to make sure we protect about us right now?" |
+| Intimacy up, Passion flat | "What are we good at connecting on — and where do we feel a bit stuck?" |
+
+*Full library size, curation process, and selection algorithm are a future increment.*
+
+### Privacy
+
+The trigger questions are derived from aggregated dimension trends, not from reflection text. Reflection notes are never read by the algorithm and never shown to the partner.
 
 ---
 
-## 8. Privacy, Safety, and Consent Requirements (Critical)
-1. Reflection text is **private** and never shared to partner endpoints.
-2. Avoid “blame UI”:
-   - no phrasing like “your partner rated you low”
-3. Partner-confirmation achievements:
-   - must be **opt-in** per achievement
-   - confirmation request is user-triggered
-   - never expose secret achievement intent unless user chooses
-4. Account controls:
-   - unpair/leave couple
-   - delete account and data
-5. Clear disclaimers:
-   - coaching tool, not therapy
+## 9. Relationship Health Model
+
+Relationships are not scored. Each of the three triangle dimensions (Intimacy, Passion, Commitment) carries a **health state** derived from recent trend direction and magnitude.
+
+### Health states
+
+| State | Meaning |
+|-------|---------|
+| **Healthy** | Dimension is stable or improving over recent weeks |
+| **Worth watching** | Dimension shows a mild or recent downward trend |
+| **Needs attention** | Dimension shows a sustained or significant downward trend |
+
+These are directional signals, not clinical thresholds. Exact transition logic is an implementation concern. No numeric thresholds are prescribed here.
+
+### What this is not
+
+- Not a diagnosis
+- Not a relationship score
+- Not a comparison between partners
 
 ---
 
-## 9. Success Metrics (KPIs)
+## 10. Dashboard & Insights
 
-### Activation
-- Invite acceptance rate within 48 hours
-- % of couples completing first weekly review within 7 days
+### Personal dashboard (Personal tier)
 
-### Engagement
-- Daily check-in completion rate per user
-- Weekly review completion rate per couple
-- Impulse selection rate after weekly review
+Designed to be glanceable in 10 seconds on a 375 px screen.
 
-### Retention
-- Week 4 and Week 8 couple retention
+- Triangle visualisation showing current scores for Intimacy, Passion, Commitment
+- Per-dimension trend line (4–8 weeks of history)
+- Per-dimension health state label alongside the trend line
+- Most recent impulse, with the option to view history
 
-### Outcome proxies (non-medical)
-- Improvements in triangle ratings over 8 weeks
-- Reduced “alignment variance” (measured carefully; aggregate-first)
-- Achievement completion rate
+### Couple trend view (Couple tier)
+
+- Aggregated triangle trend across both partners
+- Framed as an alignment view — not "you vs. them"
+- Does not expose raw per-partner scores
 
 ---
 
-## 10. MVP Scope & Milestones (Suggested)
-**Milestone 1:** Auth + pairing + daily check-ins  
-**Milestone 2:** Weekly review + dashboard trends  
-**Milestone 3:** Impulses + achievements (private)  
-**Milestone 4:** Optional partner-confirmation flow + PWA polish (offline + reminders)
+## 11. Onboarding & Pairing
+
+### Personal onboarding
+1. Create account (email + password)
+2. Set weekly reminder day and time window
+3. Brief orientation: what the triangle means, what a session looks like
+
+### Couple pairing (Couple tier unlock)
+1. One partner generates an invite link or code
+2. The other accepts
+3. Pairing is active; Couple tier features unlock for both
+4. Either partner can dissolve the pairing at any time — no confirmation required from the other party
 
 ---
 
-## 11. Open Questions / Decisions
-1. Exact “alignment” presentation:
-   - aggregate-only vs showing partner-vs-you differences
-2. Achievement confirmation UX:
-   - how to request confirmation without creating pressure
-3. Content strategy:
-   - how many impulses ship in v1 (recommend 30–60 as a starter pack)
+## 12. Privacy, Safety, and Consent
+
+1. **Reflection text is private.** It is stored only on the account that created it and is never sent to a partner endpoint.
+2. **No blame UI.** No phrasing that invites comparison, e.g. "your partner rated you low on commitment."
+3. **Monthly session is opt-in.** The trigger surfaces an invitation. No data is shared until the user taps to accept.
+4. **Trigger questions use aggregated trends only.** Reflection text does not feed the monthly session question selection.
+5. **Account controls:**
+   - Dissolve pairing
+   - Delete account and all associated data
+6. **Disclaimer:** coaching tool, not therapy. No clinical claims.
+
+---
+
+## 13. Notifications & Reminders (MVP)
+
+- Weekly reminder within the user's chosen day and time window
+- Gentle nudge if the weekly session has not been completed by the end of the chosen window (once only, no guilt language)
+- Opt-in notification when the monthly shared session becomes available
+
+---
+
+## 14. Product Metrics
+
+These replace all gamification KPIs.
+
+| Metric | What it signals |
+|--------|----------------|
+| Weekly session completion rate | Engagement and habit formation |
+| Health state distribution over cohort (aggregate, anonymous) | Whether the product is reaching people who need it |
+| Impulse follow-through (self-reported) | Whether impulses are useful and actionable |
+| Monthly shared session opt-in rate | Whether the couple feature is valuable |
+| Week 4 and Week 8 retention | Habit durability |
+
+No streak counts, no badge completion rates, no daily active user targets.
+
+---
+
+## 15. MVP Scope
+
+**Milestone 1:** Auth + onboarding + weekly session (Personal tier)
+**Milestone 2:** Personal dashboard + health states + impulses
+**Milestone 3:** Couple pairing + couple trend view + monthly shared session
+**Milestone 4:** Reminders + PWA polish (offline resilience)
+
+---
+
+## 16. Open Questions / Deferred Decisions
+
+1. Question-to-dimension weighting: which questions contribute to which dimensions, and at what weight. (Plan-phase concern for a future code increment.)
+2. Health state transition thresholds: the exact trend conditions that move a dimension between states. (V2 tuning concern.)
+3. Full trigger question library: content, curation process, and selection algorithm. (Separate increment.)
+4. Impulse library: full content, categorisation, and personalisation logic. (Separate increment.)
