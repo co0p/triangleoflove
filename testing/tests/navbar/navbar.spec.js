@@ -15,8 +15,8 @@ test('GivenLoggedIn_WhenNavigatingBetweenPages_ThenNavBarGreetingPersists', asyn
   // Greeting visible on dashboard immediately after login; wait for async load to complete
   await expect(greeting).toContainText('Hello, River', { timeout: 10000 });
 
-  // Navigate to check-in — greeting must still be visible
-  await page.goto(`${FRONTEND_BASE_URL}/checkin`);
+  // Navigate to session — greeting must still be visible
+  await page.goto(`${FRONTEND_BASE_URL}/session`);
   await expect(greeting).toBeVisible();
   await expect(greeting).toContainText('Hello, River');
 

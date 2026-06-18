@@ -112,11 +112,10 @@ JavaScript, and is tree-shaken at build time per component.
 ### REST API design
 - Versioned routes: `/api/v1/...`
 - Strict separation of:
-  - **private user data** (reflections)
+  - **private user data** (check-in note)
   - **shared aggregate couple data**
 - Idempotency:
   - daily check-in should be upserted by (user_id, date)
-  - weekly review upserted by (user_id, week_start_date)
 
 ### Layering note: shared domain sentinel errors
 
@@ -124,98 +123,63 @@ JavaScript, and is tree-shaken at build time per component.
 - Example: `ErrDuplicateEmail` belongs in `domain` rather than `service` to avoid a circular import (`repository` must not import `service`).
 - This keeps layering compliant with `repository -> domain` and `service -> domain`.
 
-### Suggested endpoint list (MVP)
-- Auth:
-  - `POST /api/v1/auth/register`
+### Implemented endpoint list (current)
+- Health:
+  - `GET /api/v1/health`
+  - `GET /api/v1/status`
+- Auth and profile:
+  - `POST /api/v1/register`
   - `POST /api/v1/auth/login`
-  - `POST /api/v1/auth/refresh`
-  - `POST /api/v1/auth/logout`
-- Couple pairing:
-  - `POST /api/v1/couple/invite`
-  - `POST /api/v1/couple/join`
-  - `POST /api/v1/couple/leave`
-- Check-ins:
-  - `PUT /api/v1/checkins/daily` (upsert)
-  - `PUT /api/v1/checkins/weekly` (upsert)
-  - `GET /api/v1/insights/me` (personal trends)
-  - `GET /api/v1/insights/couple` (aggregate-only)
-- Impulses:
-  - `GET /api/v1/impulses/weekly` (generated suggestion)
-  - `POST /api/v1/impulses/plan` (select impulse)
-- Achievements:
-  - `GET /api/v1/achievements`
-  - `POST /api/v1/achievements/claim`
-  - `POST /api/v1/achievements/request-confirmation` (optional)
+  - `PUT /api/v1/auth/password`
+  - `GET /api/v1/users/me`
+- Sessions and insights:
+  - `GET /api/v1/sessions/today`
+  - `PUT /api/v1/sessions/today`
+  - `GET /api/v1/insights`
+  - `GET /api/v1/insights/{date}`
+- Pairing and couple status:
+  - `GET /api/v1/pairing`
+  - `POST /api/v1/pairing/regenerate`
+  - `POST /api/v1/pairing/connect`
+  - `GET /api/v1/couples/me`
+  - `DELETE /api/v1/couples/me`
+- Admin:
+  - `GET /api/v1/admin/users`
+  - `PUT /api/v1/admin/users/{id}/activate`
+  - `PUT /api/v1/admin/users/{id}/deactivate`
 
 ---
 
-## 4. Data Model (Suggested Tables)
+## 4. Data Model (Implemented Tables)
 
 ### Core tables
-- `users`
+- `accounts`
+  - `id`, `email`, `hashed_password`, `first_name`, `invite_code`, `role`, `is_active`, `created_at`
 - `couples`
-- `couple_members` (user_id, couple_id, role, joined_at)
-- `daily_checkins`
-  - user_id, couple_id, date
-  - q1..q5 (smallints 1–5)
-  - optional_note (private)
-- `weekly_reviews`
-  - user_id, couple_id, week_start_date
-  - intimacy, passion, commitment (1–5)
-  - nice_text (private)
-  - annoying_text (private)
-- `impulses_catalog`
-- `impulse_deliveries` (what was suggested when)
-- `impulse_plans` (what the user selected)
-- `achievements_catalog`
-- `achievement_progress`
-- `achievement_confirmations` (optional)
+  - `id`, `account_id_a`, `account_id_b`, `formed_on`, `ended_on`
+- `checkins`
+  - `id`, `account_id`, `date`
+  - ratings: `felt_understood`, `meaningful_sharing`, `could_count_on_them`, `effort_for_us`, `desire`, `spark`, `mood`
+  - `note`, `saved_at`
 
 ### Privacy rule enforcement
-- Reflections (`nice_text`, `annoying_text`, notes) must never be returned via couple endpoints.
-- Couple insights endpoints should compute aggregates without returning user-level raw text.
+- Check-in `note` is user-private and must never be exposed via couple endpoints.
+- Couple endpoints return status and partner metadata only (no partner check-in text).
 
 ---
 
-## 5. Impulse Engine (MVP: Rule-Based)
-Start rule-based for reliability and safety.
+## 5. Deferred Product Areas
 
-Inputs:
-- last weekly triangle ratings
-- recent daily trend dips (e.g., 7-day average)
-- chosen focus
+The following product areas are intentionally **not implemented** in the current codebase:
+- Impulse generation and planning endpoints
+- Achievement and confirmation endpoints
+- Monthly shared-session orchestration and trigger-question selection
 
-Output:
-- primary impulse + optional bonus
-- difficulty level (easy/medium)
-- estimated time cost (5/10/20 min)
-
-Implementation suggestion:
-- Store impulses as content cards with tags:
-  - `dimension=intimacy|passion|commitment|communication`
-  - `effort=low|medium`
-  - `format=talk|plan|surprise|ritual`
-- Pick top candidate based on:
-  - lowest dimension OR biggest downward trend
-  - avoid repeating the same impulse too frequently (cooldown)
+These remain roadmap items and should not be treated as available API contracts.
 
 ---
 
-## 6. Achievements System Design
-### Achievement types
-- **Secret (default):** user can track and claim without partner involvement.
-- **Partner-confirmed (optional):** user triggers a confirmation request.
-
-Key UX requirement:
-- Partner should not automatically learn what the other is “working on.”
-
-Backend notes:
-- Confirmation requests should be generic unless user chooses details:
-  - e.g., “Can you confirm we did the thing we talked about?” with optional label.
-
----
-
-## 7. Railway Deployment (Recommended)
+## 6. Railway Deployment (Recommended)
 ### Services
 1. **web**: Vue app build + serve
    - Option A: Node service that serves `dist/`
@@ -245,7 +209,7 @@ Backend notes:
 
 ---
 
-## 8. LLM-Friendly Repo Conventions (Strongly Recommended)
+## 7. LLM-Friendly Repo Conventions (Strongly Recommended)
 - Monorepo structure:
   - `/web` (Vue)
   - `/api` (Go)
@@ -258,7 +222,7 @@ Backend notes:
 
 ---
 
-## 9. Security & Compliance Notes
+## 8. Security & Compliance Notes
 - Use HTTPS only (Railway provides)
 - Store passwords hashed (bcrypt/argon2id)
 - Implement rate limits on auth endpoints

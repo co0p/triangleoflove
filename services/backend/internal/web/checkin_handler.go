@@ -18,9 +18,9 @@ func writeJSON(w http.ResponseWriter, code int, payload any) {
 	}
 }
 
-// NewCheckinHandler returns an http.Handler for GET/PUT /api/v1/checkins/today.
+// NewSessionHandler returns an http.Handler for GET/PUT /api/v1/sessions/today.
 // The handler expects CallerAccount to be set in context (i.e. wrapped by Middleware).
-func NewCheckinHandler(svc *service.CheckinService) http.Handler {
+func NewSessionHandler(svc *service.SessionService) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		accountID := CallerFromContext(r.Context()).ID
 
@@ -28,11 +28,11 @@ func NewCheckinHandler(svc *service.CheckinService) http.Handler {
 		case http.MethodGet:
 			c, err := svc.GetToday(r.Context(), accountID)
 			if errors.Is(err, domain.ErrNotFound) {
-				writeJSON(w, http.StatusNotFound, map[string]string{"error": "no check-in for today"})
+				writeJSON(w, http.StatusNotFound, map[string]string{"error": "no session for today"})
 				return
 			}
 			if err != nil {
-				log.Printf("get checkin failed: %v", err)
+				log.Printf("get session failed: %v", err)
 				writeJSON(w, http.StatusInternalServerError, map[string]string{"error": "internal server error"})
 				return
 			}
@@ -46,7 +46,7 @@ func NewCheckinHandler(svc *service.CheckinService) http.Handler {
 			}
 			saved, err := svc.SaveToday(r.Context(), accountID, body)
 			if err != nil {
-				log.Printf("save checkin failed: %v", err)
+				log.Printf("save session failed: %v", err)
 				writeJSON(w, http.StatusInternalServerError, map[string]string{"error": "internal server error"})
 				return
 			}

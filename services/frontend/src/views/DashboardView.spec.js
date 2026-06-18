@@ -3,7 +3,7 @@ import { mount, flushPromises } from '@vue/test-utils';
 import DashboardView from './DashboardView.vue';
 import * as usersApi from '../api/users.js';
 import * as pairingApi from '../api/pairing.js';
-import * as checkinApi from '../api/checkin.js';
+import * as sessionApi from '../api/checkin.js';
 import { useCurrentUser } from '../composables/useCurrentUser.js';
 
 const { push } = vi.hoisted(() => ({
@@ -23,7 +23,7 @@ vi.mock('../api/pairing.js', () => ({
 }));
 
 vi.mock('../api/checkin.js', () => ({
-  getTodayCheckin: vi.fn(),
+  getTodaySession: vi.fn(),
 }));
 
 const stubs = {
@@ -39,7 +39,7 @@ describe('DashboardView', () => {
     useCurrentUser().reset();
     usersApi.getMe.mockResolvedValue({ firstName: 'Alice' });
     pairingApi.getCoupleStatus.mockResolvedValue({ paired: false, partner_first_name: '' });
-    checkinApi.getTodayCheckin.mockResolvedValue(null);
+    sessionApi.getTodaySession.mockResolvedValue(null);
   });
 
   it('TestDashboard_GivenPartnerName_WhenRendered_ThenPairingStatusVisible', async () => {
@@ -59,13 +59,13 @@ describe('DashboardView', () => {
     expect(wrapper.text()).toContain('Not connected yet');
   });
 
-  it('TestDashboard_GivenCheckinExists_WhenRendered_ThenCheckedInStatusVisible', async () => {
-    checkinApi.getTodayCheckin.mockResolvedValue({ felt_close: 3 });
+  it('TestDashboard_GivenSessionExists_WhenRendered_ThenSessionCompletedStatusVisible', async () => {
+    sessionApi.getTodaySession.mockResolvedValue({ felt_close: 3 });
 
     const wrapper = mount(DashboardView, { global: { stubs } });
     await flushPromises();
 
-    expect(wrapper.text()).toContain('Checked in today');
+    expect(wrapper.text()).toContain('Session completed today');
   });
 
   it('TestDashboard_GivenPrimaryNavigation_WhenInsightsLinkClicked_ThenOpensWeeklyInsights', async () => {

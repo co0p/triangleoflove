@@ -50,7 +50,7 @@ func main() {
 	healthService := service.NewHealthService(dbConn)
 
 	checkinRepo := repository.NewCheckinRepository(dbConn)
-	checkinService := service.NewCheckinService(checkinRepo)
+	sessionService := service.NewSessionService(checkinRepo)
 
 	insightsRepo := repository.NewInsightsRepository(dbConn)
 	insightsService := service.NewInsightsService(insightsRepo)
@@ -113,7 +113,7 @@ func main() {
 		writeJSON(w, http.StatusOK, result)
 	})))
 
-	mux.Handle("/api/v1/checkins/today", web.Middleware(web.NewCheckinHandler(checkinService)))
+	mux.Handle("/api/v1/sessions/today", web.Middleware(web.NewSessionHandler(sessionService)))
 
 	mux.Handle("GET /api/v1/insights", web.Middleware(web.NewInsightsWeeklyHandler(insightsService)))
 	mux.Handle("GET /api/v1/insights/{date}", web.Middleware(web.NewInsightsHandler(insightsService)))

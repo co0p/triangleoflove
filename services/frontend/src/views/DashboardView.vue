@@ -12,11 +12,11 @@
         <div class="dashboard-status-row">
           <span class="dashboard-dot" :class="checkedIn ? 'dashboard-dot--done' : 'dashboard-dot--pending'" aria-hidden="true"></span>
           <p class="dashboard-status-label" :class="{ 'text-muted': !checkedIn }">
-            {{ checkedIn ? 'Checked in today' : 'Not checked in yet' }}
+            {{ checkedIn ? 'Session completed today' : 'No session yet today' }}
           </p>
         </div>
-        <router-link data-testid="checkin-link" to="/checkin" class="btn btn-primary">
-          Daily check-in
+        <router-link data-testid="session-link" to="/session" class="btn btn-primary">
+          Daily session
         </router-link>
       </div>
 
@@ -49,7 +49,7 @@
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { getCoupleStatus } from '../api/pairing.js';
-import { getTodayCheckin } from '../api/checkin.js';
+import { getTodaySession } from '../api/checkin.js';
 import { useCurrentUser } from '../composables/useCurrentUser.js';
 import CheckinMatrix from '../components/CheckinMatrix.vue';
 
@@ -60,9 +60,9 @@ const router = useRouter();
 
 onMounted(async () => {
   try {
-    const [, status, todayCheckin] = await Promise.all([load(), getCoupleStatus(), getTodayCheckin()]);
+    const [, status, todaySession] = await Promise.all([load(), getCoupleStatus(), getTodaySession()]);
     if (status.paired) partnerName.value = status.partner_first_name;
-    checkedIn.value = todayCheckin !== null;
+    checkedIn.value = todaySession !== null;
   } catch (error) {
     if (!(error instanceof Error) || error.message !== 'unauthorized') {
       return;

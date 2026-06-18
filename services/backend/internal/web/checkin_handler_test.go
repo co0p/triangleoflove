@@ -14,24 +14,24 @@ import (
 	"triangleoflove/backend/internal/web"
 )
 
-type mockCheckinRepo struct {
+type mockSessionRepo struct {
 	saved domain.Checkin
 }
 
-func (m *mockCheckinRepo) FindByAccountAndDate(_ context.Context, _ string) (domain.Checkin, error) {
+func (m *mockSessionRepo) FindByAccountAndDate(_ context.Context, _ string) (domain.Checkin, error) {
 	return domain.Checkin{}, domain.ErrNotFound
 }
 
-func (m *mockCheckinRepo) Save(_ context.Context, _ string, c domain.Checkin) (domain.Checkin, error) {
+func (m *mockSessionRepo) Save(_ context.Context, _ string, c domain.Checkin) (domain.Checkin, error) {
 	m.saved = c
 	return c, nil
 }
 
-func TestCheckinHandler_GivenNoAuth_WhenGET_ThenReturns401(t *testing.T) {
-	svc := service.NewCheckinService(&mockCheckinRepo{})
-	handler := web.Middleware(web.NewCheckinHandler(svc))
+func TestSessionHandler_GivenNoAuth_WhenGET_ThenReturns401(t *testing.T) {
+	svc := service.NewSessionService(&mockSessionRepo{})
+	handler := web.Middleware(web.NewSessionHandler(svc))
 
-	req := httptest.NewRequest(http.MethodGet, "/api/v1/checkins/today", nil)
+	req := httptest.NewRequest(http.MethodGet, "/api/v1/sessions/today", nil)
 	// deliberately no Authorization header
 	rec := httptest.NewRecorder()
 	handler.ServeHTTP(rec, req)
@@ -41,12 +41,12 @@ func TestCheckinHandler_GivenNoAuth_WhenGET_ThenReturns401(t *testing.T) {
 	}
 }
 
-func TestCheckinHandler_GivenNoEntry_WhenGET_ThenReturns404(t *testing.T) {
-	svc := service.NewCheckinService(&mockCheckinRepo{})
-	handler := web.Middleware(web.NewCheckinHandler(svc))
+func TestSessionHandler_GivenNoEntry_WhenGET_ThenReturns404(t *testing.T) {
+	svc := service.NewSessionService(&mockSessionRepo{})
+	handler := web.Middleware(web.NewSessionHandler(svc))
 
 	token, _ := auth.SignToken("account-123", "user")
-	req := httptest.NewRequest(http.MethodGet, "/api/v1/checkins/today", nil)
+	req := httptest.NewRequest(http.MethodGet, "/api/v1/sessions/today", nil)
 	req.Header.Set("Authorization", "Bearer "+token)
 
 	rec := httptest.NewRecorder()
@@ -55,14 +55,22 @@ func TestCheckinHandler_GivenNoEntry_WhenGET_ThenReturns404(t *testing.T) {
 	if rec.Code != http.StatusNotFound {
 		t.Fatalf("expected 404, got %d: %s", rec.Code, rec.Body.String())
 	}
+
+	var payload map[string]string
+	if err := json.Unmarshal(rec.Body.Bytes(), &payload); err != nil {
+		t.Fatalf("expected JSON response, got error: %v", err)
+	}
+	if payload["error"] != "no session for today" {
+		t.Fatalf("expected error 'no session for today', got %q", payload["error"])
+	}
 }
 
-func TestCheckinHandler_GivenMalformedBody_WhenPUT_ThenReturns400(t *testing.T) {
-	svc := service.NewCheckinService(&mockCheckinRepo{})
-	handler := web.Middleware(web.NewCheckinHandler(svc))
+func TestSessionHandler_GivenMalformedBody_WhenPUT_ThenReturns400(t *testing.T) {
+	svc := service.NewSessionService(&mockSessionRepo{})
+	handler := web.Middleware(web.NewSessionHandler(svc))
 
 	token, _ := auth.SignToken("account-123", "user")
-	req := httptest.NewRequest(http.MethodPut, "/api/v1/checkins/today", bytes.NewReader([]byte("not-json")))
+	req := httptest.NewRequest(http.MethodPut, "/api/v1/sessions/today", bytes.NewReader([]byte("not-json")))
 	req.Header.Set("Authorization", "Bearer "+token)
 	req.Header.Set("Content-Type", "application/json")
 
@@ -74,17 +82,17 @@ func TestCheckinHandler_GivenMalformedBody_WhenPUT_ThenReturns400(t *testing.T) 
 	}
 }
 
-func TestCheckinHandler_GivenValidPUT_ThenSavesBody(t *testing.T) {
+func TestSessionHandler_GivenValidPUT_ThenSavesBody(t *testing.T) {
 	payload := domain.Checkin{FeltUnderstood: 3, MeaningfulSharing: 2, Mood: 4}
 
-	mock := &mockCheckinRepo{}
-	svc := service.NewCheckinService(mock)
-	handler := web.Middleware(web.NewCheckinHandler(svc))
+	mock := &mockSessionRepo{}
+	svc := service.NewSessionService(mock)
+	handler := web.Middleware(web.NewSessionHandler(svc))
 
 	body, _ := json.Marshal(payload)
 	token, _ := auth.SignToken("account-123", "user")
 
-	req := httptest.NewRequest(http.MethodPut, "/api/v1/checkins/today", bytes.NewReader(body))
+	req := httptest.NewRequest(http.MethodPut, "/api/v1/sessions/today", bytes.NewReader(body))
 	req.Header.Set("Authorization", "Bearer "+token)
 	req.Header.Set("Content-Type", "application/json")
 

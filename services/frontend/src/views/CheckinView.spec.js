@@ -1,11 +1,11 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { mount, flushPromises } from '@vue/test-utils';
 import CheckinView from './CheckinView.vue';
-import * as checkinApi from '../api/checkin.js';
+import * as sessionApi from '../api/checkin.js';
 
 vi.mock('../api/checkin.js', () => ({
-  getTodayCheckin: vi.fn().mockResolvedValue(null),
-  saveTodayCheckin: vi.fn().mockResolvedValue({
+  getTodaySession: vi.fn().mockResolvedValue(null),
+  saveTodaySession: vi.fn().mockResolvedValue({
     felt_understood: 4, meaningful_sharing: 3, could_count_on_them: 5,
     effort_for_us: 2, desire: 3, spark: 4, mood: 4, note: ''
   })
@@ -25,8 +25,8 @@ const EXISTING_ENTRY = {
 describe('CheckinView', () => {
   beforeEach(() => {
     vi.resetAllMocks();
-    checkinApi.getTodayCheckin.mockResolvedValue(null);
-    checkinApi.saveTodayCheckin.mockResolvedValue({
+    sessionApi.getTodaySession.mockResolvedValue(null);
+    sessionApi.saveTodaySession.mockResolvedValue({
       felt_understood: 4, meaningful_sharing: 3, could_count_on_them: 5,
       effort_for_us: 2, desire: 3, spark: 4, mood: 4, note: ''
     });
@@ -34,7 +34,7 @@ describe('CheckinView', () => {
 
   // --- Acceptance tests (D2) ---
 
-  it('TestCheckinView_GivenPageLoaded_WhenRendered_ThenShowsNewMetricsOnly', async () => {
+  it('TestSessionView_GivenPageLoaded_WhenRendered_ThenShowsNewMetricsOnly', async () => {
     const wrapper = mount(CheckinView);
     await flushPromises();
 
@@ -55,7 +55,7 @@ describe('CheckinView', () => {
     expect(wrapper.findAll('input[type="range"]')).toHaveLength(7);
   });
 
-  it('TestCheckinView_GivenAnySlider_WhenRendered_ThenRangeIsOneToFive', async () => {
+  it('TestSessionView_GivenAnySlider_WhenRendered_ThenRangeIsOneToFive', async () => {
     const wrapper = mount(CheckinView);
     await flushPromises();
 
@@ -67,8 +67,8 @@ describe('CheckinView', () => {
     }
   });
 
-  it('TestCheckinView_GivenSavedEntry_WhenPageReloaded_ThenValuesPrePopulated', async () => {
-    checkinApi.getTodayCheckin.mockResolvedValue(EXISTING_ENTRY);
+  it('TestSessionView_GivenSavedEntry_WhenPageReloaded_ThenValuesPrePopulated', async () => {
+    sessionApi.getTodaySession.mockResolvedValue(EXISTING_ENTRY);
     const wrapper = mount(CheckinView);
     await flushPromises();
 
@@ -82,7 +82,7 @@ describe('CheckinView', () => {
 
   // --- Behavioural tests ---
 
-  it('TestCheckin_GivenFreshForm_WhenDisplayed_ThenAllSlidersUnset', async () => {
+  it('TestSession_GivenFreshForm_WhenDisplayed_ThenAllSlidersUnset', async () => {
     const wrapper = mount(CheckinView);
     await flushPromises();
 
@@ -93,7 +93,7 @@ describe('CheckinView', () => {
     }
   });
 
-  it('TestCheckin_GivenUnsetSlider_WhenUserInteracts_ThenUnsetStyleClears', async () => {
+  it('TestSession_GivenUnsetSlider_WhenUserInteracts_ThenUnsetStyleClears', async () => {
     const wrapper = mount(CheckinView);
     await flushPromises();
 
@@ -106,7 +106,7 @@ describe('CheckinView', () => {
     expect(slider.classes()).not.toContain('checkin-slider--unset');
   });
 
-  it('TestCheckin_GivenValuesSet_WhenSaved_ThenConfirmationShown', async () => {
+  it('TestSession_GivenValuesSet_WhenSaved_ThenConfirmationShown', async () => {
     const wrapper = mount(CheckinView);
     await flushPromises();
 
@@ -116,9 +116,9 @@ describe('CheckinView', () => {
     expect(wrapper.find('[data-testid="checkin-confirmation"]').exists()).toBe(true);
   });
 
-  it('TestCheckin_GivenExistingEntry_WhenResubmitted_ThenEntryUpdated', async () => {
-    checkinApi.getTodayCheckin.mockResolvedValue(EXISTING_ENTRY);
-    checkinApi.saveTodayCheckin.mockResolvedValue({ ...EXISTING_ENTRY, felt_understood: 5 });
+  it('TestSession_GivenExistingEntry_WhenResubmitted_ThenEntryUpdated', async () => {
+    sessionApi.getTodaySession.mockResolvedValue(EXISTING_ENTRY);
+    sessionApi.saveTodaySession.mockResolvedValue({ ...EXISTING_ENTRY, felt_understood: 5 });
 
     const wrapper = mount(CheckinView);
     await flushPromises();
@@ -126,7 +126,7 @@ describe('CheckinView', () => {
     await wrapper.find('button[data-testid="save-checkin"]').trigger('click');
     await flushPromises();
 
-    expect(checkinApi.saveTodayCheckin).toHaveBeenCalledOnce();
+    expect(sessionApi.saveTodaySession).toHaveBeenCalledOnce();
     expect(wrapper.find('[data-testid="checkin-confirmation"]').exists()).toBe(true);
   });
 });

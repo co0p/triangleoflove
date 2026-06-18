@@ -25,7 +25,7 @@ const router = createRouter({
     { path: '/login', component: LoginView },
     { path: '/register', component: RegisterView },
     { path: '/dashboard', component: DashboardView },
-    { path: '/checkin', component: CheckinView },
+    { path: '/session', component: CheckinView },
     { path: '/pairing', component: PairingView },
     { path: '/profile', component: ProfileView },
     { path: '/insights', component: InsightsWeeklyView },
@@ -39,7 +39,7 @@ router.beforeEach((to) => {
   if (to.path === '/dashboard' && !token) {
     return '/login';
   }
-  if (to.path === '/checkin' && !token) {
+  if (to.path === '/session' && !token) {
     return '/login';
   }
   if (to.path === '/pairing' && !token) {

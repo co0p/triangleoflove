@@ -1,7 +1,7 @@
 <template>
   <div class="checkin-page">
     <main class="container section">
-      <h1>Daily check-in</h1>
+      <h1>Daily session</h1>
       <p class="text-muted">30–60 seconds · private note optional</p>
       <div class="checkin-dimensions">
         <div v-for="dim in relationshipDimensions" :key="dim.key" class="checkin-row">
@@ -52,10 +52,10 @@
         placeholder="Optional private note"
       />
       <button data-testid="save-checkin" class="btn btn-primary checkin-save" @click="save">
-        Save Check-in
+        Save session
       </button>
       <p v-if="confirmed" data-testid="checkin-confirmation" class="checkin-confirmed">
-        Check-in saved.
+        Session saved.
       </p>
       <p v-if="error" role="alert" class="checkin-error">
         {{ error }}
@@ -66,7 +66,7 @@
 
 <script setup>
 import { ref, reactive, onMounted } from 'vue';
-import { getTodayCheckin, saveTodayCheckin } from '../api/checkin.js';
+import { getTodaySession, saveTodaySession } from '../api/checkin.js';
 
 const relationshipDimensions = [
   { key: 'felt_understood',     label: 'Felt understood',      description: 'Did you feel truly heard by your partner?' },
@@ -96,7 +96,7 @@ const confirmed = ref(false);
 const error = ref('');
 
 onMounted(async () => {
-  const existing = await getTodayCheckin();
+  const existing = await getTodaySession();
   if (existing) {
     Object.keys(ratings).forEach(k => { ratings[k] = existing[k]; });
     note.value = existing.note;
@@ -115,10 +115,10 @@ async function save() {
     note: note.value,
   };
   try {
-    await saveTodayCheckin(payload);
+    await saveTodaySession(payload);
     confirmed.value = true;
   } catch {
-    error.value = 'Could not save check-in. Please try again.';
+    error.value = 'Could not save session. Please try again.';
   }
 }
 </script>

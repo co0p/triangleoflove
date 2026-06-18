@@ -18,17 +18,17 @@ async function setSlider(page, id, value) {
 }
 
 /**
- * Log in and navigate to the checkin page, waiting for the page to render.
+ * Log in and navigate to the session page, waiting for the page to render.
  */
-async function goToCheckin(page) {
+async function goToSession(page) {
   await loginViaUI(page);
   await expect(page).toHaveURL(/\/dashboard/);
-  await page.goto(`${FRONTEND_BASE_URL}/checkin`);
-  await expect(page.locator('h1')).toHaveText('Daily check-in');
+  await page.goto(`${FRONTEND_BASE_URL}/session`);
+  await expect(page.locator('h1')).toHaveText('Daily session');
 }
 
-test('GivenLoggedIn_WhenCheckinPageOpened_ThenNewMetricSlidersVisible', async ({ page }) => {
-  await goToCheckin(page);
+test('GivenLoggedIn_WhenSessionPageOpened_ThenNewMetricSlidersVisible', async ({ page }) => {
+  await goToSession(page);
 
   const expectedLabels = [
     'Felt understood', 'Meaningful sharing', 'Could count on them',
@@ -43,7 +43,7 @@ test('GivenLoggedIn_WhenCheckinPageOpened_ThenNewMetricSlidersVisible', async ({
 });
 
 test('GivenLoggedIn_WhenSlidersAdjustedAndSaved_ThenConfirmationShown', async ({ page }) => {
-  await goToCheckin(page);
+  await goToSession(page);
 
   await setSlider(page, 'felt_understood', 4);
   await setSlider(page, 'mood', 3);
@@ -52,8 +52,8 @@ test('GivenLoggedIn_WhenSlidersAdjustedAndSaved_ThenConfirmationShown', async ({
   await expect(page.locator('[data-testid="checkin-confirmation"]')).toBeVisible();
 });
 
-test('GivenCheckinSaved_WhenPageReloaded_ThenSavedValuesPrePopulated', async ({ page }) => {
-  await goToCheckin(page);
+test('GivenSessionSaved_WhenPageReloaded_ThenSavedValuesPrePopulated', async ({ page }) => {
+  await goToSession(page);
 
   await setSlider(page, 'felt_understood', 5);
   await setSlider(page, 'desire', 3);
@@ -63,7 +63,7 @@ test('GivenCheckinSaved_WhenPageReloaded_ThenSavedValuesPrePopulated', async ({ 
   await expect(page.locator('[data-testid="checkin-confirmation"]')).toBeVisible();
 
   await page.reload();
-  await expect(page.locator('h1')).toHaveText('Daily check-in');
+  await expect(page.locator('h1')).toHaveText('Daily session');
   await expect(page.locator('#felt_understood')).toHaveValue('5');
   await expect(page.locator('#desire')).toHaveValue('3');
   await expect(page.locator('#mood')).toHaveValue('2');

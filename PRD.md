@@ -71,7 +71,7 @@ The primary use context is a phone in one hand — on the subway, during a coffe
 
 | Input | Used for |
 |-------|---------|
-| Star tap (1–5) | All 5 weekly questions |
+| Star tap (1–5) | All weekly session prompts |
 | Large button / card tap | Impulse selection, monthly session opt-in, navigation |
 | Optional short-text field | Reflection notes (two per session, both skippable) |
 | Read-only card display | Monthly shared session trigger questions — no input required |
@@ -86,7 +86,7 @@ Every feature belongs to exactly one tier. The Personal tier is a complete, self
 
 | Feature | Description |
 |---------|-------------|
-| Weekly session | Answer 5 questions by tapping stars → triangle scores calculated → two optional reflection prompts → one impulse |
+| Weekly session | Answer a short prompt set by tapping stars → triangle scores calculated → two optional reflection prompts → one impulse |
 | Personal dashboard | Your own triangle trend over time, with health state label + trend line per dimension |
 | Impulses | One actionable suggestion per session, drawn from your own data |
 | Private reflections | Stored to your account only, never shared automatically |
@@ -109,7 +109,7 @@ Couple features are visible to unpaired users with a single, calm prompt: *"Invi
 
 | Cadence | Tier | Time | What happens |
 |---------|------|------|-------------|
-| Weekly | Personal | ~3–5 min | 5 questions → triangle scores → reflections → impulse |
+| Weekly | Personal | ~3–5 min | Star-rated prompts → triangle scores → reflections → impulse |
 | Monthly | Couple (opt-in) | ~20 min offline | Trigger questions surfaced → partners discuss offline |
 
 ---
@@ -120,24 +120,20 @@ The weekly session is the only regular input. It is designed to be completed in 
 
 ### Flow
 
-1. **5 questions** — all presented on a single scrollable screen. Each answered by tapping a star (1–5). No pagination. No "next" button per question.
-2. **Triangle scores calculated** — each question is designed to proxy one or more of the three dimensions (Intimacy, Passion, Commitment). The mapping is handled internally; the user sees dimension scores, not raw question averages.
+1. **Session prompt set** — a short set of relationship prompts is presented on a single scrollable screen. Each prompt is answered by tapping a star (1–5). No pagination. No "next" button per prompt.
+2. **Triangle scores calculated** — each prompt is designed to proxy one or more of the three dimensions (Intimacy, Passion, Commitment). The mapping is handled internally; the user sees dimension scores, not raw prompt averages.
 3. **Two reflection prompts** — one at a time, each with an optional short-text field (≤140 chars, skippable):
    - *"What was nice about us last week?"*
    - *"What was hard or frustrating last week?"*
 4. **One impulse** — a single actionable suggestion for the week ahead, displayed as a large card. The user taps to accept or skip.
 
-### Default question set
+### Prompt-set constraints
 
-| # | Question | Dimension(s) proxied |
-|---|----------|---------------------|
-| 1 | "I felt emotionally close to my partner this week." | Intimacy |
-| 2 | "There was positive energy and warmth between us." | Intimacy, Passion |
-| 3 | "We had fun or did something enjoyable together." | Passion |
-| 4 | "I felt like we were on the same team this week." | Commitment |
-| 5 | "We handled things together reliably and with care." | Commitment |
-
-*The question set is iterable. Mapping weights are an implementation concern, not a PRD concern.*
+- The weekly prompt set is intentionally configurable and may evolve.
+- MVP expects a small fixed set of star-rated prompts that still fits the 3–5 minute completion target.
+- Every prompt must proxy one or more Triangle dimensions.
+- Prompt wording and count are implementation concerns and can change without revising product intent.
+- Mapping weights are an implementation concern, not a PRD concern.
 
 ### Impulses
 

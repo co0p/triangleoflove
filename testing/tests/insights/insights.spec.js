@@ -15,7 +15,7 @@ test('TestInsights_GivenNoAuth_WhenNavigated_ThenRedirectsToLogin', async ({ pag
   await expect(page.getByRole('heading', { name: 'Sign in' })).toBeVisible();
 });
 
-test('TestInsights_GivenCheckinExists_WhenRequested_ThenReturnsThreeScores', async ({ page }) => {
+test('TestInsights_GivenSessionExists_WhenRequested_ThenReturnsThreeScores', async ({ page }) => {
   await loginViaUI(page);
   await expect(page).toHaveURL(/\/dashboard/);
 
