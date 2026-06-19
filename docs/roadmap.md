@@ -19,6 +19,7 @@ Tracks feature delivery against the product tiers defined in `PRD.md`. Updated a
 | Weekly Insights matrix | Done | [insights.spec.js](../testing/tests/insights/insights.spec.js) |
 | Users / me endpoint | Done | [users-me-backend.spec.js](../testing/tests/users/users-me-backend.spec.js) |
 | Weekly session flow (backend and endpoint refactor) | Partial | — |
+| Dashboard weekly backlog indicator and copy reframing | Done | [WeeklyBacklogDots.spec.js](../services/frontend/src/components/WeeklyBacklogDots.spec.js), [DashboardView.spec.js](../services/frontend/src/views/DashboardView.spec.js) |
 | Impulses | Not Started | — |
 | Private reflections | Not Started | — |
 

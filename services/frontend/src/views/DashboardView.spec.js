@@ -4,6 +4,7 @@ import DashboardView from './DashboardView.vue';
 import * as usersApi from '../api/users.js';
 import * as pairingApi from '../api/pairing.js';
 import * as sessionApi from '../api/checkin.js';
+import * as insightsApi from '../api/insights.js';
 import { useCurrentUser } from '../composables/useCurrentUser.js';
 
 const { push } = vi.hoisted(() => ({
@@ -26,6 +27,10 @@ vi.mock('../api/checkin.js', () => ({
   getTodaySession: vi.fn(),
 }));
 
+vi.mock('../api/insights.js', () => ({
+  getWeeklyInsights: vi.fn(),
+}));
+
 const stubs = {
   NavBar: true,
   RouterLink: { template: '<a v-bind="$attrs"><slot /></a>' },
@@ -40,6 +45,7 @@ describe('DashboardView', () => {
     usersApi.getMe.mockResolvedValue({ firstName: 'Alice' });
     pairingApi.getCoupleStatus.mockResolvedValue({ paired: false, partner_first_name: '' });
     sessionApi.getTodaySession.mockResolvedValue(null);
+    insightsApi.getWeeklyInsights.mockResolvedValue([{ date: '20260619', intimacy: 60, commitment: 60, passion: 60 }]);
   });
 
   it('TestDashboard_GivenPartnerName_WhenRendered_ThenPairingStatusVisible', async () => {
@@ -65,7 +71,34 @@ describe('DashboardView', () => {
     const wrapper = mount(DashboardView, { global: { stubs } });
     await flushPromises();
 
-    expect(wrapper.text()).toContain('Session completed today');
+    expect(wrapper.text()).toContain('Weekly check-in logged today');
+  });
+
+  it('TestDashboard_GivenRecentCheckin_WhenRendered_ThenBacklogShowsOneDot', async () => {
+    insightsApi.getWeeklyInsights.mockResolvedValue([{ date: '20260619', intimacy: 60, commitment: 60, passion: 60 }]);
+
+    const wrapper = mount(DashboardView, { global: { stubs } });
+    await flushPromises();
+
+    expect(wrapper.findAll('.weekly-backlog-dot--filled')).toHaveLength(1);
+  });
+
+  it('TestDashboard_GivenThreeDaysBehind_WhenRendered_ThenBacklogShowsTwoDots', async () => {
+    insightsApi.getWeeklyInsights.mockResolvedValue([{ date: '20260616', intimacy: 60, commitment: 60, passion: 60 }]);
+
+    const wrapper = mount(DashboardView, { global: { stubs } });
+    await flushPromises();
+
+    expect(wrapper.findAll('.weekly-backlog-dot--filled')).toHaveLength(2);
+  });
+
+  it('TestDashboard_GivenOldCheckin_WhenRendered_ThenBacklogShowsThreeDots', async () => {
+    insightsApi.getWeeklyInsights.mockResolvedValue([{ date: '20260610', intimacy: 60, commitment: 60, passion: 60 }]);
+
+    const wrapper = mount(DashboardView, { global: { stubs } });
+    await flushPromises();
+
+    expect(wrapper.findAll('.weekly-backlog-dot--filled')).toHaveLength(3);
   });
 
   it('TestDashboard_GivenPrimaryNavigation_WhenInsightsLinkClicked_ThenOpensWeeklyInsights', async () => {

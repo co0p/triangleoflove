@@ -12,11 +12,15 @@
         <div class="dashboard-status-row">
           <span class="dashboard-dot" :class="checkedIn ? 'dashboard-dot--done' : 'dashboard-dot--pending'" aria-hidden="true"></span>
           <p class="dashboard-status-label" :class="{ 'text-muted': !checkedIn }">
-            {{ checkedIn ? 'Session completed today' : 'No session yet today' }}
+            {{ checkedIn ? 'Weekly check-in logged today' : 'No check-in logged today' }}
           </p>
         </div>
+        <div class="dashboard-weekly-row">
+          <p class="dashboard-weekly-label text-muted">Weekly rhythm</p>
+          <WeeklyBacklogDots :weekly-insights="weeklyInsights" />
+        </div>
         <router-link data-testid="session-link" to="/session" class="btn btn-primary">
-          Daily session
+          Weekly check-in
         </router-link>
       </div>
 
@@ -40,7 +44,6 @@
           Weekly insights
         </router-link>
       </div>
-
     </main>
   </div>
 </template>
@@ -50,19 +53,29 @@ import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { getCoupleStatus } from '../api/pairing.js';
 import { getTodaySession } from '../api/checkin.js';
+import { getWeeklyInsights } from '../api/insights.js';
 import { useCurrentUser } from '../composables/useCurrentUser.js';
 import CheckinMatrix from '../components/CheckinMatrix.vue';
+import WeeklyBacklogDots from '../components/WeeklyBacklogDots.vue';
 
 const { firstName, load } = useCurrentUser();
 const partnerName = ref('');
 const checkedIn = ref(false);
+const weeklyInsights = ref([]);
 const router = useRouter();
 
 onMounted(async () => {
   try {
-    const [, status, todaySession] = await Promise.all([load(), getCoupleStatus(), getTodaySession()]);
+    const [, status, todaySession, insights] = await Promise.all([
+      load(),
+      getCoupleStatus(),
+      getTodaySession(),
+      getWeeklyInsights(7),
+    ]);
+
     if (status.paired) partnerName.value = status.partner_first_name;
     checkedIn.value = todaySession !== null;
+    weeklyInsights.value = insights;
   } catch (error) {
     if (!(error instanceof Error) || error.message !== 'unauthorized') {
       return;
@@ -105,5 +118,16 @@ onMounted(async () => {
 .dashboard-status-label {
   font-size: var(--font-size-sm);
   line-height: var(--line-height-normal);
+}
+
+.dashboard-weekly-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 44px;
+}
+
+.dashboard-weekly-label {
+  font-size: var(--font-size-xs);
 }
 </style>
